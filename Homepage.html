@@ -1,292 +1,531 @@
-<!DOCTYPE html>  <html lang="en">  
-<head>  
-<meta charset="UTF-8">  
-<meta name="viewport" content="width=device-width, initial-scale=1.0">  
-<title>Friend Zone Chat</title>  
-<style>  
-*{  
-margin:0;  
-padding:0;  
-box-sizing:border-box;  
-font-family:Arial,sans-serif;  
-}  
-body{  
-background:linear-gradient(141deg,#ff00cc,#333399,#a3924e,#ffffff);  
-height:100vh;  
-}  
-.header{  
-height:70px;  
-background:#2196F3;  
-color:white;  
-display:flex;  
-justify-content:space-between;  
-align-items:center;  
-padding:20px;  
-}  
-#logoutBtn{  
-background:red;  
-color:white;  
-border:none;  
-padding:10px 15px;  
-border-radius:5px;  
-cursor:pointer;  
-}  
-.container{  
-display:flex;  
-height:calc(100vh - 70px);  
-}  
-.sidebar{  
-width:30%;  
-background:white;  
-border-right:1px solid #ccc;  
-overflow-y:auto;  
-}  
-.profile{  
-text-align:center;  
-padding:20px;  
-border-bottom:1px solid #ddd;  
-}  
-.profile img{  
-width:80px;  
-height:80px;  
-border-radius:50%;  
-}  
-.profile h3{  
-margin-top:10px;  
-}  
-.profile button{  
-padding:8px;  
-margin-top:5px;  
-}  
-.friend{  
-display:flex;  
-align-items:center;  
-padding:10px;  
-border-bottom:1px solid #eee;  
-cursor:pointer;  
-}  
-.friend:hover{  
-background:#eee;  
-}  
-.friend img{  
-width:45px;  
-height:45px;  
-border-radius:50%;  
-margin-right:10px;  
-}  
-.status{  
-width:10px;  
-height:10px;  
-background:green;  
-border-radius:50%;  
-margin-left:auto;  
-}  
-.chat-area{  
-width:70%;  
-display:flex;  
-flex-direction:column;  
-}  
-#messages{  
-flex:1;  
-padding:15px;  
-overflow-y:auto;  
-background:#f5f5f5;  
-}  
-.message{  
-background:white;  
-padding:10px;  
-margin-bottom:10px;  
-border-radius:8px;  
-}  
-.message small{  
-display:block;  
-color:gray;  
-font-size:12px;  
-margin-top:5px;  
-text-align:right;  
-}  
-.bottom{  
-display:flex;  
-padding:10px;  
-background:white;  
-}  
-#messageInput{  
-flex:1;  
-padding:10px;  
-font-size:10px;
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Friend Zone Chat</title><style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background: linear-gradient(141deg, #ff00cc, #333399, #a3924e, #ffffff);
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ======================
+   HEADER
+====================== */
+
+.header {
+  height: 70px;
+  background: #2196F3;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+}
+
+#logoutBtn {
+  background: red;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* ======================
+   MAIN CONTAINER
+====================== */
+
+.container {
+  display: flex;
+  height: calc(100vh - 70px);
+}
+
+/* ======================
+   SIDEBAR
+====================== */
+
+.sidebar {
+  width: 30%;
+  background: white;
+  border-right: 1px solid #ccc;
+  overflow-y: auto;
+}
+
+.profile {
+  text-align: center;
+  padding: 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.profile img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile h3 {
+  margin-top: 10px;
+}
+
+.profile button {
+  padding: 8px;
+  margin-top: 5px;
+}
+
+/* ======================
+   FRIENDS
+====================== */
+
+.friend {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+.friend:hover {
+  background: #eee;
+}
+
+.friend img {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+}
+
+/* ======================
+   CHAT AREA
+====================== */
+
+.chat-area {
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+}
+
+#typingStatus {
+  font-size: 14px;
+  color: #25D366;
+  padding: 5px 10px;
+  background: white;
+}
+
+#messages {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+  background: #f5f5f5;
+}
+
+.message {
+  background: white;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+}
+
+.message small {
+  display: block;
+  color: gray;
+  font-size: 12px;
+  margin-top: 5px;
+  text-align: right;
+}
+
+/* ======================
+   MESSAGE BAR
+====================== */
+
+.bottom {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background: white;
+  gap: 5px;
+}
+
+#messageInput {
+  flex: 1;
+  padding: 10px;
+  font-size: 14px;
   height: 50px;
-}  
-#sendBtn{  
-margin-left:10px;  
-padding:10px 20px;  
-background:#2196F3;  
-color:white;  
-border:none;  
-border-radius:5px;  
-}  
-#createGroupBtn{  
-padding:10px;  
-margin:10px;  
-background:#4CAF50;  
-color:white;  
-border:none;  
-border-radius:5px;  
-}  
-#groupName{  
-margin:10px;  
-padding:10px;  
-width:90%;  
-}  
-  #voiceCallBtn,
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#sendBtn {
+  padding: 10px 20px;
+  background: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#imageBtn,
+#recordBtn {
+  padding: 10px;
+  border: none;
+  background: #eee;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* ======================
+   GROUPS
+====================== */
+
+#createGroupBtn {
+  padding: 10px;
+  margin: 10px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#groupName {
+  margin: 10px;
+  padding: 10px;
+  width: 90%;
+}
+
+#membersList {
+  padding: 10px;
+}
+
+/* ======================
+   CALL BUTTONS
+====================== */
+
+.call-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+#voiceCallBtn,
 #videoCallBtn {
   background: #25D366;
   color: white;
   border: none;
   padding: 8px 12px;
-  margin-left: 8px;
   border-radius: 50%;
   cursor: pointer;
   font-size: 18px;
-  }
-</style>  
-</head>  
-<body>  
-  <div id="typingStatus" style="font-size:14px;color:#25D366;padding:5px 10px;"></div>
-<div class="header">  
-<h3>FRIEND ZONE CHAT</h3> 
-  
-<button id="logoutBtn">  
-Logout  
-</button>  
-</div>  
-<div class="container">  
-<div class="sidebar">  
-<div class="profile">  
-<img id="profilePic"  
-src="https://via.placeholder.com/80">  
-<h3 id="username">  
-Loading...  
-</h3>  
-  <button id="voiceCallBtn">📞</button>
-<button id="videoCallBtn">🎥</button>
-  <button id="hangUpBtn">
-  🔴 End Call
-</button>
+}
 
-<p id="callStatus"></p>
-  <audio id="localAudio" autoplay muted></audio>
-<audio id="remoteAudio" autoplay></audio>
-<input type="file" id="imageInput" accept="image/*">  
-<button id="uploadBtn">  
-ADD +  
-</button>  
-</div>  
-<h3 style="padding:10px;">  
-Friends  
-</h3>  
-<div id="friendsList"></div>  
-<hr>  
-<h3 style="padding:10px;">  
-Groups  
-</h3>  
-<input id="groupName"  
-placeholder="Group name">  
-<button id="createGroupBtn">  
-Create Group  
-</button>  
-<button id="addMemberBtn" style="display:none;">  
-Add Member  
-</button>  
-<select id="friendSelect" style="display:none;">  
-</select>  
-<button id="confirmAddMemberBtn" style="display:none;">  
-Add  
-</button>  
-<h4>Select Members</h4>  
-<div id="membersList"></div>  
-<div id="groupsList"></div>  
-</div>  
-<div class="chat-area">  
-<div id="messages">  
-</div>  
-<div class="bottom">  
-<input  
-id="messageInput"  
-placeholder="Type your message...">  
-<input  
-type="file"  
-id="chatImage"  
-accept="image/*"  
-style="display:none;">  
-<button id="imageBtn">  
-📷  
-</button>  
-<button id="recordBtn">🎤</button>
-<audio id="voicePlayer" controls style="display:none;"></audio>
-<button id="sendBtn">Send</button>
-</div>  
-</div>  
-</div>  
-  <audio id="notificationSound" preload="auto">
-  <source src="notification.mp3" type="audio/mpeg">
-</audio>
-  <div id="incomingCallBox" style="
-display:none;
-position:fixed;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-background:#fff;
-padding:20px;
-border-radius:12px;
-box-shadow:0 0 10px rgba(0,0,0,.3);
-text-align:center;
-z-index:9999;
-">
+#hangUpBtn {
+  background: #e53935;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  margin-top: 8px;
+}
 
-<h3>📞 Incoming Call</h3>
+/* ======================
+   CALL STATUS
+====================== */
 
-<p id="callerName">Someone is calling...</p>
+#callStatus {
+  margin-top: 8px;
+  font-size: 14px;
+}
 
-<button id="acceptCallBtn">✅ Accept</button>
+/* ======================
+   CALL SCREEN
+====================== */
 
-<button id="declineCallBtn">❌ Decline</button>
+#callScreen {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: white;
+  z-index: 9000;
+  text-align: center;
+  padding-top: 60px;
+}
+
+#callProfilePic {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+#callScreen button {
+  padding: 10px 15px;
+  margin: 5px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ======================
+   INCOMING CALL
+====================== */
+
+#incomingCallBox {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,.3);
+  text-align: center;
+  z-index: 9999;
+}
+
+#incomingCallBox button {
+  padding: 10px;
+  margin: 5px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+</style></head><body><!-- ======================
+     HEADER
+====================== --><div class="header">  <h3>FRIEND ZONE CHAT</h3>  <button id="logoutBtn">
+    Logout
+  </button></div><!-- ======================
+     MAIN
+====================== --><div class="container">  <!-- ======================
+       SIDEBAR
+  ====================== -->  <div class="sidebar"><!-- PROFILE -->
+
+<div class="profile">
+
+  <img
+    id="profilePic"
+    src="https://via.placeholder.com/80"
+    alt="Profile Picture"
+  >
+
+  <h3 id="username">
+    Loading...
+  </h3>
+
+  <!-- CALL BUTTONS -->
+
+  <div class="call-buttons">
+
+    <button id="voiceCallBtn">
+      📞
+    </button>
+
+    <button id="videoCallBtn">
+      🎥
+    </button>
 
   </div>
-  <audio id="remoteAudio" autoplay></audio>
-<script type="module" src="Home.js"></script>
-<script type="module" src="Calls.js"></script> 
-<!-- ======================
-CALL SCREEN
-====================== -->
 
-<div id="callScreen" style="display:none;">
+  <button id="hangUpBtn">
+    🔴 End Call
+  </button>
 
-    <img id="callProfilePic"
-         src="images/default-profile.png"
-         width="120"
-         height="120">
+  <p id="callStatus"></p>
 
-    <h2 id="callUserName">Friend</h2>
+  <!-- CALL AUDIO -->
 
-    <p id="callStatus">Calling...</p>
+  <audio
+    id="localAudio"
+    autoplay
+    muted>
+  </audio>
 
-    <h1 id="callTimer">00:00</h1>
+  <audio
+    id="remoteAudio"
+    autoplay>
+  </audio>
 
-    <div>
+  <!-- PROFILE IMAGE -->
 
-        <button id="muteBtn">🎤 Mute</button>
+  <input
+    type="file"
+    id="imageInput"
+    accept="image/*"
+  >
 
-        <button id="speakerBtn">🔊 Speaker</button>
-
-    </div>
-
-    <br>
-
-    <button id="hangUpBtn">🔴 End Call</button>
+  <button id="uploadBtn">
+    ADD +
+  </button>
 
 </div>
 
-<audio id="remoteAudio" autoplay></audio>
-</body>  
+<!-- ======================
+     FRIENDS
+====================== -->
+
+<h3 style="padding:10px;">
+  Friends
+</h3>
+
+<div id="friendsList"></div>
+
+<hr>
+
+<!-- ======================
+     GROUPS
+====================== -->
+
+<h3 style="padding:10px;">
+  Groups
+</h3>
+
+<input
+  id="groupName"
+  placeholder="Group name"
+>
+
+<button id="createGroupBtn">
+  Create Group
+</button>
+
+<!-- ADD MEMBER CONTROLS -->
+
+<button
+  id="addMemberBtn"
+  style="display:none;">
+  Add Member
+</button>
+
+<select
+  id="friendSelect"
+  style="display:none;">
+</select>
+
+<button
+  id="confirmAddMemberBtn"
+  style="display:none;">
+  Add
+</button>
+
+<!-- GROUP MEMBER SELECTION -->
+
+<h4 style="padding:10px;">
+  Select Members
+</h4>
+
+<div id="membersList"></div>
+
+<div id="groupsList"></div>
+
+  </div>  <!-- ======================
+       CHAT AREA
+  ====================== -->  <div class="chat-area"><!-- TYPING STATUS -->
+
+<div id="typingStatus"></div>
+
+<!-- MESSAGES -->
+
+<div id="messages"></div>
+
+<!-- MESSAGE BAR -->
+
+<div class="bottom">
+
+  <input
+    id="messageInput"
+    placeholder="Type your message..."
+    autocomplete="off"
+  >
+
+  <!-- CHAT IMAGE -->
+
+  <input
+    type="file"
+    id="chatImage"
+    accept="image/*"
+    style="display:none;"
+  >
+
+  <button id="imageBtn">
+    📷
+  </button>
+
+  <!-- VOICE MESSAGE -->
+
+  <button id="recordBtn">
+    🎤
+  </button>
+
+  <audio
+    id="voicePlayer"
+    controls
+    style="display:none;">
+  </audio>
+
+  <!-- SEND -->
+
+  <button id="sendBtn">
+    Send
+  </button>
+
+</div>
+
+  </div></div><!-- ======================
+     NOTIFICATION SOUND
+====================== --><audio
+id="notificationSound"
+preload="auto">
+
+<source
+src="notification.mp3"
+type="audio/mpeg">
+
+</audio><!-- ======================
+     INCOMING CALL
+====================== --><div id="incomingCallBox">  <h3>
+    📞 Incoming Call
+  </h3>  <p id="callerName">
+    Someone is calling...
+  </p>  <button id="acceptCallBtn">
+    ✅ Accept
+  </button>  <button id="declineCallBtn">
+    ❌ Decline
+  </button></div><!-- ======================
+     CALL SCREEN
+====================== --><div id="callScreen"><img
+id="callProfilePic"
+src="images/default-profile.png"
+alt="Profile Picture"
+
+«»
+
+  <h2 id="callUserName">
+    Friend
+  </h2>  <p id="callStatus">
+    Calling...
+  </p>  <h1 id="callTimer">
+    00:00
+  </h1>  <div><button id="muteBtn">
+  🎤 Mute
+</button>
+
+<button id="speakerBtn">
+  🔊 Speaker
+</button>
+
+  </div>  <button id="callHangUpBtn">
+    🔴 End Call
+  </button></div><!-- ======================
+     JAVASCRIPT
+====================== --><script type="module" src="Home.js"></script><script type="module" src="Calls.js"></script></body>
 </html>
