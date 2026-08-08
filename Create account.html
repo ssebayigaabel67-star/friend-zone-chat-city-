@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Create Account</title>
+
+<style>
+
+body{
+  background-image: url("Add.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+h3{
+  color:red;
+}
+
+h4{
+  color:greenyellow;
+}
+
+h6{
+  color:white;
+}
+
+input{
+  padding:8px;
+  border-radius:5px;
+  border:none;
+}
+
+button{
+  padding:10px 20px;
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+  background:black;
+  color:white;
+}
+
+button:hover{
+  background:green;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h3>Create an account</h3>
+
+<h4>
+Name:
+<input id="name" type="text" required>
+</h4>
+
+
+<h4>
+Email:
+<input id="email" type="email" required>
+</h4>
+
+
+<h4>
+Password:
+<input id="password" type="password" required>
+</h4>
+
+
+<h4>
+Date of Birth:
+<input id="dob" type="date" required>
+</h4>
+
+
+<h4>
+Contacts:
+</h4>
+
+<input id="phone" type="tel" required>
+
+
+<h4>
+Gender:
+</h4>
+
+
+<input type="radio" id="male" name="gender" value="Male">
+<label for="male">
+<h6>Male</h6>
+</label>
+
+
+<input type="radio" id="female" name="gender" value="Female">
+<label for="female">
+<h6>Female</h6>
+</label>
+
+
+<br><br>
+
+
+<button id="signupBtn">
+Create Account
+</button>
+
+
+<button>
+Help
+</button>
+
+
+<script type="module" src="App.js"></script>
+
+
+</body>
+</html>
