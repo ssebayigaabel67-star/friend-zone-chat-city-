@@ -1,0 +1,1282 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Friend Zone Chat</title><style>
+
+/* ======================
+   RESET
+====================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  background: linear-gradient(
+    141deg,
+    #ff00cc,
+    #333399,
+    #a3924e,
+    #ffffff
+  );
+
+  height: 100vh;
+  overflow: hidden;
+}
+
+
+/* ======================
+   HEADER
+====================== */
+
+.header {
+  height: 60px;
+
+  background-color: blue;
+
+  color: yellowgreen;
+
+  display: flex;
+
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 10px 15px;
+
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.header h3 {
+  font-size: 18px;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+
+/* ======================
+   LOGOUT
+====================== */
+
+#logoutBtn {
+  background: red;
+
+  color: white;
+
+  border: none;
+
+  padding: 9px 15px;
+
+  border-radius: 50px;
+
+  cursor: pointer;
+
+  font-size: 14px;
+
+  font-weight: bold;
+}
+
+#logoutBtn:active {
+  transform: scale(0.95);
+}
+
+
+/* ======================
+   MAIN CONTAINER
+====================== */
+
+.container {
+  display: flex;
+
+  width: 100%;
+
+  height: calc(100vh - 60px);
+
+  overflow: hidden;
+}
+
+
+/* ======================
+   SIDEBAR
+====================== */
+
+.sidebar {
+  width: 280px;
+
+  min-width: 220px;
+
+  flex-shrink: 0;
+
+  background: blue;
+
+  border-right: 3px solid #ccc;
+
+  overflow-y: auto;
+
+  overflow-x: hidden;
+}
+
+
+/* ======================
+   PROFILE
+====================== */
+
+.profile {
+  text-align: center;
+
+  padding: 15px;
+
+  border-bottom: 1px solid #ddd;
+
+  background: #ffffff;
+}
+
+.profile img {
+  width: 80px;
+
+  height: 80px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  border: 2px solid #2196F3;
+
+  display: block;
+
+  margin: 0 auto;
+}
+
+.profile h3 {
+  margin-top: 10px;
+
+  font-size: 20px;
+
+  color: #222;
+}
+
+
+/* ======================
+   PROFILE POPOVER
+====================== */
+
+.profile-picture-wrapper {
+  position: relative;
+
+  display: inline-block;
+}
+
+#profilePic {
+  cursor: pointer;
+}
+
+.profile-popover {
+  display: none;
+
+  position:center;
+
+  top: 85px;
+
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  width: 190px;
+
+  background: white;
+
+  border-radius: 12px;
+
+  padding: 10px;
+
+  box-shadow: 0 9px 20px rgba(0,0,0,0.25);
+
+  z-index: 5000;
+
+  text-align: left;
+}
+
+.profile-popover.show {
+  display: block;
+}
+
+.popover-title {
+  font-size: 15px;
+
+  font-weight: bold;
+
+  padding: 8px;
+
+  border-bottom: 1px solid #eee;
+}
+
+.popover-status {
+  font-size: 13px;
+
+  padding: 8px;
+
+  color: #555;
+}
+
+.profile-popover button {
+  display: block;
+
+  width: 100%;
+
+  padding: 9px;
+
+  margin-top: 4px;
+
+  background: white;
+
+  border: none;
+
+  border-radius: 7px;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  font-size: 14px;
+}
+
+.profile-popover button:hover {
+  background: #f1f5f9;
+}
+
+
+/* ======================
+   CALL BUTTONS
+====================== */
+
+.call-buttons {
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  gap: 10px;
+
+  margin-top: 10px;
+}
+
+#voiceCallBtn,
+#videoCallBtn {
+  width: 48px;
+
+  height: 48px;
+
+  background: #25D366;
+
+  color: white;
+
+  border: none;
+
+  border-radius: 50%;
+
+  cursor: pointer;
+
+  font-size: 20px;
+}
+
+#videoCallBtn {
+  background: #2196F3;
+}
+
+#voiceCallBtn:active,
+#videoCallBtn:active {
+  transform: scale(0.95);
+}
+
+
+/* ======================
+   SIDEBAR CALL STATUS
+====================== */
+
+#sidebarCallStatus {
+  margin-top: 7px;
+
+  font-size: 13px;
+
+  color: #555;
+}
+
+
+/* ======================
+   FRIENDS
+====================== */
+
+.friend {
+  display: flex;
+
+  align-items: center;
+
+  padding: 10px;
+
+  border-bottom: 1px solid #eee;
+
+  cursor: pointer;
+
+  background: white;
+}
+
+.friend:hover {
+  background: #eeeeee;
+}
+
+.friend.active {
+  background: #e3f2fd;
+}
+
+.friend img {
+  width: 45px;
+
+  height: 45px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  margin-right: 10px;
+}
+
+
+/* ======================
+   GROUPS
+====================== */
+
+#createGroupBtn {
+  padding: 10px;
+
+  margin: 10px;
+
+  background: #4CAF50;
+
+  color: white;
+
+  border: none;
+
+  border-radius: 5px;
+
+  cursor: pointer;
+}
+
+#groupName {
+  margin: 10px;
+
+  padding: 10px;
+
+  width: calc(100% - 20px);
+
+  border: 1px solid #ccc;
+
+  border-radius: 5px;
+
+  outline: none;
+}
+
+#groupsList {
+  margin-top: 5px;
+}
+
+
+/* ======================
+   CHAT AREA
+====================== */
+
+.chat-area {
+  flex: 1;
+
+  width: calc(100% - 280px);
+
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  background-image: url("background.png");
+
+  background-size: cover;
+
+  background-position: center;
+
+  background-repeat: no-repeat;
+}
+
+
+/* ======================
+   TYPING STATUS
+====================== */
+
+#typingStatus {
+  min-height: 25px;
+
+  font-size: 14px;
+
+  color: #25D366;
+
+  padding: 5px 10px;
+
+  background: rgba(255,255,255,0.95);
+}
+
+
+/* ======================
+   MESSAGES
+====================== */
+
+#messages {
+  flex: 1;
+
+  padding: 15px;
+
+  overflow-y: auto;
+
+  overflow-x: hidden;
+
+  background: rgba(245,245,245,0.75);
+}
+
+.message {
+  background: white;
+
+  padding: 10px;
+
+  margin-bottom: 10px;
+
+  border-radius: 8px;
+
+  max-width: 95%;
+
+  word-wrap: break-word;
+
+  overflow-wrap: break-word;
+
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.message small {
+  display: block;
+
+  color: gray;
+
+  font-size: 12px;
+
+  margin-top: 5px;
+
+  text-align: right;
+}
+
+.message button {
+  margin-top: 7px;
+
+  margin-right: 5px;
+
+  padding: 5px 9px;
+
+  cursor: pointer;
+}
+
+
+/* ======================
+   MESSAGE BAR
+====================== */
+
+.bottom {
+  display: flex;
+
+  align-items: center;
+
+  padding: 8px;
+
+  background: white;
+
+  gap: 5px;
+
+  border-top: 1px solid #ddd;
+}
+
+#messageInput {
+  flex: 1;
+
+  min-width: 0;
+
+  padding: 10px;
+
+  font-size: 16px;
+
+  height: 50px;
+
+  border: 1px solid #ccc;
+
+  border-radius: 8px;
+
+  outline: none;
+}
+
+#messageInput:focus {
+  border-color: #2196F3;
+}
+
+#sendBtn {
+  padding: 10px 16px;
+
+  background: #2196F3;
+
+  color: white;
+
+  border: none;
+
+  border-radius: 6px;
+
+  cursor: pointer;
+}
+
+#imageBtn,
+#recordBtn {
+  width: 42px;
+
+  height: 42px;
+
+  padding: 5px;
+
+  border: none;
+
+  background: #eeeeee;
+
+  border-radius: 6px;
+
+  cursor: pointer;
+
+  font-size: 18px;
+}
+
+
+/* ======================
+   AUDIO
+====================== */
+
+audio {
+  max-width: 100%;
+}
+
+
+/* ======================
+   INCOMING CALL
+====================== */
+
+#incomingCallBox {
+  display: none;
+
+  position: fixed;
+
+  top: 50%;
+
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: 90%;
+
+  max-width: 350px;
+
+  background: white;
+
+  padding: 25px;
+
+  border-radius: 15px;
+
+  box-shadow: 0 0 20px rgba(0,0,0,0.35);
+
+  text-align: center;
+
+  z-index: 9999;
+}
+
+#incomingCallBox h3 {
+  margin-bottom: 10px;
+}
+
+#incomingCallBox button {
+  padding: 10px 15px;
+
+  margin: 10px 5px 0;
+
+  border: none;
+
+  border-radius: 7px;
+
+  cursor: pointer;
+}
+
+#acceptCallBtn {
+  background: #25D366;
+
+  color: white;
+}
+
+#declineCallBtn {
+  background: #e53935;
+
+  color: white;
+}
+
+
+/* ======================
+   CALL SCREEN
+====================== */
+
+#callScreen {
+  display: none;
+
+  position: fixed;
+
+  inset: 0;
+
+  width: 100%;
+
+  height: 100%;
+
+  background: linear-gradient(
+    160deg,
+    #111,
+    #222,
+    #333
+  );
+
+  color: white;
+
+  z-index: 9000;
+
+  text-align: center;
+
+  padding-top: 60px;
+}
+
+#callProfilePic {
+  width: 120px;
+
+  height: 120px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  border: 4px solid white;
+
+  margin-bottom: 15px;
+}
+
+#callUserName {
+  font-size: 25px;
+
+  margin-bottom: 8px;
+}
+
+#callScreen #callStatus {
+  font-size: 16px;
+
+  margin-bottom: 10px;
+}
+
+#callTimer {
+  font-size: 35px;
+
+  margin: 15px 0;
+}
+
+#callScreen button {
+  padding: 10px 15px;
+
+  margin: 5px;
+
+  border: none;
+
+  border-radius: 8px;
+
+  cursor: pointer;
+}
+
+#muteBtn {
+  background: #555;
+
+  color: white;
+}
+
+#speakerBtn {
+  background: #555;
+
+  color: white;
+}
+
+#hangUpBtn {
+  background: #e53935;
+
+  color: white;
+
+  font-size: 16px;
+
+  margin-top: 20px;
+}
+
+
+/* ======================
+   HIDDEN AUDIO
+====================== */
+
+#localAudio,
+#remoteAudio {
+  display: none;
+}
+
+
+/* ==================================================
+   MOBILE PHONE LAYOUT
+================================================== */
+
+@media (max-width: 600px) {
+
+  .header {
+    height: 55px;
+
+    padding: 8px 10px;
+  }
+
+  .header h3 {
+    font-size: 16px;
+
+    max-width: 60%;
+  }
+
+  #logoutBtn {
+    padding: 7px 11px;
+
+    font-size: 12px;
+  }
+
+  .container {
+    height: calc(100vh - 55px);
+
+    width: 100%;
+  }
+
+  .sidebar {
+    width: 32%;
+
+    min-width: 110px;
+
+    max-width: 145px;
+
+    flex-shrink: 0;
+  }
+
+  .chat-area {
+    flex: 1;
+
+    width: 68%;
+
+    min-width: 0;
+  }
+
+  .profile {
+    padding: 10px 5px;
+  }
+
+  .profile img {
+    width: 50px;
+
+    height: 50px;
+  }
+
+  .profile h3 {
+    font-size: 15px;
+  }
+
+  .profile-popover {
+    width: 175px;
+
+    left: 100%;
+
+    transform: translateX(-5px);
+  }
+
+  .profile button {
+    font-size: 12px;
+  }
+
+  .friend {
+    padding: 8px 5px;
+  }
+
+  .friend img {
+    width: 38px;
+
+    height: 38px;
+
+    margin-right: 5px;
+  }
+
+  .friend span {
+    font-size: 13px;
+  }
+
+  #messages {
+    padding: 10px;
+  }
+
+  .message {
+    padding: 8px;
+
+    margin-bottom: 8px;
+
+    font-size: 15px;
+  }
+
+  .message small {
+    font-size: 11px;
+  }
+
+  .message button {
+    font-size: 13px;
+
+    padding: 4px 7px;
+  }
+
+  .bottom {
+    padding: 5px;
+
+    gap: 3px;
+  }
+
+  #messageInput {
+    width: 100%;
+
+    min-width: 0;
+
+    height: 45px;
+
+    font-size: 15px;
+  }
+
+  #imageBtn,
+  #recordBtn {
+    width: 36px;
+
+    height: 36px;
+
+    font-size: 16px;
+  }
+
+  #sendBtn {
+    padding: 8px 10px;
+
+    font-size: 13px;
+  }
+
+  #groupName {
+    font-size: 13px;
+  }
+
+  #createGroupBtn {
+    font-size: 12px;
+
+    padding: 8px;
+  }
+}
+
+
+/* ==================================================
+   VERY SMALL PHONES
+================================================== */
+
+@media (max-width: 400px) {
+
+  .sidebar {
+    width: 35%;
+
+    min-width: 110px;
+  }
+
+  .chat-area {
+    width: 65%;
+
+    min-width: 0;
+  }
+
+  .header h3 {
+    font-size: 14px;
+  }
+
+  #logoutBtn {
+    padding: 7px 9px;
+
+    font-size: 12px;
+  }
+
+  .message {
+    font-size: 14px;
+  }
+
+  #sendBtn {
+    padding: 7px;
+
+    font-size: 12px;
+  }
+
+}
+/* ======================
+   CREATE GROUP POPOVER
+====================== */
+
+.create-group-main-btn {
+  display: block;
+
+  width: calc(100% - 20px);
+
+  margin: 10px;
+
+  padding: 10px;
+
+  background: #4CAF50;
+
+  color: white;
+
+  border: none;
+
+  border-radius: 7px;
+
+  cursor: pointer;
+
+  font-weight: bold;
+
+  font-size: 14px;
+}
+
+.create-group-main-btn:active {
+  transform: scale(0.98);
+}
+
+.create-group-popover {
+  display: none;
+
+  position: fixed;
+
+  top: 50%;
+
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: 90%;
+
+  max-width: 320px;
+
+  background: white;
+
+  padding: 18px;
+
+  border-radius: 15px;
+
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+
+  z-index: 10000;
+}
+
+.create-group-popover.show {
+  display: block;
+}
+
+.create-group-title {
+  font-size: 18px;
+
+  font-weight: bold;
+
+  text-align: center;
+
+  margin-bottom: 15px;
+}
+
+#createGroupPopover #groupName {
+  width: 100%;
+
+  margin: 0;
+
+  padding: 11px;
+
+  border: 1px solid #ccc;
+
+  border-radius: 8px;
+
+  outline: none;
+
+  font-size: 15px;
+}
+
+#createGroupPopover #groupName:focus {
+  border-color: #2196F3;
+}
+
+.create-group-actions {
+  display: flex;
+
+  justify-content: flex-end;
+
+  gap: 8px;
+
+  margin-top: 15px;
+}
+
+.create-group-actions button {
+  padding: 9px 14px;
+
+  border: none;
+
+  border-radius: 7px;
+
+  cursor: pointer;
+
+  font-weight: bold;
+}
+
+#cancelCreateGroupBtn {
+  background: #eeeeee;
+
+  color: #333;
+}
+
+#createGroupBtn {
+  background: #4CAF50;
+
+  color: white;
+
+  margin: 0;
+  }
+</style>
+</head>
+  <body><!-
+  <div class="header">  <h3>FRIEND ZONE CHAT</h3>  <button id="logoutBtn">
+    Logout
+  </button></div><div class="container"><div class="sidebar">
+    <div class="profile">
+  <div class="profile-picture-wrapper">
+    <img
+      id="profilePic"
+      src="images/default-profile.png"
+      alt="Profile Picture"
+    >
+    <div
+      id="profilePopover"
+      class="profile-popover"
+    >
+      <div class="popover-title">
+        👤 My Profile
+      </div>
+
+      <div class="popover-status">
+        🟢 Online
+      </div>
+      <button id="viewProfileBtn">
+        👤 View Profile
+      </button>
+
+      <button id="profileSettingsBtn">
+        ⚙️ Settings
+      </button>
+
+    </div>
+
+  </div>
+  <h3 id="username">
+    Loading...
+  </h3>
+  <div class="call-buttons">
+
+    <button id="voiceCallBtn">
+      📞
+    </button>
+
+    <button id="videoCallBtn">
+      🎥
+    </button>
+  </div>
+  <p id="sidebarCallStatus"></p>
+
+</div>
+<h3 style="padding:10px;">
+  Friends
+</h3>
+
+<div id="friendsList"></div>
+<hr>
+<h3 style="padding:10px;">
+  Groups
+</h3>
+<!-- ======================
+     CREATE GROUP
+====================== -->
+
+<button id="openCreateGroupBtn" class="create-group-main-btn">
+  ➕ Create Group
+</button>
+
+<div id="createGroupPopover" class="create-group-popover">
+
+  <div class="create-group-title">
+    👥 Create Group
+  </div>
+
+  <input
+    id="groupName"
+    type="text"
+    placeholder="Enter group name..."
+    autocomplete="off"
+  >
+
+  <div class="create-group-actions">
+    <button id="cancelCreateGroupBtn" type="button">
+      Cancel
+    </button>
+    <button id="createGroupBtn" type="button">
+      Create
+    </button>
+  </div>
+</div>
+<button
+  id="addMemberBtn"
+  style="display:none;"
+>
+  Add Member
+</button>
+
+
+<select
+  id="friendSelect"
+  style="display:none;"
+>
+</select>
+
+
+<button
+  id="confirmAddMemberBtn"
+  style="display:none;"
+>
+  Add
+</button>
+
+
+<div id="groupsList"></div>
+
+  </div>
+  <div class="chat-area">
+<div id="typingStatus"></div>
+<div id="messages"></div>
+<div class="bottom">
+  <input
+    id="messageInput"
+    placeholder="Type your message..."
+    autocomplete="off"
+  >
+  <input
+    type="file"
+    id="chatImage"
+    accept="image/*"
+    style="display:none;"
+  >
+
+
+  <button id="imageBtn">
+    📷
+  </button>
+  <button id="recordBtn">
+    🎤
+  </button>
+
+
+  <audio
+    id="voicePlayer"
+    controls
+    style="display:none;"
+  >
+  </audio>
+  <button id="sendBtn">
+    Send
+  </button>
+
+
+</div>
+
+  </div></div><audio
+id="notificationSound"
+preload="auto"
+
+«»
+
+<source
+src="notification.mp3"
+type="audio/mpeg"
+
+«»
+
+</audio><audio
+id="localAudio"
+autoplay
+muted
+
+«»
+
+</audio><audio
+id="remoteAudio"
+autoplay
+«»
+</audio><div id="incomingCallBox">  <h3>
+    📞 Incoming Call
+  </h3>  <p id="callerName">
+    Someone is calling...
+  </p>  <button id="acceptCallBtn">
+    ✅ Accept
+  </button>  <button id="declineCallBtn">
+    ❌ Decline
+  </button></div><div id="callScreen"><img
+id="callProfilePic"
+src="images/default-profile.png"
+alt="Profile Picture"
+«»
+
+  <h2 id="callUserName">
+    Friend
+  </h2>  <p id="callStatus">
+    Calling...
+  </p>  <h1 id="callTimer">
+    00:00
+  </h1>  <div><button id="muteBtn">
+  🎤 Mute
+</button>
+
+<button id="speakerBtn">
+  🔊 Speaker
+</button>
+
+  </div>  <button id="hangUpBtn">
+    🔴 End Call
+  </button></div>
+  <script
+  type="module"
+  src="Home.js"
+></script><script
+  type="module"
+  src="Calls.js"
+></script></body>
+</html>
