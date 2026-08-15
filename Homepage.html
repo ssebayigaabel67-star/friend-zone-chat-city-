@@ -1,0 +1,2943 @@
+<!DOCTYPE html>
+<html lang="en"><head>  <meta charset="UTF-8">  
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Friend Zone Chat</title>
+  <style>  /* ======================
+RESET
+====================== */
+
+*{
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+font-family: Arial, sans-serif;
+}
+
+
+html,
+body {
+width: 100%;
+height: 100%;
+}
+
+body {
+background: linear-gradient(
+141deg,
+#ff00cc,
+#333399,
+#a3924e,
+#ffffff
+);
+
+height: 100vh;
+overflow: hidden;
+}
+
+/* ======================
+HEADER
+====================== */
+
+.header {
+height: 60px;
+
+background: blue;
+
+color: white;
+
+display: flex;
+
+justify-content: space-between;
+align-items: center;
+
+padding: 10px 15px;
+
+box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+
+position: relative;
+
+z-index: 100;
+}
+
+.header h3 {
+font-size: 18px;
+
+white-space: nowrap;
+
+overflow: hidden;
+
+text-overflow: ellipsis;
+}
+
+/* ======================
+LOGOUT
+====================== */
+
+#logoutBtn {
+background: red;
+
+color: white;
+
+border: none;
+
+padding: 9px 15px;
+
+border-radius: 50px;
+
+cursor: pointer;
+
+font-size: 14px;
+
+font-weight: bold;
+}
+
+#logoutBtn:active {
+transform: scale(0.95);
+}
+
+/* ======================
+MAIN CONTAINER
+====================== */
+
+.container {
+display: flex;
+
+width: 100%;
+
+height: calc(100vh - 60px);
+
+overflow: hidden;
+}
+
+/* ======================
+SIDEBAR
+====================== */
+
+.sidebar {
+width: 280px;
+
+min-width: 220px;
+
+flex-shrink: 0;
+
+background: blue;
+
+border-right: 3px solid #ccc;
+
+overflow-y: auto;
+
+overflow-x: hidden;
+
+position: relative;
+}
+
+/* ======================
+PROFILE
+====================== */
+
+.profile {
+text-align: center;
+
+padding: 15px;
+
+border-bottom: 1px solid #ddd;
+
+background: #ffffff;
+
+position: relative;
+}
+
+.profile-picture-wrapper {
+position: relative;
+
+display: inline-block;
+}
+
+.profile img {
+width: 80px;
+
+height: 80px;
+
+border-radius: 50%;
+
+object-fit: cover;
+
+border: 2px solid #2196F3;
+
+display: block;
+
+margin: 0 auto;
+}
+
+#profilePic {
+cursor: pointer;
+}
+
+.profile h3 {
+margin-top: 10px;
+
+font-size: 20px;
+
+color: #222;
+}
+
+/* ======================
+PROFILE POPOVER
+====================== */
+
+.profile-popover {
+display: none;
+
+position:center;
+
+top: 85px;
+
+left: 50%;
+
+transform: translateX(-50%);
+
+width: 190px;
+
+background: white;
+
+border-radius: 12px;
+
+padding: 10px;
+
+box-shadow: 0 5px 20px rgba(0,0,0,0.25);
+
+z-index: 5000;
+
+text-align:right;
+}
+
+.profile-popover.show {
+display: block;
+}
+
+.popover-title {
+font-size: 15px;
+
+font-weight: bold;
+
+padding: 8px;
+
+border-bottom: 1px solid #eee;
+}
+
+.popover-status {
+font-size: 13px;
+
+padding: 8px;
+
+color: #555;
+}
+
+.profile-popover button {
+display: block;
+
+width: 100%;
+
+padding: 9px;
+
+margin-top: 4px;
+
+background: white;
+
+border: none;
+
+border-radius: 7px;
+
+text-align: left;
+
+cursor: pointer;
+
+font-size: 14px;
+}
+
+.profile-popover button:hover {
+background: #f1f5f9;
+}
+
+/* ======================
+CALL BUTTONS
+====================== */
+
+.call-buttons {
+display: flex;
+
+justify-content: center;
+
+align-items: center;
+
+gap: 10px;
+
+margin-top: 10px;
+}
+
+#voiceCallBtn,
+#videoCallBtn {
+width: 48px;
+
+height: 48px;
+
+background: #25D366;
+
+color: white;
+
+border: none;
+
+border-radius: 50%;
+
+cursor: pointer;
+
+font-size: 20px;
+}
+
+#videoCallBtn {
+background: #2196F3;
+}
+
+#voiceCallBtn:active,
+#videoCallBtn:active {
+transform: scale(0.95);
+}
+
+/* ======================
+SIDEBAR CALL STATUS
+====================== */
+
+#sidebarCallStatus {
+margin-top: 7px;
+
+font-size: 13px;
+
+color: #555;
+}
+
+/* ======================
+FRIENDS
+====================== */
+
+.friend {
+display: flex;
+
+align-items: center;
+
+padding: 10px;
+
+border-bottom: 1px solid #eee;
+
+cursor: pointer;
+
+background: white;
+}
+
+.friend:hover {
+background: #eeeeee;
+}
+
+.friend.active {
+background: #e3f2fd;
+}
+
+.friend img {
+width: 45px;
+
+height: 45px;
+
+border-radius: 50%;
+
+object-fit: cover;
+
+margin-right: 10px;
+}
+
+/* ======================
+GROUPS
+====================== */
+
+.groups-title {
+padding: 10px;
+
+color: white;
+
+font-size: 18px;
+}
+
+/* ======================
+CREATE GROUP BUTTON
+====================== */
+
+.create-group-main-btn {
+display: block;
+
+width: calc(100% - 20px);
+
+margin: 10px;
+
+padding: 10px;
+
+background: #4CAF50;
+
+color: white;
+
+border: none;
+
+border-radius: 7px;
+
+cursor: pointer;
+
+font-weight: bold;
+
+font-size: 14px;
+}
+
+.create-group-main-btn:active {
+transform: scale(0.98);
+}
+
+/* ======================
+CREATE GROUP POPOVER
+====================== */
+
+.create-group-popover {
+display: none;
+
+position: fixed;
+
+top: 50%;
+
+left: 50%;
+
+transform: translate(-50%, -50%);
+
+width: 90%;
+
+max-width: 320px;
+
+background: white;
+
+padding: 18px;
+
+border-radius: 15px;
+
+box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+
+z-index: 10000;
+}
+
+.create-group-popover.show {
+display: block;
+}
+
+.create-group-title {
+font-size: 18px;
+
+font-weight: bold;
+
+text-align: center;
+
+margin-bottom: 15px;
+}
+
+#createGroupPopover #groupName {
+width: 100%;
+
+margin: 0;
+
+padding: 11px;
+
+border: 1px solid #ccc;
+
+border-radius: 8px;
+
+outline: none;
+
+font-size: 15px;
+}
+
+#createGroupPopover #groupName:focus {
+border-color: #2196F3;
+}
+
+.create-group-actions {
+display: flex;
+
+justify-content: flex-end;
+
+gap: 8px;
+
+margin-top: 15px;
+}
+
+.create-group-actions button {
+padding: 9px 14px;
+
+border: none;
+
+border-radius: 7px;
+
+cursor: pointer;
+
+font-weight: bold;
+}
+
+#cancelCreateGroupBtn {
+background: #eeeeee;
+
+color: #333;
+}
+
+#createGroupBtn {
+background: #4CAF50;
+
+color: white;
+
+margin: 0;
+}
+
+/* ======================
+GROUP LIST
+====================== */
+
+#groupsList {
+margin-top: 5px;
+}
+
+/* ======================
+HIDDEN MEMBER CONTROLS
+====================== */
+
+#addMemberBtn,
+#friendSelect,
+#confirmAddMemberBtn {
+display: none !important;
+}
+
+/* ======================
+CHAT AREA
+====================== */
+
+.chat-area {
+flex: 1;
+
+width: calc(100% - 280px);
+
+min-width: 0;
+
+display: flex;
+
+flex-direction: column;
+
+background-image: url("background.png");
+
+background-size: cover;
+
+background-position: center;
+
+background-repeat: no-repeat;
+}
+
+/* ======================
+TYPING STATUS
+====================== */
+
+#typingStatus {
+min-height: 25px;
+
+font-size: 14px;
+
+color: #25D366;
+
+padding: 5px 10px;
+
+background: rgba(255,255,255,0.95);
+}
+
+/* ======================
+MESSAGES
+====================== */
+
+#messages {
+flex: 1;
+
+padding: 15px;
+
+overflow-y: auto;
+
+overflow-x: hidden;
+
+background: rgba(245,245,245,0.75);
+}
+
+.message {
+background: white;
+
+padding: 10px;
+
+margin-bottom: 10px;
+
+border-radius: 8px;
+
+max-width: 95%;
+
+word-wrap: break-word;
+
+overflow-wrap: break-word;
+
+box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.message small {
+display: block;
+
+color: gray;
+
+font-size: 12px;
+
+margin-top: 5px;
+
+text-align: right;
+}
+
+.message button {
+margin-top: 7px;
+
+margin-right: 5px;
+
+padding: 5px 9px;
+
+cursor: pointer;
+}
+
+/* ======================
+MESSAGE BAR
+====================== */
+
+.bottom {
+display: flex;
+
+align-items: center;
+
+padding: 8px;
+
+background: white;
+
+gap: 5px;
+
+border-top: 1px solid #ddd;
+}
+
+#messageInput {
+flex: 1;
+
+min-width: 0;
+
+padding: 10px;
+
+font-size: 16px;
+
+height: 50px;
+
+border: 1px solid #ccc;
+
+border-radius: 8px;
+
+outline: none;
+}
+
+#messageInput:focus {
+border-color: #2196F3;
+}
+
+#sendBtn {
+padding: 10px 16px;
+
+background: #2196F3;
+
+color: white;
+
+border: none;
+
+border-radius: 6px;
+
+cursor: pointer;
+}
+
+#imageBtn,
+#recordBtn {
+width: 42px;
+
+height: 42px;
+
+padding: 5px;
+
+border: none;
+
+background: #eeeeee;
+
+border-radius: 6px;
+
+cursor: pointer;
+
+font-size: 18px;
+}
+
+/* ======================
+AUDIO
+====================== */
+
+audio {
+max-width: 100%;
+}
+
+/* ======================
+INCOMING CALL
+====================== */
+
+#incomingCallBox {
+display: none;
+
+position: fixed;
+
+top: 50%;
+
+left: 50%;
+
+transform: translate(-50%, -50%);
+
+width: 90%;
+
+max-width: 350px;
+
+background: white;
+
+padding: 25px;
+
+border-radius: 15px;
+
+box-shadow: 0 0 20px rgba(0,0,0,0.35);
+
+text-align: center;
+
+z-index: 9999;
+}
+
+#incomingCallBox h3 {
+margin-bottom: 10px;
+}
+
+#incomingCallBox button {
+padding: 10px 15px;
+
+margin: 10px 5px 0;
+
+border: none;
+
+border-radius: 7px;
+
+cursor: pointer;
+}
+
+#acceptCallBtn {
+background: #25D366;
+
+color: white;
+}
+
+#declineCallBtn {
+background: #e53935;
+
+color: white;
+}
+
+/* ======================
+CALL SCREEN
+====================== */
+
+#callScreen {
+display: none;
+
+position: fixed;
+
+inset: 0;
+
+width: 100%;
+
+height: 100%;
+
+background: linear-gradient(
+160deg,
+#111,
+#222,
+#333
+);
+
+color: white;
+
+z-index: 9000;
+
+text-align: center;
+
+padding-top: 60px;
+}
+
+#callProfilePic {
+width: 120px;
+
+height: 120px;
+
+border-radius: 50%;
+
+object-fit: cover;
+
+border: 4px solid white;
+
+margin-bottom: 15px;
+}
+
+#callUserName {
+font-size: 25px;
+
+margin-bottom: 8px;
+}
+
+#callScreen #callStatus {
+font-size: 16px;
+
+margin-bottom: 10px;
+}
+
+#callTimer {
+font-size: 35px;
+
+margin: 15px 0;
+}
+
+#callScreen button {
+padding: 10px 15px;
+
+margin: 5px;
+
+border: none;
+
+border-radius: 8px;
+
+cursor: pointer;
+}
+
+#muteBtn {
+background: #555;
+
+color: white;
+}
+
+#speakerBtn {
+background: #555;
+
+color: white;
+}
+
+#hangUpBtn {
+background: #e53935;
+
+color: white;
+
+font-size: 16px;
+
+margin-top: 20px;
+}
+
+/* ======================
+HIDDEN AUDIO
+====================== */
+
+#localAudio,
+#remoteAudio {
+display: none;
+}
+
+/* ==================================================
+MOBILE PHONE LAYOUT
+================================================== */
+
+@media (max-width: 600px) {
+
+.header {
+height: 55px;
+
+padding: 8px 10px;
+
+}
+
+.header h3 {
+font-size: 16px;
+
+max-width: 60%;
+
+}
+
+#logoutBtn {
+padding: 7px 11px;
+
+font-size: 12px;
+
+}
+
+.container {
+height: calc(100vh - 55px);
+
+width: 100%;
+
+}
+
+.sidebar {
+width: 32%;
+
+min-width: 110px;  
+
+max-width: 145px;  
+
+flex-shrink: 0;
+
+}
+
+.chat-area {
+flex: 1;
+
+width: 68%;  
+
+min-width: 0;
+
+}
+
+.profile {
+padding: 10px 5px;
+}
+
+.profile img {
+width: 50px;
+
+height: 50px;
+
+}
+
+.profile h3 {
+font-size: 15px;
+}
+
+.profile-popover {
+width: 175px;
+
+left: 100%;  
+
+transform: translateX(-5px);
+
+}
+
+.friend {
+padding: 8px 5px;
+}
+
+.friend img {
+width: 38px;
+
+height: 38px;  
+
+margin-right: 5px;
+
+}
+
+.friend span {
+font-size: 13px;
+}
+
+#messages {
+padding: 10px;
+}
+
+.message {
+padding: 8px;
+
+margin-bottom: 8px;  
+
+font-size: 15px;
+
+}
+
+.message small {
+font-size: 11px;
+}
+
+.message button {
+font-size: 13px;
+
+padding: 4px 7px;
+
+}
+
+.bottom {
+padding: 5px;
+
+gap: 3px;
+
+}
+
+#messageInput {
+width: 100%;
+
+min-width: 0;  
+
+height: 45px;  
+
+font-size: 15px;
+
+}
+
+#imageBtn,
+#recordBtn {
+width: 36px;
+
+height: 36px;  
+
+font-size: 16px;
+
+}
+
+#sendBtn {
+padding: 8px 10px;
+
+font-size: 13px;
+
+}
+
+#groupName {
+font-size: 13px;
+}
+
+#createGroupBtn {
+font-size: 12px;
+
+padding: 8px;
+
+}
+}
+
+/* ==================================================
+VERY SMALL PHONES
+================================================== */
+
+@media (max-width: 400px) {
+
+.sidebar {
+width: 35%;
+
+min-width: 110px;
+
+}
+
+.chat-area {
+width: 65%;
+
+min-width: 0;
+
+}
+
+.header h3 {
+font-size: 14px;
+}
+
+#logoutBtn {
+padding: 7px 9px;
+
+font-size: 12px;
+
+}
+
+.message {
+font-size: 14px;
+}
+
+#sendBtn {
+padding: 7px;
+
+font-size: 12px;
+
+}
+
+}
+/* ======================
+   DARK MODE BUTTON
+====================== */
+
+#darkModeBtn {
+  width: 38px;
+  height: 38px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: white;
+  color: #222;
+
+  cursor: pointer;
+
+  font-size: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#darkModeBtn:active {
+  transform: scale(0.92);
+}
+  /* ======================
+   DARK MODE
+====================== */
+
+body.dark-mode {
+  background: #121212;
+}
+
+/* HEADER */
+
+body.dark-mode .header {
+  background: #181818;
+}
+
+/* SIDEBAR */
+
+body.dark-mode .sidebar {
+  background: #181818;
+  border-right-color: #333;
+}
+
+/* PROFILE */
+
+body.dark-mode .profile {
+  background: #1e1e1e;
+  border-bottom-color: #333;
+}
+
+body.dark-mode .profile h3 {
+  color: white;
+}
+
+/* FRIENDS */
+
+body.dark-mode .friend {
+  background: #1e1e1e;
+  color: white;
+  border-bottom-color: #333;
+}
+
+body.dark-mode .friend:hover {
+  background: #292929;
+}
+
+body.dark-mode .friend.active {
+  background: #263b4d;
+}
+
+/* GROUP TITLE */
+
+body.dark-mode .groups-title {
+  color: white;
+}
+
+/* CHAT AREA */
+
+body.dark-mode .chat-area {
+  background-color: #121212;
+}
+
+/* TYPING STATUS */
+
+body.dark-mode #typingStatus {
+  background: #1e1e1e;
+  color: #25D366;
+}
+
+/* MESSAGES */
+
+body.dark-mode #messages {
+  background: rgba(18,18,18,0.95);
+}
+
+body.dark-mode .message {
+  background: #1e1e1e;
+  color: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
+body.dark-mode .message small {
+  color: #aaa;
+}
+
+/* MESSAGE BAR */
+
+body.dark-mode .bottom {
+  background: #181818;
+  border-top-color: #333;
+}
+
+body.dark-mode #messageInput {
+  background: #242424;
+  color: white;
+  border-color: #444;
+}
+
+body.dark-mode #messageInput::placeholder {
+  color: #aaa;
+}
+
+/* BUTTONS */
+
+body.dark-mode #imageBtn,
+body.dark-mode #recordBtn {
+  background: #333;
+  color: white;
+}
+
+/* CREATE GROUP */
+
+body.dark-mode .create-group-popover {
+  background: #1e1e1e;
+  color: white;
+}
+
+body.dark-mode #createGroupPopover #groupName {
+  background: #242424;
+  color: white;
+  border-color: #444;
+}
+
+body.dark-mode #cancelCreateGroupBtn {
+  background: #333;
+  color: white;
+}
+
+/* PROFILE POPOVER */
+
+body.dark-mode .profile-popover {
+  background: #1e1e1e;
+  color: white;
+}
+
+body.dark-mode .popover-title {
+  border-bottom-color: #333;
+}
+
+body.dark-mode .popover-status {
+  color: #aaa;
+}
+
+body.dark-mode .profile-popover button {
+  background: #1e1e1e;
+  color: white;
+}
+
+body.dark-mode .profile-popover button:hover {
+  background: #333;
+}
+
+/* DARK MODE BUTTON */
+
+body.dark-mode #darkModeBtn {
+  background: #333;
+  color: white;
+  }
+    /* ======================
+   GROUP ADMIN POPOVER
+====================== */
+
+.group-admin-popover {
+  display: none;
+
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: 90%;
+  max-width: 350px;
+
+  background: white;
+
+  border-radius: 18px;
+
+  padding: 22px;
+
+  box-shadow:
+    0 8px 35px rgba(0,0,0,0.35);
+
+  z-index: 30000;
+
+  text-align: center;
+}
+
+.group-admin-popover.show {
+  display: block;
+}
+
+.group-admin-close {
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+
+  width: 32px;
+  height: 32px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #eeeeee;
+
+  cursor: pointer;
+
+  font-size: 16px;
+}
+
+.group-admin-icon {
+  font-size: 45px;
+
+  margin-bottom: 5px;
+}
+
+#adminGroupName {
+  margin: 5px 0;
+
+  color: #222;
+
+  font-size: 22px;
+}
+
+#adminGroupAdmin,
+#adminGroupMembers {
+  margin: 7px 0;
+
+  color: #666;
+
+  font-size: 14px;
+}
+
+.group-admin-actions {
+  margin-top: 18px;
+}
+
+.group-admin-actions button {
+  width: 100%;
+
+  padding: 11px;
+
+  margin-top: 8px;
+
+  border: none;
+
+  border-radius: 9px;
+
+  background: #f1f5f9;
+
+  color: #222;
+
+  cursor: pointer;
+
+  font-size: 14px;
+
+  font-weight: bold;
+
+  text-align: left;
+}
+
+.group-admin-actions button:hover {
+  background: #e2e8f0;
+}
+
+.group-admin-actions button.danger {
+  background: #ffebee;
+
+  color: #d32f2f;
+}
+
+
+/* ======================
+   DARK MODE
+====================== */
+
+body.dark-mode .group-admin-popover {
+  background: #1e1e1e;
+
+  color: white;
+}
+
+body.dark-mode #adminGroupName {
+  color: white;
+}
+
+body.dark-mode #adminGroupAdmin,
+body.dark-mode #adminGroupMembers {
+  color: #aaa;
+}
+
+body.dark-mode .group-admin-close {
+  background: #333;
+
+  color: white;
+}
+
+body.dark-mode .group-admin-actions button {
+  background: #2a2a2a;
+
+  color: white;
+}
+
+body.dark-mode .group-admin-actions button:hover {
+  background: #383838;
+}
+
+body.dark-mode .group-admin-actions button.danger {
+  background: #3a2020;
+
+  color: #ff6b6b;
+    }
+    /* ======================
+   GROUP MEMBERS POPOVER
+====================== */
+
+.group-members-popover {
+  display: none;
+
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: 90%;
+  max-width: 350px;
+
+  max-height: 75vh;
+
+  overflow-y: auto;
+
+  background: white;
+
+  border-radius: 18px;
+
+  padding: 22px;
+
+  box-shadow:
+    0 8px 35px rgba(0,0,0,0.35);
+
+  z-index: 31000;
+
+  text-align: center;
+}
+
+.group-members-popover.show {
+  display: block;
+}
+
+.group-members-close {
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+
+  width: 32px;
+  height: 32px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #eeeeee;
+
+  cursor: pointer;
+
+  font-size: 16px;
+}
+
+.group-members-icon {
+  font-size: 42px;
+
+  margin-bottom: 5px;
+}
+
+#membersPopoverTitle {
+  margin: 5px 0;
+
+  color: #222;
+
+  font-size: 21px;
+}
+
+#membersPopoverCount {
+  margin: 5px 0 15px;
+
+  color: #777;
+
+  font-size: 14px;
+}
+
+
+/* ======================
+   MEMBER ITEM
+====================== */
+
+.group-member-item {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 10px;
+
+  margin-top: 7px;
+
+  background: #f5f5f5;
+
+  border-radius: 10px;
+
+  text-align: left;
+}
+
+.group-member-item img {
+  width: 45px;
+
+  height: 45px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  flex-shrink: 0;
+}
+
+.group-member-info {
+  flex: 1;
+
+  min-width: 0;
+}
+
+.group-member-name {
+  font-weight: bold;
+
+  color: #222;
+
+  word-break: break-word;
+}
+
+.group-member-status {
+  font-size: 12px;
+
+  margin-top: 3px;
+
+  color: #777;
+}
+
+
+/* ======================
+   DARK MODE
+====================== */
+
+body.dark-mode .group-members-popover {
+  background: #1e1e1e;
+
+  color: white;
+}
+
+body.dark-mode #membersPopoverTitle {
+  color: white;
+}
+
+body.dark-mode #membersPopoverCount {
+  color: #aaa;
+}
+
+body.dark-mode .group-members-close {
+  background: #333;
+
+  color: white;
+}
+
+body.dark-mode .group-member-item {
+  background: #2a2a2a;
+}
+
+body.dark-mode .group-member-name {
+  color: white;
+}
+
+body.dark-mode .group-member-status {
+  color: #aaa;
+}
+    /* ======================
+   RENAME GROUP POPOVER
+====================== */
+
+.rename-group-popover {
+
+  display: none;
+
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: 90%;
+  max-width: 340px;
+
+  background: white;
+
+  padding: 22px;
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 8px 30px rgba(0,0,0,0.3);
+
+  z-index: 10002;
+
+  text-align: center;
+}
+
+.rename-group-popover.show {
+  display: block;
+}
+
+.rename-group-close {
+
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+
+  width: 32px;
+  height: 32px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #eeeeee;
+
+  font-size: 18px;
+
+  cursor: pointer;
+}
+
+.rename-group-icon {
+
+  font-size: 42px;
+
+  margin-bottom: 5px;
+}
+
+.rename-group-popover h2 {
+
+  margin: 5px 0;
+
+  color: #222;
+
+  font-size: 21px;
+}
+
+.rename-group-popover p {
+
+  margin: 5px 0 15px;
+
+  color: #777;
+
+  font-size: 14px;
+}
+
+#renameGroupInput {
+
+  width: 100%;
+
+  padding: 12px;
+
+  border: 1px solid #ccc;
+
+  border-radius: 9px;
+
+  outline: none;
+
+  font-size: 15px;
+}
+
+#renameGroupInput:focus {
+
+  border-color: #2196F3;
+}
+
+.rename-group-actions {
+
+  display: flex;
+
+  justify-content: flex-end;
+
+  gap: 8px;
+
+  margin-top: 15px;
+}
+
+.rename-group-actions button {
+
+  padding: 9px 15px;
+
+  border: none;
+
+  border-radius: 8px;
+
+  cursor: pointer;
+
+  font-weight: bold;
+}
+
+#cancelRenameGroupBtn {
+
+  background: #eeeeee;
+
+  color: #333;
+}
+
+#saveRenameGroupBtn {
+
+  background: #2196F3;
+
+  color: white;
+  }
+    /* ======================
+   CHANGE GROUP PHOTO
+====================== */
+
+.change-group-photo-popover {
+
+  display: none;
+
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: 90%;
+  max-width: 340px;
+
+  background: white;
+
+  padding: 22px;
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 8px 30px rgba(0,0,0,0.3);
+
+  z-index: 10003;
+
+  text-align: center;
+}
+
+.change-group-photo-popover.show {
+  display: block;
+}
+
+.change-group-photo-close {
+
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+
+  width: 32px;
+  height: 32px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #eeeeee;
+
+  font-size: 18px;
+
+  cursor: pointer;
+}
+
+.change-group-photo-icon {
+
+  font-size: 42px;
+
+  margin-bottom: 5px;
+}
+
+.change-group-photo-popover h2 {
+
+  margin: 5px 0;
+
+  font-size: 21px;
+
+  color: #222;
+}
+
+.change-group-photo-popover p {
+
+  margin: 5px 0 15px;
+
+  color: #777;
+
+  font-size: 14px;
+}
+
+#groupPhotoPreview {
+
+  width: 110px;
+  height: 110px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  display: block;
+
+  margin: 10px auto 15px;
+
+  border: 3px solid #2196F3;
+}
+
+#chooseGroupPhotoBtn {
+
+  padding: 10px 15px;
+
+  border: none;
+
+  border-radius: 9px;
+
+  background: #eeeeee;
+
+  cursor: pointer;
+
+  font-weight: bold;
+}
+
+.change-group-photo-actions {
+
+  display: flex;
+
+  justify-content: flex-end;
+
+  gap: 8px;
+
+  margin-top: 18px;
+}
+
+.change-group-photo-actions button {
+
+  padding: 9px 15px;
+
+  border: none;
+
+  border-radius: 8px;
+
+  cursor: pointer;
+
+  font-weight: bold;
+}
+
+#cancelChangeGroupPhotoBtn {
+
+  background: #eeeeee;
+}
+
+#saveGroupPhotoBtn {
+
+  background: #2196F3;
+
+  color: white;}
+/* ================================
+   GROUP INFO POPOVER
+================================ */
+
+.group-info-popover {
+  display: none;
+
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: calc(100% - 32px);
+  max-width: 380px;
+
+  max-height: 82vh;
+
+  overflow-y: auto;
+
+  background: rgba(255, 255, 255, 0.98);
+
+  border-radius: 24px;
+
+  padding: 28px 22px 22px;
+
+  box-sizing: border-box;
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.35);
+
+  z-index: 99999;
+
+  text-align: center;
+
+  animation: groupInfoOpen 0.2s ease;
+}
+
+
+/* ================================
+   SHOW POPOVER
+================================ */
+
+.group-info-popover.show {
+  display: block;
+}
+
+
+/* ================================
+   OPEN ANIMATION
+================================ */
+
+@keyframes groupInfoOpen {
+
+  from {
+    opacity: 0;
+    transform:
+      translate(-50%, -46%)
+      scale(0.94);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translate(-50%, -50%)
+      scale(1);
+  }
+
+}
+
+
+/* ================================
+   CLOSE BUTTON
+================================ */
+
+.group-info-close {
+
+  position: absolute;
+
+  top: 12px;
+  right: 12px;
+
+  width: 36px;
+  height: 36px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #f0f0f0;
+
+  color: #333;
+
+  font-size: 19px;
+
+  font-weight: bold;
+
+  cursor: pointer;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+
+
+.group-info-close:hover {
+
+  background: #e2e2e2;
+
+  transform: rotate(90deg);
+
+}
+
+
+.group-info-close:active {
+
+  transform: scale(0.9);
+
+}
+
+
+/* ================================
+   ICON
+================================ */
+
+.group-info-icon {
+
+  width: 72px;
+  height: 72px;
+
+  margin: 4px auto 12px;
+
+  border-radius: 50%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 38px;
+
+  background: #f1f3f5;
+
+  box-shadow:
+    0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+
+/* ================================
+   TITLE
+================================ */
+
+#groupInfoName {
+
+  margin: 0 0 22px;
+
+  font-size: 23px;
+
+  font-weight: 700;
+
+  color: #222;
+
+  word-break: break-word;
+}
+
+
+/* ================================
+   INFORMATION CONTAINER
+================================ */
+
+.group-info-details {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+
+  text-align: left;
+}
+
+
+/* ================================
+   INFORMATION ROW
+================================ */
+
+.group-info-row {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 13px;
+
+  padding: 13px 14px;
+
+  background: #f7f7f7;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 14px;
+
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
+}
+
+
+.group-info-row:hover {
+
+  background: #f1f1f1;
+
+  transform: translateY(-1px);
+
+}
+
+
+/* ================================
+   LABEL
+================================ */
+
+.group-info-row span {
+
+  min-width: 105px;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  color: #777;
+}
+
+
+/* ================================
+   VALUE
+================================ */
+
+.group-info-row strong {
+
+  flex: 1;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  color: #222;
+
+  word-break: break-word;
+}
+
+
+/* ================================
+   GROUP ID
+================================ */
+
+.group-info-id {
+
+  font-size: 10px !important;
+
+  font-weight: 500 !important;
+
+  color: #777 !important;
+
+  word-break: break-all;
+}
+
+
+/* ================================
+   MOBILE
+================================ */
+
+@media (max-width: 480px) {
+
+  .group-info-popover {
+
+    width: calc(100% - 24px);
+
+    padding: 25px 16px 18px;
+
+    border-radius: 22px;
+
+  }
+
+  .group-info-icon {
+
+    width: 64px;
+    height: 64px;
+
+    font-size: 34px;
+
+  }
+
+  #groupInfoName {
+
+    font-size: 21px;
+
+  }
+
+  .group-info-row {
+
+    padding: 11px;
+
+  }
+
+  .group-info-row span {
+
+    min-width: 90px;
+
+    font-size: 11px;
+
+  }
+
+  .group-info-row strong {
+
+    font-size: 13px;
+
+  }
+
+}
+</style>
+ </head>
+<body>
+
+<!-- ======================
+     HEADER
+====================== -->
+
+<div class="header">
+
+  <h3 id="chatHeaderTitle">
+    FRIEND ZONE CHAT
+  </h3>
+
+  <div style="
+    display:flex;
+    align-items:center;
+    gap:6px;
+  ">
+
+    <button
+      id="darkModeBtn"
+      type="button"
+    >
+      🌙
+    </button>
+
+    <button
+      id="logoutBtn"
+      type="button"
+    >
+      Logout
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- ======================
+     GROUP ADMIN POPOVER
+====================== -->
+
+<div
+  id="groupAdminPopover"
+  class="group-admin-popover"
+>
+
+  <button
+    id="closeGroupAdminPopover"
+    class="group-admin-close"
+    type="button"
+  >
+    ✕
+  </button>
+
+  <div class="group-admin-icon">
+    👥
+  </div>
+
+  <h2 id="adminGroupName">
+    Group
+  </h2>
+
+  <p id="adminGroupAdmin">
+    👑 Admin: -
+  </p>
+
+  <p id="adminGroupMembers">
+    👥 Members: 0
+  </p>
+
+  <div class="group-admin-actions">
+    <button
+      id="groupNotificationsAction"
+      type="button"
+    >
+      🔔 Group Notifications
+    </button>
+
+    <button
+      id="renameGroupAction"
+      type="button"
+    >
+      ✏️ Rename Group
+    </button>
+
+    <button
+      id="changeGroupPhotoAction"
+      type="button"
+    >
+      🖼️ Change Group Photo
+    </button>
+
+    <button
+      id="groupInfoAction"
+      type="button"
+    >
+      🔗 Group Info
+    </button>
+    <button
+  id="leaveGroupAction"
+  type="button"
+>
+  🚪 Leave Group
+</button>
+
+<button
+  id="groupMembersAction"
+  type="button"
+>
+  👥 Group Members
+</button>
+    <button
+      id="deleteGroupAction"
+      type="button"
+      class="danger"
+    >
+      🗑️Remove Group
+    </button>
+
+  </div>
+
+</div>
+
+<!-- ======================
+     RENAME GROUP POPOVER
+====================== -->
+
+<div
+  id="renameGroupPopover"
+  class="rename-group-popover"
+>
+
+  <button
+    id="closeRenameGroupPopover"
+    class="rename-group-close"
+    type="button"
+  >
+    ✕
+  </button>
+
+  <div class="rename-group-icon">
+    ✏️
+  </div>
+
+  <h2>
+    Rename Group
+  </h2>
+
+  <p>
+    Enter a new name for your group.
+  </p>
+
+  <input
+    id="renameGroupInput"
+    type="text"
+    placeholder="Enter new group name..."
+    maxlength="50"
+    autocomplete="off"
+  >
+
+  <div class="rename-group-actions">
+
+    <button
+      id="cancelRenameGroupBtn"
+      type="button"
+    >
+      Cancel
+    </button>
+
+    <button
+      id="saveRenameGroupBtn"
+      type="button"
+    >
+      Save
+    </button>
+
+  </div>
+
+</div>
+  <!-- ======================
+     CHANGE GROUP PHOTO POPOVER
+====================== -->
+
+<div
+  id="changeGroupPhotoPopover"
+  class="change-group-photo-popover"
+>
+
+  <button
+    id="closeChangeGroupPhotoPopover"
+    class="change-group-photo-close"
+    type="button"
+  >
+    ✕
+  </button>
+
+  <div class="change-group-photo-icon">
+    🖼️
+  </div>
+
+  <h2>Change Group Photo</h2>
+
+  <p>
+    Choose a new photo for your group.
+  </p>
+
+  <img
+    id="groupPhotoPreview"
+    src="images/default-profile.png"
+    alt="Group Photo"
+  >
+
+  <input
+    type="file"
+    id="groupPhotoInput"
+    accept="image/*"
+    style="display:none;"
+  >
+
+  <button
+    id="chooseGroupPhotoBtn"
+    type="button"
+  >
+    📷 Choose Photo
+  </button>
+
+  <div class="change-group-photo-actions">
+
+    <button
+      id="cancelChangeGroupPhotoBtn"
+      type="button"
+    >
+      Cancel
+    </button>
+
+    <button
+      id="saveGroupPhotoBtn"
+      type="button"
+    >
+      Save
+    </button>
+
+  </div>
+
+</div>
+  <!-- ======================
+     GROUP INFO POPOVER
+====================== -->
+
+<div
+  id="groupInfoPopover"
+  class="group-info-popover"
+>
+
+  <button
+    id="closeGroupInfoPopover"
+    class="group-info-close"
+    type="button"
+  >
+    ✕
+  </button>
+
+  <div class="group-info-icon">
+    🔗
+  </div>
+
+  <h2 id="groupInfoName">
+    Group Info
+  </h2>
+
+  <div class="group-info-details">
+
+    <div class="group-info-row">
+      <span>👥 Group Name</span>
+      <strong id="groupInfoGroupName">
+        -
+      </strong>
+    </div>
+
+    <div class="group-info-row">
+      <span>👑 Admin</span>
+      <strong id="groupInfoAdmin">
+        -
+      </strong>
+    </div>
+
+    <div class="group-info-row">
+      <span>👤 Members</span>
+      <strong id="groupInfoMembers">
+        0
+      </strong>
+    </div>
+
+    <div class="group-info-row">
+      <span>📅 Created</span>
+      <strong id="groupInfoCreated">
+        -
+      </strong>
+    </div>
+
+    <div class="group-info-row">
+      <span>🆔 Group ID</span>
+      <strong
+        id="groupInfoId"
+        class="group-info-id"
+      >
+        -
+      </strong>
+    </div>
+
+  </div>
+
+</div>
+<!-- ======================
+     GROUP MEMBERS POPOVER
+====================== -->
+
+<div
+  id="groupMembersPopover"
+  class="group-members-popover"
+>
+
+  <button
+    id="closeGroupMembersPopover"
+    class="group-members-close"
+    type="button"
+  >
+    ✕
+  </button>
+
+  <div class="group-members-icon">
+    👥
+  </div>
+
+  <h2 id="membersPopoverTitle">
+    Group Members
+  </h2>
+
+  <p id="membersPopoverCount">
+    Members: 0
+  </p>
+
+  <div id="groupMembersList">
+    <!-- Members will appear here -->
+  </div>
+
+</div>
+
+
+<!-- ==================================================
+     MAIN CONTAINER
+================================================== -->
+
+<div class="container">
+
+
+  <!-- ==================================================
+       SIDEBAR
+  ================================================== -->
+
+  <div class="sidebar">
+
+
+    <!-- ======================
+         PROFILE
+    ====================== -->
+
+    <div class="profile">
+
+      <div class="profile-picture-wrapper">
+
+        <img
+          id="profilePic"
+          src="images/default-profile.png"
+          alt="Profile Picture"
+        >
+
+        <input
+          type="file"
+          id="imageInput"
+          accept="image/*"
+          style="display:none;"
+        >
+
+        <div
+          id="profilePopover"
+          class="profile-popover"
+        >
+
+          <div class="popover-title">
+            👤 My Profile
+          </div>
+
+          <div class="popover-status">
+            🟢 Online
+          </div>
+
+          <button id="viewProfileBtn">
+            👤 View Profile
+          </button>
+
+          <button id="profileSettingsBtn">
+            ⚙️ Settings
+          </button>
+
+        </div>
+
+      </div>
+
+      <h3 id="username">
+        Loading...
+      </h3>
+
+
+      <!-- ======================
+           CALL BUTTONS
+      ====================== -->
+
+      <div class="call-buttons">
+
+        <button id="voiceCallBtn">
+          📞
+        </button>
+
+        <button id="videoCallBtn">
+          🎥
+        </button>
+
+      </div>
+
+      <p id="sidebarCallStatus"></p>
+
+    </div>
+
+
+    <!-- ==================================================
+         FRIENDS
+    ================================================== -->
+
+    <h3 style="padding:10px; color:white;">
+      Friends
+    </h3>
+
+    <div id="friendsList"></div>
+
+    <hr>
+
+
+    <!-- ==================================================
+         GROUPS
+    ================================================== -->
+
+    <h3 class="groups-title">
+      Groups
+    </h3>
+
+
+    <!-- ======================
+         CREATE GROUP BUTTON
+    ====================== -->
+
+    <button
+      id="openCreateGroupBtn"
+      class="create-group-main-btn"
+      type="button"
+    >
+      ➕ Create Group
+    </button>
+
+
+    <!-- ======================
+         CREATE GROUP POPOVER
+    ====================== -->
+
+    <div
+      id="createGroupPopover"
+      class="create-group-popover"
+    >
+
+      <div class="create-group-title">
+        👥 Create Group
+      </div>
+
+      <input
+        id="groupName"
+        type="text"
+        placeholder="Enter group name..."
+        autocomplete="off"
+      >
+
+      <div class="create-group-actions">
+
+        <button
+          id="cancelCreateGroupBtn"
+          type="button"
+        >
+          Cancel
+        </button>
+
+        <button
+          id="createGroupBtn"
+          type="button"
+        >
+          Create
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- ======================
+         OLD MEMBER CONTROLS
+         KEPT HIDDEN
+    ====================== -->
+
+    <button
+      id="addMemberBtn"
+      style="display:none;"
+    >
+      Add Member
+    </button>
+
+    <select
+      id="friendSelect"
+      style="display:none;"
+    >
+    </select>
+
+    <button
+      id="confirmAddMemberBtn"
+      style="display:none;"
+    >
+      Add
+    </button>
+
+
+    <div id="groupsList"></div>
+
+  </div>
+
+
+  <!-- ==================================================
+       CHAT AREA
+  ================================================== -->
+
+  <div class="chat-area">
+
+
+    <!-- ======================
+         TYPING STATUS
+    ====================== -->
+
+    <div id="typingStatus"></div>
+
+
+    <!-- ======================
+         MESSAGES
+    ====================== -->
+
+    <div id="messages"></div>
+
+
+    <!-- ======================
+         MESSAGE BAR
+    ====================== -->
+
+    <div class="bottom">
+
+      <input
+        id="messageInput"
+        placeholder="Type your message..."
+        autocomplete="off"
+      >
+
+
+      <!-- ======================
+           CHAT IMAGE
+      ====================== -->
+
+      <input
+        type="file"
+        id="chatImage"
+        accept="image/*"
+        style="display:none;"
+      >
+
+      <button
+        id="imageBtn"
+        type="button"
+      >
+        📷
+      </button>
+
+
+      <!-- ======================
+           VOICE MESSAGE
+      ====================== -->
+
+      <button
+        id="recordBtn"
+        type="button"
+      >
+        🎤
+      </button>
+
+      <audio
+        id="voicePlayer"
+        controls
+        style="display:none;"
+      >
+      </audio>
+
+
+      <!-- ======================
+           SEND
+      ====================== -->
+
+      <button
+        id="sendBtn"
+        type="button"
+      >
+        Send
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ==================================================
+     NOTIFICATION SOUND
+================================================== -->
+
+<audio
+  id="notificationSound"
+  preload="auto"
+>
+  <source
+    src="notification.mp3"
+    type="audio/mpeg"
+  >
+</audio>
+
+
+<!-- ==================================================
+     CALL AUDIO
+================================================== -->
+
+<audio
+  id="localAudio"
+  autoplay
+  muted
+>
+</audio>
+
+<audio
+  id="remoteAudio"
+  autoplay
+>
+</audio>
+
+
+<!-- ==================================================
+     INCOMING CALL
+================================================== -->
+
+<div id="incomingCallBox">
+
+  <h3>
+    📞 Incoming Call
+  </h3>
+
+  <p id="callerName">
+    Someone is calling...
+  </p>
+
+  <button id="acceptCallBtn">
+    ✅ Accept
+  </button>
+
+  <button id="declineCallBtn">
+    ❌ Decline
+  </button>
+
+</div>
+
+
+<!-- ==================================================
+     CALL SCREEN
+================================================== -->
+
+<div id="callScreen">
+
+  <img
+    id="callProfilePic"
+    src="images/default-profile.png"
+    alt="Profile Picture"
+  >
+
+  <h2 id="callUserName">
+    Friend
+  </h2>
+
+  <p id="callStatus">
+    Calling...
+  </p>
+
+  <h1 id="callTimer">
+    00:00
+  </h1>
+
+  <div>
+
+    <button id="muteBtn">
+      🎤 Mute
+    </button>
+
+    <button id="speakerBtn">
+      🔊 Speaker
+    </button>
+
+  </div>
+
+  <button id="hangUpBtn">
+    🔴 End Call
+  </button>
+
+</div>
+
+
+<!-- ==================================================
+     JAVASCRIPT
+================================================== -->
+
+<script
+  type="module"
+  src="Home.js"
+></script>
+
+<script
+  type="module"
+  src="Calls.js"
+></script>
+</body>
+</html>
