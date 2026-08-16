@@ -1,4 +1,11 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+// ======================
+// FIREBASE IMPORTS
+// ======================
+
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+
 import {
   getAuth,
   createUserWithEmailAndPassword
@@ -10,6 +17,11 @@ import {
   setDoc
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
+
+// ======================
+// FIREBASE CONFIG
+// ======================
+
 const firebaseConfig = {
   apiKey: "AIzaSyAxVyuHiNb-NEeXLfMfaq0RS9ERfahORt4",
   authDomain: "friend-zone-chat-city.firebaseapp.com",
@@ -20,28 +32,187 @@ const firebaseConfig = {
   measurementId: "G-3RD3QLSF3F"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
 
-document.getElementById("signupBtn").addEventListener("click", async () => {
+// ======================
+// INITIALIZE FIREBASE
+// ======================
 
-    const name = document.getElementById("name").value;
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+const app =
+  initializeApp(firebaseConfig);
 
-    try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+const auth =
+  getAuth(app);
 
-        await setDoc(doc(db, "users", userCredential.user.uid), {
+const db =
+  getFirestore(app);
+
+
+// ======================
+// CREATE ACCOUNT
+// ======================
+
+document
+  .getElementById("signupBtn")
+  .addEventListener(
+    "click",
+    async () => {
+
+      // ======================
+      // GET FORM VALUES
+      // ======================
+
+      const name =
+        document
+          .getElementById("name")
+          .value
+          .trim();
+
+      const email =
+        document
+          .getElementById("email")
+          .value
+          .trim();
+
+      const password =
+        document
+          .getElementById("password")
+          .value;
+
+      const dob =
+        document
+          .getElementById("dob")
+          .value;
+
+      const phone =
+        document
+          .getElementById("phone")
+          .value
+          .trim();
+
+      const nationality =
+        document
+          .getElementById("nationality")
+          .value
+          .trim();
+
+
+      // ======================
+      // GET GENDER
+      // ======================
+
+      const genderInput =
+        document.querySelector(
+          'input[name="gender"]:checked'
+        );
+
+      const gender =
+        genderInput
+          ? genderInput.value
+          : "";
+
+
+      // ======================
+      // VALIDATION
+      // ======================
+
+      if (
+        !name ||
+        !email ||
+        !password ||
+        !dob ||
+        !phone ||
+        !nationality ||
+        !gender
+      ) {
+
+        alert(
+          "Please fill in all fields."
+        );
+
+        return;
+      }
+
+
+      try {
+
+        // ======================
+        // CREATE AUTH ACCOUNT
+        // ======================
+
+        const userCredential =
+          await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password
+          );
+
+
+        const uid =
+          userCredential.user.uid;
+
+
+        // ======================
+        // SAVE USER PROFILE
+        // ======================
+
+        await setDoc(
+          doc(
+            db,
+            "users",
+            uid
+          ),
+          {
+
             name: name,
-            email: email
-        });
 
-        alert("Account created successfully!");
-        window.location.href = "Homepage.html";
+            email: email,
 
-    } catch (error) {
-        alert(error.message);
+            dob: dob,
+
+            phone: phone,
+
+            gender: gender,
+
+            nationality: nationality,
+
+            photoURL:
+              "images/default-profile.png",
+
+            online: true,
+
+            friendsCount: 0,
+
+            likesCount: 0
+
+          }
+        );
+
+
+        // ======================
+        // SUCCESS
+        // ======================
+
+        alert(
+          "Account created successfully!"
+        );
+
+
+        window.location.href =
+          "Homepage.html";
+
+
+      } catch (error) {
+
+        console.error(
+          "Signup error:",
+          error
+        );
+
+        alert(
+          error.message
+        );
+
+      }
+
     }
-});
+  );
