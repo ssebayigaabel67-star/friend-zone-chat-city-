@@ -2429,7 +2429,555 @@ body.dark-mode .group-member-status {
 .message-user-btn:hover {
   background: #0d65d9;
   }
-</style>
+/* ==================================================
+   MY PROFILE POPOVER
+================================================== */
+
+.profile-popover {
+
+  /* ======================
+     POSITION
+  ====================== */
+
+  position: fixed;
+
+  top: 80px;
+  left: 85px;
+
+  width: 300px;
+  max-width: calc(100vw - 100px);
+
+  max-height: 80vh;
+
+  overflow-y: auto;
+
+
+  /* ======================
+     APPEARANCE
+  ====================== */
+
+  background: rgba(20, 20, 30, 0.98);
+
+  color: white;
+
+  border-radius: 16px;
+
+  padding: 18px;
+
+
+  /* ======================
+     SHADOW
+  ====================== */
+
+  box-shadow:
+    0 10px 35px
+    rgba(0, 0, 0, 0.6);
+
+
+  /* ======================
+     LAYER
+  ====================== */
+
+  z-index: 99999;
+
+
+  /* ======================
+     HIDDEN BY DEFAULT
+  ====================== */
+
+  display: none;
+}
+
+
+/* ======================
+   SHOW POPOVER
+====================== */
+
+.profile-popover.show {
+
+  display: block;
+
+}
+
+
+/* ==================================================
+   CLOSE BUTTON
+================================================== */
+
+.my-profile-close {
+
+  position: absolute;
+
+  top: 8px;
+  right: 8px;
+
+  width: 32px;
+  height: 32px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background:
+    rgba(255, 255, 255, 0.1);
+
+  color: white;
+
+  font-size: 18px;
+
+  cursor: pointer;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+}
+
+
+.my-profile-close:hover {
+
+  background: red;
+
+}
+
+
+/* ==================================================
+   PROFILE PHOTO
+================================================== */
+
+.my-profile-photo-wrapper {
+
+  text-align: center;
+
+  margin-top: 5px;
+
+  margin-bottom: 10px;
+
+}
+
+
+.my-profile-popover-photo {
+
+  width: 90px;
+
+  height: 90px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  border: 3px solid white;
+
+  display: block;
+
+  margin: 0 auto 8px;
+
+}
+
+
+/* ==================================================
+   CHANGE PHOTO BUTTON
+================================================== */
+
+.change-profile-photo-btn {
+
+  border: none;
+
+  background: transparent;
+
+  color: #4da6ff;
+
+  cursor: pointer;
+
+  font-size: 13px;
+
+}
+
+
+.change-profile-photo-btn:hover {
+
+  text-decoration: underline;
+
+}
+
+
+/* ==================================================
+   PROFILE NAME
+================================================== */
+
+#myProfilePopoverName {
+
+  text-align: center;
+
+  margin: 5px 0;
+
+  font-size: 21px;
+
+}
+
+
+/* ==================================================
+   EMAIL
+================================================== */
+
+.my-profile-email {
+
+  text-align: center;
+
+  color: #aaa;
+
+  font-size: 13px;
+
+  margin-bottom: 6px;
+
+  word-break: break-word;
+
+}
+
+
+/* ==================================================
+   ONLINE STATUS
+================================================== */
+
+.my-profile-status {
+
+  text-align: center;
+
+  font-size: 13px;
+
+  margin-bottom: 15px;
+
+}
+
+
+/* ==================================================
+   PROFILE STATS
+================================================== */
+
+.my-profile-stats {
+
+  display: flex;
+
+  justify-content: space-around;
+
+  border-top:
+    1px solid
+    rgba(255,255,255,0.1);
+
+  border-bottom:
+    1px solid
+    rgba(255,255,255,0.1);
+
+  padding: 12px 0;
+
+  margin-bottom: 15px;
+
+}
+
+
+.profile-stat {
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 3px;
+
+}
+
+
+.profile-stat strong {
+
+  font-size: 18px;
+
+}
+
+
+.profile-stat span {
+
+  color: #aaa;
+
+  font-size: 12px;
+
+}
+
+
+/* ==================================================
+   PROFILE INFORMATION
+================================================== */
+
+.my-profile-info {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+
+  margin-bottom: 15px;
+
+}
+
+
+.my-profile-info div {
+
+  font-size: 14px;
+
+  padding: 8px;
+
+  background:
+    rgba(255,255,255,0.05);
+
+  border-radius: 8px;
+
+}
+
+
+/* ==================================================
+   PROFILE PROGRESS
+================================================== */
+
+.profile-progress-section {
+
+  margin-bottom: 15px;
+
+}
+
+
+.profile-progress-title {
+
+  font-size: 14px;
+
+  margin-bottom: 7px;
+
+}
+
+
+.profile-progress-bar {
+
+  width: 100%;
+
+  height: 8px;
+
+  background:
+    rgba(255,255,255,0.12);
+
+  border-radius: 10px;
+
+  overflow: hidden;
+
+}
+
+
+.profile-progress-fill {
+
+  width: 0%;
+
+  height: 100%;
+
+  background: #4da6ff;
+
+  border-radius: 10px;
+
+  transition:
+    width 0.4s ease;
+
+}
+
+
+.profile-progress-text {
+
+  text-align: right;
+
+  font-size: 11px;
+
+  color: #aaa;
+
+  margin-top: 4px;
+
+}
+
+
+/* ==================================================
+   ACTION BUTTONS
+================================================== */
+
+.my-profile-action-btn {
+
+  width: 100%;
+
+  padding: 10px;
+
+  margin-top: 7px;
+
+  border: none;
+
+  border-radius: 9px;
+
+  background:
+    rgba(255,255,255,0.08);
+
+  color: white;
+
+  cursor: pointer;
+
+  text-align: left;
+
+  font-size: 14px;
+
+}
+
+
+.my-profile-action-btn:hover {
+
+  background:
+    rgba(255,255,255,0.16);
+
+}
+
+
+/* ==================================================
+   MOBILE
+================================================== */
+
+@media (max-width: 600px) {
+
+  .profile-popover {
+
+    top: 70px;
+
+    left: 60px;
+
+    width: 280px;
+
+    max-width:
+      calc(100vw - 75px);
+  }
+
+
+}
+    /* ==================================================
+   EDIT PROFILE
+================================================== */
+
+.edit-profile-panel {
+
+  margin-top: 15px;
+
+  padding-top: 15px;
+
+  border-top:
+    1px solid
+    rgba(255,255,255,0.1);
+
+}
+
+.edit-profile-panel h3 {
+
+  margin-bottom: 12px;
+
+}
+
+
+.edit-profile-panel label {
+
+  display: block;
+
+  margin-top: 9px;
+
+  margin-bottom: 4px;
+
+  font-size: 12px;
+
+  color: #aaa;
+
+}
+
+
+.edit-profile-panel input,
+.edit-profile-panel select {
+
+  width: 100%;
+
+  padding: 9px;
+
+  border: none;
+
+  border-radius: 8px;
+
+  background:
+    rgba(255,255,255,0.1);
+
+  color: white;
+
+  outline: none;
+
+}
+
+
+.edit-profile-panel select option {
+
+  color: black;
+
+}
+
+
+.edit-profile-buttons {
+
+  display: flex;
+
+  gap: 8px;
+
+  margin-top: 15px;
+
+}
+
+
+.edit-profile-buttons button {
+
+  flex: 1;
+
+  padding: 9px;
+
+  border: none;
+
+  border-radius: 8px;
+
+  cursor: pointer;
+
+  color: white;
+
+  background:
+    rgba(255,255,255,0.12);
+
+}
+
+
+.edit-profile-buttons button:hover {
+
+  background:
+    rgba(255,255,255,0.22);
+
+}
+
+
+#saveProfileBtn {
+
+  background: #1677ff;
+
+}
+
+
+#saveProfileBtn:hover {
+
+  background: #0866df;
+
+  }
+  </style>
  </head>
 <body>
 
@@ -2814,29 +3362,314 @@ body.dark-mode .group-member-status {
           accept="image/*"
           style="display:none;"
         >
+<div
+  id="profilePopover"
+  class="profile-popover"
+>
 
-        <div
-          id="profilePopover"
-          class="profile-popover"
-        >
+  <!-- CLOSE -->
 
-          <div class="popover-title">
-            👤 My Profile
-          </div>
+  <button
+    id="closeMyProfilePopover"
+    class="my-profile-close"
+    type="button"
+  >
+    ✕
+  </button>
 
-          <div class="popover-status">
-            🟢 Online
-          </div>
 
-          <button id="viewProfileBtn">
-            👤 View Profile
-          </button>
+  <!-- PROFILE PHOTO -->
 
-          <button id="profileSettingsBtn">
-            ⚙️ Settings
-          </button>
+  <div class="my-profile-photo-wrapper">
 
-        </div>
+    <img
+      id="myProfilePopoverPhoto"
+      src="images/default-profile.png"
+      alt="My Profile Picture"
+      class="my-profile-popover-photo"
+    >
+
+    <button
+      id="changeMyProfilePhotoBtn"
+      type="button"
+      class="change-profile-photo-btn"
+    >
+      📷 Change Photo
+    </button>
+
+  </div>
+
+
+  <!-- NAME -->
+
+  <h2 id="myProfilePopoverName">
+    Loading...
+  </h2>
+
+
+  <!-- EMAIL -->
+
+  <div
+    id="myProfilePopoverEmail"
+    class="my-profile-email"
+  >
+    Loading...
+  </div>
+
+
+  <!-- STATUS -->
+
+  <div
+    id="myProfilePopoverStatus"
+    class="my-profile-status"
+  >
+    🟢 Online
+  </div>
+
+
+  <!-- PROFILE STATS -->
+
+  <div class="my-profile-stats">
+
+    <div class="profile-stat">
+
+      <strong
+        id="myProfileLikes"
+      >
+        0
+      </strong>
+
+      <span>
+        ❤️ Likes
+      </span>
+
+    </div>
+
+
+    <div class="profile-stat">
+
+      <strong
+        id="myProfileFriends"
+      >
+        0
+      </strong>
+
+      <span>
+        👥 Friends
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <!-- PROFILE INFORMATION -->
+
+  <div class="my-profile-info">
+
+    <div>
+      👤
+      <span id="myProfileUsername">
+        Username: —
+      </span>
+    </div>
+
+    <div>
+      🎂
+      <span id="myProfileAge">
+        Age: —
+      </span>
+    </div>
+
+    <div>
+      🌍
+      <span id="myProfileNationality">
+        Nationality: —
+      </span>
+    </div>
+
+    <div>
+      ⚧️
+      <span id="myProfileGender">
+        Gender: —
+      </span>
+    </div>
+
+    <div>
+      📱
+      <span id="myProfilePhone">
+        Phone: —
+      </span>
+    </div>
+
+  </div>
+
+
+  <!-- PROFILE PROGRESS -->
+
+  <div class="profile-progress-section">
+
+    <div class="profile-progress-title">
+      📊 Profile Progress
+    </div>
+
+    <div class="profile-progress-bar">
+
+      <div
+        id="myProfileProgress"
+        class="profile-progress-fill"
+      ></div>
+
+    </div>
+
+    <div
+      id="myProfileProgressText"
+      class="profile-progress-text"
+    >
+      0% Complete
+    </div>
+
+  </div>
+
+
+  <!-- ACTIONS -->
+
+  <button
+    id="editMyProfileBtn"
+    class="my-profile-action-btn"
+    type="button"
+  >
+    ✏️ Edit Profile
+  </button>
+
+
+  <button
+    id="myFriendsBtn"
+    class="my-profile-action-btn"
+    type="button"
+  >
+    👥 My Friends
+  </button>
+
+
+  <button
+    id="profileSettingsBtn"
+    class="my-profile-action-btn"
+    type="button"
+  >
+    ⚙️ Settings
+  </button>
+<!-- ======================
+     EDIT PROFILE
+====================== -->
+
+<div
+  id="editProfilePanel"
+  class="edit-profile-panel"
+  style="display:none;"
+>
+
+  <h3>
+    ✏️ Edit Profile
+  </h3>
+
+  <label>
+    Username
+  </label>
+
+  <input
+    type="text"
+    id="editProfileUsername"
+    placeholder="Username"
+  >
+
+
+  <label>
+    Name
+  </label>
+
+  <input
+    type="text"
+    id="editProfileName"
+    placeholder="Your name"
+  >
+
+
+  <label>
+    Date of Birth
+  </label>
+
+  <input
+    type="date"
+    id="editProfileDob"
+  >
+
+
+  <label>
+    Nationality
+  </label>
+
+  <input
+    type="text"
+    id="editProfileNationality"
+    placeholder="Nationality"
+  >
+
+
+  <label>
+    Gender
+  </label>
+
+  <select
+    id="editProfileGender"
+  >
+
+    <option value="">
+      Select gender
+    </option>
+
+    <option value="Male">
+      Male
+    </option>
+
+    <option value="Female">
+      Female
+    </option>
+
+  </select>
+
+
+  <label>
+    Phone
+  </label>
+
+  <input
+    type="tel"
+    id="editProfilePhone"
+    placeholder="Phone number"
+  >
+
+
+  <div class="edit-profile-buttons">
+
+    <button
+      id="saveProfileBtn"
+      type="button"
+    >
+      💾 Save
+    </button>
+
+    <button
+      id="cancelEditProfileBtn"
+      type="button"
+    >
+      Cancel
+    </button>
+
+  </div>
+
+</div>
+</div>
 
       </div>
 
@@ -2878,7 +3711,15 @@ body.dark-mode .group-member-status {
 
     <hr>
 
+<!-- ======================
+     FRIEND REQUESTS
+====================== -->
 
+<h3 style="padding:10px; color:white;">
+  🤝 Friend Requests
+</h3>
+
+<div id="friendRequestsList"></div>
     <!-- ==================================================
          GROUPS
     ================================================== -->

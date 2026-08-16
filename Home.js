@@ -19,6 +19,7 @@ import {
   deleteDoc,
   serverTimestamp,
   query,
+  where,
   orderBy,
   onSnapshot,
   doc,
@@ -889,6 +890,555 @@ if (userProfilePopover) {
 
 }
 // ======================
+// SEND FRIEND REQUEST
+// ======================
+
+const addFriendBtn =
+  document.getElementById(
+    "addFriendBtn"
+  );
+
+if (addFriendBtn) {
+
+  addFriendBtn.addEventListener(
+    "click",
+    async () => {
+
+      // ======================
+      // CHECK LOGIN
+      // ======================
+
+      if (!auth.currentUser) {
+
+        alert(
+          "Please log in first."
+        );
+
+        return;
+
+      }
+
+
+      // ======================
+      // GET TARGET USER
+      // ======================
+
+      const targetUserId =
+        window.selectedProfileUserId;
+
+
+      if (!targetUserId) {
+        return;
+      }
+
+
+      // ======================
+      // DON'T ADD YOURSELF
+      // ======================
+
+      if (
+        targetUserId ===
+        auth.currentUser.uid
+      ) {
+
+        alert(
+          "You cannot add yourself."
+        );
+
+        return;
+
+      }
+
+
+      try {
+
+        // ======================
+        // CREATE REQUEST ID
+        // ======================
+
+        const requestId =
+          auth.currentUser.uid +
+          "_" +
+          targetUserId;
+
+
+        const requestRef =
+          doc(
+            db,
+            "friendRequests",
+            requestId
+          );
+
+
+        // ======================
+        // CHECK EXISTING REQUEST
+        // ======================
+
+        const requestSnap =
+          await getDoc(
+            requestRef
+          );
+
+
+        if (
+          requestSnap.exists()
+        ) {
+
+          alert(
+            "Friend request already sent."
+          );
+
+          return;
+
+        }
+
+
+        // ======================
+        // SAVE REQUEST
+        // ======================
+
+        await setDoc(
+          requestRef,
+          {
+
+            senderId:
+              auth.currentUser.uid,
+
+            receiverId:
+              targetUserId,
+
+            status:
+              "pending",
+
+            timestamp:
+              serverTimestamp()
+
+          }
+        );
+
+
+        // ======================
+        // CHANGE BUTTON
+        // ======================
+
+        addFriendBtn.textContent =
+          "⏳ Request Sent";
+
+        addFriendBtn.disabled =
+          true;
+
+
+        alert(
+          "Friend request sent!"
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "Friend request error:",
+          error
+        );
+
+        alert(
+          "Could not send friend request."
+        );
+
+      }
+
+    }
+  );
+
+}
+// ======================
+// LOAD FRIEND REQUESTS
+// ======================
+
+async function loadFriendRequests() {
+
+  const list =
+    document.getElementById(
+      "friendRequestsList"
+    );
+
+  if (
+    !list ||
+    !auth.currentUser
+  ) {
+    return;
+  }
+
+  list.innerHTML = "";
+
+  try {
+
+    const requestsQuery =
+      query(
+        collection(
+          db,
+          "friendRequests"
+        ),
+        where(
+          "receiverId",
+          "==",
+          auth.currentUser.uid
+        ),
+        where(
+          "status",
+          "==",
+          "pending"
+        )
+      );
+
+    const snapshot =
+      await getDocs(
+        requestsQuery
+      );
+
+
+    if (snapshot.empty) {
+
+      list.innerHTML = `
+        <div style="
+          padding:10px;
+          color:#aaa;
+        ">
+          No friend requests
+        </div>
+      `;
+
+      return;
+    }
+
+
+    for (
+      const requestDoc
+      of snapshot.docs
+    ) {
+
+      const request =
+        requestDoc.data();
+
+
+      // ======================
+      // GET SENDER
+      // ======================
+
+      const senderSnap =
+        await getDoc(
+          doc(
+            db,
+            "users",
+            request.senderId
+          )
+        );
+
+
+      if (
+        !senderSnap.exists()
+      ) {
+        continue;
+      }
+
+
+      const sender =
+        senderSnap.data();
+
+
+      // ======================
+      // REQUEST CONTAINER
+      // ======================
+
+      const requestDiv =
+        document.createElement(
+          "div"
+        );
+
+      requestDiv.className =
+        "friend-request";
+
+
+      requestDiv.innerHTML = `
+
+        <img
+          src="${
+            sender.photoURL ||
+            "images/default-profile.png"
+          }"
+          alt="Profile"
+          style="
+            width:45px;
+            height:45px;
+            border-radius:50%;
+            object-fit:cover;
+          "
+        >
+
+        <div style="
+          flex:1;
+          margin-left:10px;
+        ">
+
+          <strong>
+            ${escapeHTML(
+              sender.name ||
+              sender.email ||
+              "User"
+            )}
+          </strong>
+
+          <div style="
+            font-size:12px;
+            color:#aaa;
+          ">
+            wants to be your friend
+          </div>
+
+        </div>
+
+        <button
+          class="accept-request-btn"
+          type="button"
+        >
+          ✅
+        </button>
+
+        <button
+          class="decline-request-btn"
+          type="button"
+        >
+          ❌
+        </button>
+
+      `;
+
+
+      // ======================
+      // ACCEPT
+      // ======================
+
+      requestDiv
+        .querySelector(
+          ".accept-request-btn"
+        )
+        .addEventListener(
+          "click",
+          () => {
+
+            acceptFriendRequest(
+              requestDoc.id,
+              request
+            );
+
+          }
+        );
+
+
+      // ======================
+      // DECLINE
+      // ======================
+
+      requestDiv
+        .querySelector(
+          ".decline-request-btn"
+        )
+        .addEventListener(
+          "click",
+          () => {
+
+            declineFriendRequest(
+              requestDoc.id
+            );
+
+          }
+        );
+
+
+      list.appendChild(
+        requestDiv
+      );
+
+    }
+
+
+  } catch (error) {
+
+    console.error(
+      "Load friend requests error:",
+      error
+    );
+
+  }
+
+}
+// ======================
+// ACCEPT FRIEND REQUEST
+// ======================
+
+async function acceptFriendRequest(
+  requestId,
+  request
+) {
+
+  if (!auth.currentUser) {
+    return;
+  }
+
+  try {
+
+    const currentUserId =
+      auth.currentUser.uid;
+
+    const senderId =
+      request.senderId;
+
+
+    // ======================
+    // CREATE FRIEND LINKS
+    // ======================
+
+    await setDoc(
+      doc(
+        db,
+        "users",
+        currentUserId,
+        "friends",
+        senderId
+      ),
+      {
+        userId: senderId,
+        since: serverTimestamp()
+      }
+    );
+
+
+    await setDoc(
+      doc(
+        db,
+        "users",
+        senderId,
+        "friends",
+        currentUserId
+      ),
+      {
+        userId: currentUserId,
+        since: serverTimestamp()
+      }
+    );
+
+
+    // ======================
+    // UPDATE FRIEND COUNTS
+    // ======================
+
+    await updateDoc(
+      doc(
+        db,
+        "users",
+        currentUserId
+      ),
+      {
+        friendsCount:
+          increment(1)
+      }
+    );
+
+
+    await updateDoc(
+      doc(
+        db,
+        "users",
+        senderId
+      ),
+      {
+        friendsCount:
+          increment(1)
+      }
+    );
+
+
+    // ======================
+    // MARK REQUEST ACCEPTED
+    // ======================
+
+    await updateDoc(
+      doc(
+        db,
+        "friendRequests",
+        requestId
+      ),
+      {
+        status:
+          "accepted"
+      }
+    );
+
+
+    // ======================
+    // RELOAD REQUESTS
+    // ======================
+
+    loadFriendRequests();
+
+
+    alert(
+      "Friend request accepted!"
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Accept friend request error:",
+      error
+    );
+
+    alert(
+      "Could not accept friend request."
+    );
+
+  }
+
+}
+
+
+// ======================
+// DECLINE FRIEND REQUEST
+// ======================
+
+async function declineFriendRequest(
+  requestId
+) {
+
+  try {
+
+    await deleteDoc(
+      doc(
+        db,
+        "friendRequests",
+        requestId
+      )
+    );
+
+
+    loadFriendRequests();
+
+
+  } catch (error) {
+
+    console.error(
+      "Decline friend request error:",
+      error
+    );
+
+    alert(
+      "Could not decline friend request."
+    );
+
+  }
+
+}
+// ======================
 // LOGIN CHECK
 // ======================
 
@@ -908,6 +1458,10 @@ onAuthStateChanged(
       );
 
 
+      // ======================
+      // CHECK IF LOGGED IN
+      // ======================
+
       if (!user) {
 
         console.log(
@@ -925,6 +1479,10 @@ onAuthStateChanged(
       );
 
 
+      // ======================
+      // CURRENT USER
+      // ======================
+
       const userRef =
         doc(
           db,
@@ -939,10 +1497,15 @@ onAuthStateChanged(
         );
 
 
+      // ======================
+      // SET ONLINE
+      // ======================
+
       await setDoc(
         userRef,
         {
           online: true,
+
           lastSeen:
             serverTimestamp()
         },
@@ -951,6 +1514,10 @@ onAuthStateChanged(
         }
       );
 
+
+      // ======================
+      // LOAD USER NAME
+      // ======================
 
       if (
         userSnap.exists()
@@ -972,6 +1539,10 @@ onAuthStateChanged(
 
       }
 
+
+      // ======================
+      // DISPLAY USERNAME
+      // ======================
 
       const username =
         document.getElementById(
@@ -995,6 +1566,13 @@ onAuthStateChanged(
 
 
       // ======================
+      // LOAD FRIEND REQUESTS
+      // ======================
+
+      await loadFriendRequests();
+
+
+      // ======================
       // LOAD GROUPS
       // ======================
 
@@ -1006,7 +1584,9 @@ onAuthStateChanged(
       // ======================
 
       await loadFriendSelector();
-
+await loadMyProfilePopover();
+      await
+        loadMyProfilePicture();
 
       console.log(
         "Homepage loaded successfully"
@@ -1020,6 +1600,7 @@ onAuthStateChanged(
         error
       );
 
+
       alert(
         "Homepage error: " +
         error.message
@@ -1029,8 +1610,6 @@ onAuthStateChanged(
 
   }
 );
-
-
 // ======================
 // MESSAGE INPUT
 // ======================
@@ -6838,5 +7417,1013 @@ if (
 
     }
   );
+
+}
+// ==================================================
+// LOAD MY PROFILE POPOVER
+// ==================================================
+
+async function loadMyProfilePopover() {
+
+  // ======================
+  // CHECK LOGIN
+  // ======================
+
+  if (!auth.currentUser) {
+    return;
+  }
+
+
+  try {
+
+    const uid =
+      auth.currentUser.uid;
+
+
+    // ======================
+    // GET USER DOCUMENT
+    // ======================
+
+    const userRef =
+      doc(
+        db,
+        "users",
+        uid
+      );
+
+
+    const userSnap =
+      await getDoc(
+        userRef
+      );
+
+
+    if (!userSnap.exists()) {
+
+      console.error(
+        "My profile document not found."
+      );
+
+      return;
+
+    }
+
+
+    const userData =
+      userSnap.data();
+
+
+    // ==================================================
+    // PROFILE PHOTO
+    // ==================================================
+
+    const photo =
+      document.getElementById(
+        "myProfilePopoverPhoto"
+      );
+
+
+    if (photo) {
+
+      photo.src =
+        userData.photoURL ||
+        "images/default-profile.png";
+
+    }
+
+
+    // ==================================================
+    // NAME
+    // ==================================================
+
+    const name =
+      document.getElementById(
+        "myProfilePopoverName"
+      );
+
+
+    if (name) {
+
+      name.textContent =
+        userData.name ||
+        userData.username ||
+        userData.email ||
+        "User";
+
+    }
+
+
+    // ==================================================
+    // EMAIL
+    // ==================================================
+
+    const email =
+      document.getElementById(
+        "myProfilePopoverEmail"
+      );
+
+
+    if (email) {
+
+      email.textContent =
+        userData.email ||
+        auth.currentUser.email ||
+        "No email";
+
+    }
+
+
+    // ==================================================
+    // ONLINE STATUS
+    // ==================================================
+
+    const status =
+      document.getElementById(
+        "myProfilePopoverStatus"
+      );
+
+
+    if (status) {
+
+      status.textContent =
+        userData.online
+          ? "🟢 Online"
+          : "⚫ Offline";
+
+    }
+
+
+    // ==================================================
+    // LIKES
+    // ==================================================
+
+    const likes =
+      document.getElementById(
+        "myProfileLikes"
+      );
+
+
+    if (likes) {
+
+      likes.textContent =
+        userData.likesCount ||
+        0;
+
+    }
+
+
+    // ==================================================
+    // FRIENDS
+    // ==================================================
+
+    const friends =
+      document.getElementById(
+        "myProfileFriends"
+      );
+
+
+    if (friends) {
+
+      friends.textContent =
+        userData.friendsCount ||
+        0;
+
+    }
+
+
+    // ==================================================
+    // USERNAME
+    // ==================================================
+
+    const username =
+      document.getElementById(
+        "myProfileUsername"
+      );
+
+
+    if (username) {
+
+      username.textContent =
+        "Username: " +
+        (
+          userData.username ||
+          userData.name ||
+          "Not set"
+        );
+
+    }
+
+
+    // ==================================================
+    // AGE
+    // ==================================================
+
+    const age =
+      document.getElementById(
+        "myProfileAge"
+      );
+
+
+    let calculatedAge =
+      "—";
+
+
+    if (userData.dob) {
+
+      const birthDate =
+        new Date(
+          userData.dob
+        );
+
+      const today =
+        new Date();
+
+
+      calculatedAge =
+        today.getFullYear() -
+        birthDate.getFullYear();
+
+
+      const monthDifference =
+        today.getMonth() -
+        birthDate.getMonth();
+
+
+      if (
+        monthDifference < 0 ||
+        (
+          monthDifference === 0 &&
+          today.getDate() <
+          birthDate.getDate()
+        )
+      ) {
+
+        calculatedAge--;
+
+      }
+
+    }
+
+
+    if (age) {
+
+      age.textContent =
+        "Age: " +
+        (
+          calculatedAge === "—"
+            ? "Not set"
+            : calculatedAge
+        );
+
+    }
+
+
+    // ==================================================
+    // NATIONALITY
+    // ==================================================
+
+    const nationality =
+      document.getElementById(
+        "myProfileNationality"
+      );
+
+
+    if (nationality) {
+
+      nationality.textContent =
+        "Nationality: " +
+        (
+          userData.nationality ||
+          "Not set"
+        );
+
+    }
+
+
+    // ==================================================
+    // GENDER
+    // ==================================================
+
+    const gender =
+      document.getElementById(
+        "myProfileGender"
+      );
+
+
+    if (gender) {
+
+      gender.textContent =
+        "Gender: " +
+        (
+          userData.gender ||
+          "Not set"
+        );
+
+    }
+
+
+    // ==================================================
+    // PHONE
+    // ==================================================
+
+    const phone =
+      document.getElementById(
+        "myProfilePhone"
+      );
+
+
+    if (phone) {
+
+      phone.textContent =
+        "Phone: " +
+        (
+          userData.phone ||
+          "Not set"
+        );
+
+    }
+
+
+    // ==================================================
+    // PROFILE PROGRESS
+    // ==================================================
+
+    let completed =
+      0;
+
+    let total =
+      6;
+
+
+    if (userData.name) {
+      completed++;
+    }
+
+    if (
+      userData.photoURL
+    ) {
+      completed++;
+    }
+
+    if (userData.dob) {
+      completed++;
+    }
+
+    if (
+      userData.nationality
+    ) {
+      completed++;
+    }
+
+    if (userData.gender) {
+      completed++;
+    }
+
+    if (userData.phone) {
+      completed++;
+    }
+
+
+    const progress =
+      Math.round(
+        (
+          completed /
+          total
+        ) * 100
+      );
+
+
+    const progressBar =
+      document.getElementById(
+        "myProfileProgress"
+      );
+
+
+    const progressText =
+      document.getElementById(
+        "myProfileProgressText"
+      );
+
+
+    if (progressBar) {
+
+      progressBar.style.width =
+        progress + "%";
+
+    }
+
+
+    if (progressText) {
+
+      progressText.textContent =
+        progress +
+        "% Complete";
+
+    }
+
+
+  } catch (error) {
+
+    console.error(
+      "Load my profile error:",
+      error
+    );
+
+  }
+
+}
+// ==================================================
+// EDIT MY PROFILE
+// ==================================================
+
+const editMyProfileBtn =
+  document.getElementById(
+    "editMyProfileBtn"
+  );
+
+const editProfilePanel =
+  document.getElementById(
+    "editProfilePanel"
+  );
+
+const cancelEditProfileBtn =
+  document.getElementById(
+    "cancelEditProfileBtn"
+  );
+
+const saveProfileBtn =
+  document.getElementById(
+    "saveProfileBtn"
+  );
+
+
+// ==================================================
+// OPEN EDIT PROFILE
+// ==================================================
+
+if (editMyProfileBtn) {
+
+  editMyProfileBtn.addEventListener(
+    "click",
+    async () => {
+
+      if (!auth.currentUser) {
+        return;
+      }
+
+      try {
+
+        const userRef =
+          doc(
+            db,
+            "users",
+            auth.currentUser.uid
+          );
+
+        const userSnap =
+          await getDoc(
+            userRef
+          );
+
+        if (!userSnap.exists()) {
+          return;
+        }
+
+        const userData =
+          userSnap.data();
+
+
+        // ======================
+        // FILL FORM
+        // ======================
+
+        document.getElementById(
+          "editProfileUsername"
+        ).value =
+          userData.username ||
+          "";
+
+        document.getElementById(
+          "editProfileName"
+        ).value =
+          userData.name ||
+          "";
+
+        document.getElementById(
+          "editProfileDob"
+        ).value =
+          userData.dob ||
+          "";
+
+        document.getElementById(
+          "editProfileNationality"
+        ).value =
+          userData.nationality ||
+          "";
+
+        document.getElementById(
+          "editProfileGender"
+        ).value =
+          userData.gender ||
+          "";
+
+        document.getElementById(
+          "editProfilePhone"
+        ).value =
+          userData.phone ||
+          "";
+
+
+        // ======================
+        // SHOW EDIT PANEL
+        // ======================
+
+        if (editProfilePanel) {
+
+          editProfilePanel.style.display =
+            "block";
+
+        }
+
+        editMyProfileBtn.style.display =
+          "none";
+
+
+      } catch (error) {
+
+        console.error(
+          "Open edit profile error:",
+          error
+        );
+
+      }
+
+    }
+  );
+
+}
+
+
+// ==================================================
+// CANCEL EDIT
+// ==================================================
+
+if (cancelEditProfileBtn) {
+
+  cancelEditProfileBtn.addEventListener(
+    "click",
+    () => {
+
+      if (editProfilePanel) {
+
+        editProfilePanel.style.display =
+          "none";
+
+      }
+
+      if (editMyProfileBtn) {
+
+        editMyProfileBtn.style.display =
+          "block";
+
+      }
+
+    }
+  );
+
+}
+
+
+// ==================================================
+// SAVE PROFILE
+// ==================================================
+
+if (saveProfileBtn) {
+
+  saveProfileBtn.addEventListener(
+    "click",
+    async () => {
+
+      if (!auth.currentUser) {
+
+        alert(
+          "Please log in first."
+        );
+
+        return;
+
+      }
+
+
+      try {
+
+        const username =
+          document.getElementById(
+            "editProfileUsername"
+          ).value.trim();
+
+        const name =
+          document.getElementById(
+            "editProfileName"
+          ).value.trim();
+
+        const dob =
+          document.getElementById(
+            "editProfileDob"
+          ).value;
+
+        const nationality =
+          document.getElementById(
+            "editProfileNationality"
+          ).value.trim();
+
+        const gender =
+          document.getElementById(
+            "editProfileGender"
+          ).value;
+
+        const phone =
+          document.getElementById(
+            "editProfilePhone"
+          ).value.trim();
+
+
+        // ======================
+        // UPDATE FIREBASE
+        // ======================
+
+        await updateDoc(
+          doc(
+            db,
+            "users",
+            auth.currentUser.uid
+          ),
+          {
+
+            username:
+              username,
+
+            name:
+              name,
+
+            dob:
+              dob,
+
+            nationality:
+              nationality,
+
+            gender:
+              gender,
+
+            phone:
+              phone
+
+          }
+        );
+
+
+        // ======================
+        // REFRESH PROFILE
+        // ======================
+
+        await loadMyProfilePopover();
+
+
+        // ======================
+        // CLOSE EDIT PANEL
+        // ======================
+
+        if (editProfilePanel) {
+
+          editProfilePanel.style.display =
+            "none";
+
+        }
+
+        if (editMyProfileBtn) {
+
+          editMyProfileBtn.style.display =
+            "block";
+
+        }
+
+
+        // ======================
+        // UPDATE MAIN USERNAME
+        // ======================
+
+        const usernameDisplay =
+          document.getElementById(
+            "username"
+          );
+
+        if (usernameDisplay) {
+
+          usernameDisplay.textContent =
+            name ||
+            username ||
+            "User";
+
+        }
+
+
+        alert(
+          "Profile updated successfully!"
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "Save profile error:",
+          error
+        );
+
+        alert(
+          "Could not update profile: " +
+          error.message
+        );
+
+      }
+
+    }
+  );
+
+}
+// ==================================================
+// CHANGE MY PROFILE PHOTO
+// ==================================================
+
+const changeMyProfilePhotoBtn =
+  document.getElementById(
+    "changeMyProfilePhotoBtn"
+  );
+
+const imageInput =
+  document.getElementById(
+    "imageInput"
+  );
+
+
+if (
+  changeMyProfilePhotoBtn &&
+  imageInput
+) {
+
+  // ======================
+  // OPEN IMAGE PICKER
+  // ======================
+
+  changeMyProfilePhotoBtn.addEventListener(
+    "click",
+    () => {
+
+      imageInput.click();
+
+    }
+  );
+
+
+  // ======================
+  // IMAGE SELECTED
+  // ======================
+
+  imageInput.addEventListener(
+    "change",
+    async () => {
+
+      if (
+        !auth.currentUser
+      ) {
+
+        alert(
+          "Please log in first."
+        );
+
+        return;
+
+      }
+
+
+      const file =
+        imageInput.files[0];
+
+
+      if (!file) {
+        return;
+      }
+
+
+      try {
+
+        changeMyProfilePhotoBtn.textContent =
+          "⏳ Uploading...";
+
+        changeMyProfilePhotoBtn.disabled =
+          true;
+
+
+        // ======================
+        // STORAGE LOCATION
+        // ======================
+
+        const photoRef =
+          ref(
+            storage,
+            "profilePictures/" +
+            auth.currentUser.uid +
+            "/profile.jpg"
+          );
+
+
+        // ======================
+        // UPLOAD IMAGE
+        // ======================
+
+        await uploadBytes(
+          photoRef,
+          file
+        );
+
+
+        // ======================
+        // GET IMAGE URL
+        // ======================
+
+        const photoURL =
+          await getDownloadURL(
+            photoRef
+          );
+
+
+        // ======================
+        // SAVE URL TO FIRESTORE
+        // ======================
+
+        await updateDoc(
+          doc(
+            db,
+            "users",
+            auth.currentUser.uid
+          ),
+          {
+            photoURL:
+              photoURL
+          }
+        );
+
+
+        // ======================
+        // UPDATE MAIN PROFILE
+        // ======================
+
+        const mainProfilePic =
+          document.getElementById(
+            "profilePic"
+          );
+
+
+        if (mainProfilePic) {
+
+          mainProfilePic.src =
+            photoURL;
+
+        }
+
+
+        // ======================
+        // UPDATE POPOVER PHOTO
+        // ======================
+
+        const popoverPhoto =
+          document.getElementById(
+            "myProfilePopoverPhoto"
+          );
+
+
+        if (popoverPhoto) {
+
+          popoverPhoto.src =
+            photoURL;
+
+        }
+
+
+        // ======================
+        // REFRESH PROFILE DATA
+        // ======================
+
+        await loadMyProfilePopover();
+
+
+        alert(
+          "Profile picture updated!"
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "Profile picture upload error:",
+          error
+        );
+
+        alert(
+          "Could not update profile picture: " +
+          error.message
+        );
+
+
+      } finally {
+
+        changeMyProfilePhotoBtn.textContent =
+          "📷 Change Photo";
+
+        changeMyProfilePhotoBtn.disabled =
+          false;
+
+        imageInput.value =
+          "";
+
+      }
+
+    }
+  );
+
+}
+// ==================================================
+// LOAD MY PROFILE PICTURE
+// ==================================================
+
+async function loadMyProfilePicture() {
+
+  if (!auth.currentUser) {
+    return;
+  }
+
+  try {
+
+    const userSnap = await getDoc(
+      doc(
+        db,
+        "users",
+        auth.currentUser.uid
+      )
+    );
+
+    if (!userSnap.exists()) {
+      return;
+    }
+
+    const userData =
+      userSnap.data();
+
+    const photoURL =
+      userData.photoURL;
+
+
+    // ======================
+    // MAIN PROFILE PICTURE
+    // ======================
+
+    const profilePic =
+      document.getElementById(
+        "profilePic"
+      );
+
+    if (profilePic) {
+
+      profilePic.src =
+        photoURL ||
+        "images/default-profile.png";
+
+    }
+
+
+    // ======================
+    // POPOVER PROFILE PICTURE
+    // ======================
+
+    const popoverPhoto =
+      document.getElementById(
+        "myProfilePopoverPhoto"
+      );
+
+    if (popoverPhoto) {
+
+      popoverPhoto.src =
+        photoURL ||
+        "images/default-profile.png";
+
+    }
+
+  } catch (error) {
+
+    console.error(
+      "Load profile picture error:",
+      error
+    );
+
+  }
 
 }
