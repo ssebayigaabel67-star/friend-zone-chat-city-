@@ -4274,7 +4274,6 @@ q                  data.text || ""
     );
 
 }
-
 // ======================
 // SEND CHAT IMAGE
 // ======================
@@ -4318,6 +4317,10 @@ if (
       }
 
 
+      // ======================
+      // CHECK IMAGE
+      // ======================
+
       if (
         !file.type.startsWith(
           "image/"
@@ -4337,6 +4340,10 @@ if (
 
       try {
 
+        // ======================
+        // LOGIN CHECK
+        // ======================
+
         if (!auth.currentUser) {
 
           alert(
@@ -4349,6 +4356,10 @@ if (
 
         }
 
+
+        // ======================
+        // CHAT CHECK
+        // ======================
 
         if (
           !isGroupChat &&
@@ -4366,92 +4377,255 @@ if (
         }
 
 
-        const imageRef =
-          ref(
-            storage,
-            "chatImages/" +
-            Date.now() +
-            "_" +
-            file.name
-          );
+        // ======================
+        // PROCESSING
+        // ======================
+
+        imageBtn.disabled =
+          true;
+
+        imageBtn.textContent =
+          "⏳";
 
 
-        await uploadBytes(
-          imageRef,
+        // ======================
+        // CREATE IMAGE
+        // ======================
+
+        const image =
+          new Image();
+
+        const reader =
+          new FileReader();
+
+
+        reader.onload =
+          async function () {
+
+            image.onload =
+              async function () {
+
+                // ======================
+                // RESIZE
+                // ======================
+
+                const maxSize =
+                  900;
+
+                let width =
+                  image.width;
+
+                let height =
+                  image.height;
+
+
+                if (
+                  width > maxSize ||
+                  height > maxSize
+                ) {
+
+                  if (
+                    width > height
+                  ) {
+
+                    height =
+                      Math.round(
+                        height *
+                        maxSize /
+                        width
+                      );
+
+                    width =
+                      maxSize;
+
+                  } else {
+
+                    width =
+                      Math.round(
+                        width *
+                        maxSize /
+                        height
+                      );
+
+                    height =
+                      maxSize;
+
+                  }
+
+                }
+
+
+                // ======================
+                // CANVAS
+                // ======================
+
+                const canvas =
+                  document.createElement(
+                    "canvas"
+                  );
+
+                canvas.width =
+                  width;
+
+                canvas.height =
+                  height;
+
+
+                const context =
+                  canvas.getContext(
+                    "2d"
+                  );
+
+
+                context.drawImage(
+                  image,
+                  0,
+                  0,
+                  width,
+                  height
+                );
+
+
+                // ======================
+                // COMPRESS
+                // ======================
+
+                const imageData =
+                  canvas.toDataURL(
+                    "image/jpeg",
+                    0.70
+                  );
+
+
+                // ======================
+                // MESSAGE DATA
+                // ======================
+
+                const messageData = {
+
+                  senderId:
+                    auth.currentUser.uid,
+
+                  senderName:
+                    currentUserName,
+
+                  type:
+                    "image",
+
+                  imageURL:
+                    imageData,
+
+                  timestamp:
+                    serverTimestamp(),
+
+                  read:
+                    false,
+
+                  replyTo:
+                    replyingTo
+                      ? replyingTo.text
+                      : null,
+
+                  replyToId:
+                    replyingTo
+                      ? replyingTo.id
+                      : null
+
+                };
+
+
+                // ======================
+                // GROUP IMAGE
+                // ======================
+
+                if (
+                  isGroupChat &&
+                  selectedGroupId
+                ) {
+
+                  await addDoc(
+                    collection(
+                      db,
+                      "groups",
+                      selectedGroupId,
+                      "messages"
+                    ),
+                    messageData
+                  );
+
+
+                } else {
+
+                  // ======================
+                  // PRIVATE IMAGE
+                  // ======================
+
+                  const chatId =
+                    getChatId(
+                      auth.currentUser.uid,
+                      selectedFriendId
+                    );
+
+
+                  await addDoc(
+                    collection(
+                      db,
+                      "chats",
+                      chatId,
+                      "messages"
+                    ),
+                    messageData
+                  );
+
+                }
+
+
+                // ======================
+                // RESET
+                // ======================
+
+                chatImage.value =
+                  "";
+
+                replyingTo =
+                  null;
+
+
+                imageBtn.disabled =
+                  false;
+
+                imageBtn.textContent =
+                  "📷";
+
+
+              };
+
+
+            image.onerror =
+              function () {
+
+                throw new Error(
+                  "Could not process image."
+                );
+
+              };
+
+
+            image.src =
+              reader.result;
+
+          };
+
+
+        reader.readAsDataURL(
           file
         );
-
-
-        const imageURL =
-          await getDownloadURL(
-            imageRef
-          );
-
-
-        const messageData = {
-
-          senderId:
-            auth.currentUser.uid,
-
-          senderName:
-            currentUserName,
-
-          imageURL:
-            imageURL,
-
-          timestamp:
-            serverTimestamp(),
-
-          read:
-            false
-
-        };
-
-
-        if (
-          isGroupChat &&
-          selectedGroupId
-        ) {
-
-          await addDoc(
-            collection(
-              db,
-              "groups",
-              selectedGroupId,
-              "messages"
-            ),
-            messageData
-          );
-
-        } else {
-
-          const chatId =
-            getChatId(
-              auth.currentUser.uid,
-              selectedFriendId
-            );
-
-
-          await addDoc(
-            collection(
-              db,
-              "chats",
-              chatId,
-              "messages"
-            ),
-            messageData
-          );
-
-        }
-
-
-        chatImage.value = "";
 
 
       } catch (error) {
 
         console.error(
-          "Image upload error:",
+          "Send image error:",
           error
         );
 
@@ -4460,13 +4634,22 @@ if (
           error.message
         );
 
+
+        imageBtn.disabled =
+          false;
+
+        imageBtn.textContent =
+          "📷";
+
+        chatImage.value =
+          "";
+
       }
 
     }
   );
 
 }
-
 
 // ======================
 // VOICE RECORDING
@@ -4522,6 +4705,10 @@ if (recordBtn) {
       }
 
 
+      // ======================
+      // LOGIN CHECK
+      // ======================
+
       if (!auth.currentUser) {
 
         alert(
@@ -4535,6 +4722,10 @@ if (recordBtn) {
 
       try {
 
+        // ======================
+        // MICROPHONE
+        // ======================
+
         const stream =
           await navigator
             .mediaDevices
@@ -4542,6 +4733,10 @@ if (recordBtn) {
               audio: true
             });
 
+
+        // ======================
+        // CREATE RECORDER
+        // ======================
 
         mediaRecorder =
           new MediaRecorder(
@@ -4552,10 +4747,15 @@ if (recordBtn) {
         audioChunks = [];
 
 
+        // ======================
+        // COLLECT AUDIO
+        // ======================
+
         mediaRecorder.ondataavailable =
           (event) => {
 
             if (
+              event.data &&
               event.data.size > 0
             ) {
 
@@ -4568,18 +4768,33 @@ if (recordBtn) {
           };
 
 
+        // ======================
+        // RECORDING STOPPED
+        // ======================
+
         mediaRecorder.onstop =
           async () => {
 
             try {
 
+              // ======================
+              // STOP MICROPHONE
+              // ======================
+
               stream
                 .getTracks()
                 .forEach(
-                  track =>
-                    track.stop()
+                  (track) => {
+
+                    track.stop();
+
+                  }
                 );
 
+
+              // ======================
+              // CREATE AUDIO BLOB
+              // ======================
 
               const audioBlob =
                 new Blob(
@@ -4591,93 +4806,112 @@ if (recordBtn) {
                 );
 
 
-              const audioRef =
-                ref(
-                  storage,
-                  "voiceMessages/" +
-                  Date.now() +
-                  ".webm"
-                );
-
-
-              await uploadBytes(
-                audioRef,
-                audioBlob
+              console.log(
+                "VOICE RECORDING CREATED:",
+                audioBlob.size,
+                "bytes"
               );
 
 
-              const audioURL =
-                await getDownloadURL(
-                  audioRef
-                );
-
-
-              const messageData = {
-
-                senderId:
-                  auth.currentUser.uid,
-
-                senderName:
-                  currentUserName,
-
-                audioURL:
-                  audioURL,
-
-                timestamp:
-                  serverTimestamp(),
-
-                read:
-                  false
-
-              };
-
-
               if (
-                isGroupChat &&
-                selectedGroupId
+                audioBlob.size === 0
               ) {
 
-                await addDoc(
-                  collection(
-                    db,
-                    "groups",
-                    selectedGroupId,
-                    "messages"
-                  ),
-                  messageData
+                alert(
+                  "The voice recording is empty."
                 );
 
-              } else {
-
-                const chatId =
-                  getChatId(
-                    auth.currentUser.uid,
-                    selectedFriendId
-                  );
-
-
-                await addDoc(
-                  collection(
-                    db,
-                    "chats",
-                    chatId,
-                    "messages"
-                  ),
-                  messageData
-                );
+                return;
 
               }
+
+
+              // ======================
+              // CREATE LOCAL AUDIO URL
+              // ======================
+
+              const audioURL =
+                URL.createObjectURL(
+                  audioBlob
+                );
+
+
+              console.log(
+                "VOICE AUDIO READY:",
+                audioURL
+              );
+
+
+              // ======================
+              // CREATE AUDIO PLAYER
+              // ======================
+
+              const audio =
+                document.createElement(
+                  "audio"
+                );
+
+
+              audio.controls =
+                true;
+
+              audio.src =
+                audioURL;
+
+              audio.style.width =
+                "100%";
+
+              audio.style.marginTop =
+                "8px";
+
+
+              // ======================
+              // ADD TO CHAT
+              // ======================
+
+              const messages =
+                document.getElementById(
+                  "messages"
+                );
+
+
+              if (messages) {
+
+                messages.appendChild(
+                  audio
+                );
+
+
+                messages.scrollTop =
+                  messages.scrollHeight;
+
+              }
+
+
+              console.log(
+                "VOICE AUDIO PLAYER ADDED"
+              );
+
+
+              // ======================
+              // RESET
+              // ======================
+
+              audioChunks = [];
+
+              mediaRecorder =
+                null;
 
 
             } catch (error) {
 
               console.error(
-                "Voice message error:",
+                "Voice recording error:",
                 error
               );
 
               alert(
-                "Failed to send voice message: " +
+                "Voice recording failed: " +
                 error.message
               );
 
@@ -4686,10 +4920,20 @@ if (recordBtn) {
           };
 
 
+        // ======================
+        // START RECORDING
+        // ======================
+
         mediaRecorder.start();
+
 
         recordBtn.textContent =
           "⏹";
+
+
+        console.log(
+          "VOICE RECORDING STARTED"
+        );
 
 
       } catch (error) {
@@ -4699,9 +4943,14 @@ if (recordBtn) {
           error
         );
 
+
         alert(
           "Microphone permission denied or unavailable."
         );
+
+
+        recordBtn.textContent =
+          "🎤";
 
       }
 
@@ -4709,7 +4958,6 @@ if (recordBtn) {
   );
 
 }
-
 
 // ======================
 // DELETE PRIVATE MESSAGE
