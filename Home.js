@@ -29,15 +29,6 @@ import {
   increment,
   setDoc
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
-
-
 // ======================
 // FIREBASE CONFIG
 // ======================
@@ -62,10 +53,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 const db = getFirestore(app);
-
-const storage = getStorage(app);
-
-
 // ======================
 // GLOBAL VARIABLES
 // ======================
@@ -8150,208 +8137,7 @@ if (saveProfileBtn) {
   );
 
 }
-// ==================================================
-// CHANGE MY PROFILE PHOTO
-// ==================================================
-
-const changeMyProfilePhotoBtn =
-  document.getElementById(
-    "changeMyProfilePhotoBtn"
-  );
-
-const imageInput =
-  document.getElementById(
-    "imageInput"
-  );
-
-
-if (
-  changeMyProfilePhotoBtn &&
-  imageInput
-) {
-
-  // ======================
-  // OPEN IMAGE PICKER
-  // ======================
-
-  changeMyProfilePhotoBtn.addEventListener(
-    "click",
-    () => {
-
-      imageInput.click();
-
-    }
-  );
-
-
-  // ======================
-  // IMAGE SELECTED
-  // ======================
-
-  imageInput.addEventListener(
-    "change",
-    async () => {
-
-      if (
-        !auth.currentUser
-      ) {
-
-        alert(
-          "Please log in first."
-        );
-
-        return;
-
-      }
-
-
-      const file =
-        imageInput.files[0];
-
-
-      if (!file) {
-        return;
-      }
-
-
-      try {
-
-        changeMyProfilePhotoBtn.textContent =
-          "⏳ Uploading...";
-
-        changeMyProfilePhotoBtn.disabled =
-          true;
-
-
-        // ======================
-        // STORAGE LOCATION
-        // ======================
-
-        const photoRef =
-          ref(
-            storage,
-            "profilePictures/" +
-            auth.currentUser.uid +
-            "/profile.jpg"
-          );
-
-
-        // ======================
-        // UPLOAD IMAGE
-        // ======================
-
-        await uploadBytes(
-          photoRef,
-          file
-        );
-
-
-        // ======================
-        // GET IMAGE URL
-        // ======================
-
-        const photoURL =
-          await getDownloadURL(
-            photoRef
-          );
-
-
-        // ======================
-        // SAVE URL TO FIRESTORE
-        // ======================
-
-        await updateDoc(
-          doc(
-            db,
-            "users",
-            auth.currentUser.uid
-          ),
-          {
-            photoURL:
-              photoURL
-          }
-        );
-
-
-        // ======================
-        // UPDATE MAIN PROFILE
-        // ======================
-
-        const mainProfilePic =
-          document.getElementById(
-            "profilePic"
-          );
-
-
-        if (mainProfilePic) {
-
-          mainProfilePic.src =
-            photoURL;
-
-        }
-
-
-        // ======================
-        // UPDATE POPOVER PHOTO
-        // ======================
-
-        const popoverPhoto =
-          document.getElementById(
-            "myProfilePopoverPhoto"
-          );
-
-
-        if (popoverPhoto) {
-
-          popoverPhoto.src =
-            photoURL;
-
-        }
-
-
-        // ======================
-        // REFRESH PROFILE DATA
-        // ======================
-
-        await loadMyProfilePopover();
-
-
-        alert(
-          "Profile picture updated!"
-        );
-
-
-      } catch (error) {
-
-        console.error(
-          "Profile picture upload error:",
-          error
-        );
-
-        alert(
-          "Could not update profile picture: " +
-          error.message
-        );
-
-
-      } finally {
-
-        changeMyProfilePhotoBtn.textContent =
-          "📷 Change Photo";
-
-        changeMyProfilePhotoBtn.disabled =
-          false;
-
-        imageInput.value =
-          "";
-
-      }
-
-    }
-  );
-
-}
-// ==================================================
+        // ==================================================
 // LOAD MY PROFILE PICTURE
 // ==================================================
 
@@ -8363,13 +8149,14 @@ async function loadMyProfilePicture() {
 
   try {
 
-    const userSnap = await getDoc(
-      doc(
-        db,
-        "users",
-        auth.currentUser.uid
-      )
+    const userRef = doc(
+      db,
+      "users",
+      auth.currentUser.uid
     );
+
+    const userSnap =
+      await getDoc(userRef);
 
     if (!userSnap.exists()) {
       return;
@@ -8379,7 +8166,8 @@ async function loadMyProfilePicture() {
       userSnap.data();
 
     const photoURL =
-      userData.photoURL;
+      userData.photoURL ||
+      "images/default-profile.png";
 
 
     // ======================
@@ -8394,14 +8182,13 @@ async function loadMyProfilePicture() {
     if (profilePic) {
 
       profilePic.src =
-        photoURL ||
-        "images/default-profile.png";
+        photoURL;
 
     }
 
 
     // ======================
-    // POPOVER PROFILE PICTURE
+    // PROFILE POPOVER PHOTO
     // ======================
 
     const popoverPhoto =
@@ -8412,8 +8199,7 @@ async function loadMyProfilePicture() {
     if (popoverPhoto) {
 
       popoverPhoto.src =
-        photoURL ||
-        "images/default-profile.png";
+        photoURL;
 
     }
 
@@ -8425,5 +8211,124 @@ async function loadMyProfilePicture() {
     );
 
   }
+
+}
+// ==================================================
+// SET PROFILE PHOTO URL
+// ==================================================
+
+const changeMyProfilePhotoBtn =
+  document.getElementById(
+    "changeMyProfilePhotoBtn"
+  );
+
+
+if (changeMyProfilePhotoBtn) {
+
+  changeMyProfilePhotoBtn.addEventListener(
+    "click",
+    async () => {
+
+      if (!auth.currentUser) {
+
+        alert(
+          "Please log in first."
+        );
+
+        return;
+
+      }
+
+
+      const currentPhoto =
+        document.getElementById(
+          "myProfilePopoverPhoto"
+        )?.src || "";
+
+
+      const photoURL =
+        prompt(
+          "Paste your profile picture URL:",
+          currentPhoto
+        );
+
+
+      if (!photoURL) {
+        return;
+      }
+
+
+      try {
+
+        await updateDoc(
+          doc(
+            db,
+            "users",
+            auth.currentUser.uid
+          ),
+          {
+            photoURL:
+              photoURL.trim()
+          }
+        );
+
+
+        // ======================
+        // UPDATE MAIN PHOTO
+        // ======================
+
+        const profilePic =
+          document.getElementById(
+            "profilePic"
+          );
+
+        if (profilePic) {
+
+          profilePic.src =
+            photoURL.trim();
+
+        }
+
+
+        // ======================
+        // UPDATE POPOVER PHOTO
+        // ======================
+
+        const popoverPhoto =
+          document.getElementById(
+            "myProfilePopoverPhoto"
+          );
+
+        if (popoverPhoto) {
+
+          popoverPhoto.src =
+            photoURL.trim();
+
+        }
+
+
+        await loadMyProfilePopover();
+
+        alert(
+          "Profile picture updated!"
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "Save profile photo error:",
+          error
+        );
+
+        alert(
+          "Could not save profile picture: " +
+          error.message
+        );
+
+      }
+
+    }
+  );
 
 }
