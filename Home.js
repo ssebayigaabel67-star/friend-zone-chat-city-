@@ -8214,7 +8214,7 @@ async function loadMyProfilePicture() {
 
 }
 // ==================================================
-// SET PROFILE PHOTO URL
+// CHANGE PROFILE PHOTO FROM PHONE
 // ==================================================
 
 const changeMyProfilePhotoBtn =
@@ -8222,11 +8222,29 @@ const changeMyProfilePhotoBtn =
     "changeMyProfilePhotoBtn"
   );
 
+const imageInput =
+  document.getElementById(
+    "imageInput"
+  );
 
-if (changeMyProfilePhotoBtn) {
+
+if (
+  changeMyProfilePhotoBtn &&
+  imageInput
+) {
 
   changeMyProfilePhotoBtn.addEventListener(
     "click",
+    () => {
+
+      imageInput.click();
+
+    }
+  );
+
+
+  imageInput.addEventListener(
+    "change",
     async () => {
 
       if (!auth.currentUser) {
@@ -8240,91 +8258,269 @@ if (changeMyProfilePhotoBtn) {
       }
 
 
-      const currentPhoto =
-        document.getElementById(
-          "myProfilePopoverPhoto"
-        )?.src || "";
+      const file =
+        imageInput.files[0];
 
 
-      const photoURL =
-        prompt(
-          "Paste your profile picture URL:",
-          currentPhoto
+      if (!file) {
+        return;
+      }
+
+
+      // ======================
+      // CHECK IMAGE
+      // ======================
+
+      if (!file.type.startsWith("image/")) {
+
+        alert(
+          "Please choose an image."
         );
 
+        imageInput.value = "";
 
-      if (!photoURL) {
         return;
+
       }
 
 
       try {
 
-        await updateDoc(
-          doc(
-            db,
-            "users",
-            auth.currentUser.uid
-          ),
-          {
-            photoURL:
-              photoURL.trim()
-          }
-        );
+        changeMyProfilePhotoBtn.textContent =
+          "⏳ Processing...";
+
+        changeMyProfilePhotoBtn.disabled =
+          true;
 
 
         // ======================
-        // UPDATE MAIN PHOTO
+        // CREATE IMAGE
         // ======================
 
-        const profilePic =
-          document.getElementById(
-            "profilePic"
-          );
+        const image =
+          new Image();
 
-        if (profilePic) {
-
-          profilePic.src =
-            photoURL.trim();
-
-        }
+        const reader =
+          new FileReader();
 
 
-        // ======================
-        // UPDATE POPOVER PHOTO
-        // ======================
+        reader.onload =
+          async function () {
 
-        const popoverPhoto =
-          document.getElementById(
-            "myProfilePopoverPhoto"
-          );
+            image.onload =
+              async function () {
 
-        if (popoverPhoto) {
+                // ======================
+                // RESIZE IMAGE
+                // ======================
 
-          popoverPhoto.src =
-            photoURL.trim();
+                const maxSize = 500;
 
-        }
+                let width =
+                  image.width;
+
+                let height =
+                  image.height;
 
 
-        await loadMyProfilePopover();
+                if (
+                  width > maxSize ||
+                  height > maxSize
+                ) {
 
-        alert(
-          "Profile picture updated!"
+                  if (
+                    width > height
+                  ) {
+
+                    height =
+                      Math.round(
+                        height *
+                        maxSize /
+                        width
+                      );
+
+                    width =
+                      maxSize;
+
+                  } else {
+
+                    width =
+                      Math.round(
+                        width *
+                        maxSize /
+                        height
+                      );
+
+                    height =
+                      maxSize;
+
+                  }
+
+                }
+
+
+                // ======================
+                // CANVAS
+                // ======================
+
+                const canvas =
+                  document.createElement(
+                    "canvas"
+                  );
+
+                canvas.width =
+                  width;
+
+                canvas.height =
+                  height;
+
+
+                const context =
+                  canvas.getContext(
+                    "2d"
+                  );
+
+
+                context.drawImage(
+                  image,
+                  0,
+                  0,
+                  width,
+                  height
+                );
+
+
+                // ======================
+                // COMPRESS IMAGE
+                // ======================
+
+                const photoURL =
+                  canvas.toDataURL(
+                    "image/jpeg",
+                    0.75
+                  );
+
+
+                // ======================
+                // SAVE TO FIRESTORE
+                // ======================
+
+                await updateDoc(
+                  doc(
+                    db,
+                    "users",
+                    auth.currentUser.uid
+                  ),
+                  {
+                    photoURL:
+                      photoURL
+                  }
+                );
+
+
+                // ======================
+                // UPDATE MAIN PHOTO
+                // ======================
+
+                const profilePic =
+                  document.getElementById(
+                    "profilePic"
+                  );
+
+
+                if (profilePic) {
+
+                  profilePic.src =
+                    photoURL;
+
+                }
+
+
+                // ======================
+                // UPDATE POPOVER PHOTO
+                // ======================
+
+                const popoverPhoto =
+                  document.getElementById(
+                    "myProfilePopoverPhoto"
+                  );
+
+
+                if (popoverPhoto) {
+
+                  popoverPhoto.src =
+                    photoURL;
+
+                }
+
+
+                // ======================
+                // REFRESH PROFILE
+                // ======================
+
+                await loadMyProfilePopover();
+
+
+                alert(
+                  "Profile picture updated successfully!"
+                );
+
+
+                changeMyProfilePhotoBtn.textContent =
+                  "📷 Change Photo";
+
+                changeMyProfilePhotoBtn.disabled =
+                  false;
+
+                imageInput.value =
+                  "";
+
+              };
+
+
+            image.onerror =
+              function () {
+
+                throw new Error(
+                  "Could not process the image."
+                );
+
+              };
+
+
+            image.src =
+              reader.result;
+
+          };
+
+
+        reader.readAsDataURL(
+          file
         );
 
 
       } catch (error) {
 
         console.error(
-          "Save profile photo error:",
+          "Profile photo error:",
           error
         );
 
+
         alert(
-          "Could not save profile picture: " +
+          "Could not update profile picture: " +
           error.message
         );
+
+
+        changeMyProfilePhotoBtn.textContent =
+          "📷 Change Photo";
+
+        changeMyProfilePhotoBtn.disabled =
+          false;
+
+        imageInput.value =
+          "";
 
       }
 
