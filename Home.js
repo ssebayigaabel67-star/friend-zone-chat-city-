@@ -4666,7 +4666,7 @@ const recordBtn =
 // ======================
 
 const VOICE_UPLOAD_URL =
-  "https://friend-zone-chat-city-k6m1.vercel.app/api/upload-voice";
+  "/api/upload-voice";
 
 
 if (recordBtn) {
