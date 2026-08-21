@@ -8898,3 +8898,94 @@ if (
   );
 
 }
+// ======================
+// SIDEBAR MENU
+// ======================
+
+const sidebar =
+  document.getElementById("sidebar");
+
+const sidebarMenuBtn =
+  document.getElementById("sidebarMenuBtn");
+
+const sidebarOverlay =
+  document.getElementById("sidebarOverlay");
+
+
+// ======================
+// OPEN SIDEBAR
+// ======================
+
+function openSidebar() {
+
+  if (sidebar) {
+    sidebar.classList.add("sidebar-open");
+  }
+
+  if (sidebarOverlay) {
+    sidebarOverlay.classList.add("active");
+  }
+
+}
+
+
+// ======================
+// CLOSE SIDEBAR
+// ======================
+
+function closeSidebar() {
+
+  if (sidebar) {
+    sidebar.classList.remove("sidebar-open");
+  }
+
+  if (sidebarOverlay) {
+    sidebarOverlay.classList.remove("active");
+  }
+
+}
+
+
+// ======================
+// MENU BUTTON
+// ======================
+
+if (sidebarMenuBtn) {
+
+  sidebarMenuBtn.addEventListener(
+    "click",
+    () => {
+
+      if (
+        sidebar &&
+        sidebar.classList.contains(
+          "sidebar-open"
+        )
+      ) {
+
+        closeSidebar();
+
+      } else {
+
+        openSidebar();
+
+      }
+
+    }
+  );
+
+}
+
+
+// ======================
+// CLICK OUTSIDE
+// ======================
+
+if (sidebarOverlay) {
+
+  sidebarOverlay.addEventListener(
+    "click",
+    closeSidebar
+  );
+
+}
