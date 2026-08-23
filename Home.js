@@ -2109,19 +2109,62 @@ div.className =
     ? "message sent"
     : "message received";
 
-          let html = `
+  // ======================
+// SENDER NAME COLOR
+// ======================
 
-            <b>
-              ${escapeHTML(
-                data.senderName ||
-                "Unknown User"
-              )}
-            </b>
+const savedNameColor =
+  localStorage.getItem(
+    "friendszoneNameColor"
+  ) || "#2196F3";
 
-            <br>
 
-          `;
+let nameStyle = "";
 
+
+if (
+  savedNameColor ===
+  "rainbow"
+) {
+
+  nameStyle = `
+    color: transparent;
+    background: linear-gradient(
+      90deg,
+      red,
+      orange,
+      green,
+      blue,
+      purple
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+  `;
+
+} else {
+
+  nameStyle = `
+    color: ${savedNameColor};
+  `;
+
+}
+
+
+let html = `
+
+  <b
+    class="message-sender-name"
+    style="${nameStyle}"
+  >
+    ${escapeHTML(
+      data.senderName ||
+      "Unknown User"
+    )}
+  </b>
+
+  <br>
+
+`;
 
           // ======================
           // REPLY PREVIEW
@@ -2312,7 +2355,50 @@ div.className =
 
           div.innerHTML =
             html;
+// Apply saved name color to this message
 
+const senderName =
+  div.querySelector(
+    ".message-sender-name"
+  );
+
+const currentNameColor =
+  localStorage.getItem(
+    "friendszoneNameColor"
+  ) || "#2196F3";
+
+
+if (senderName) {
+
+  if (
+    currentNameColor ===
+    "rainbow"
+  ) {
+
+    senderName.style.color =
+      "transparent";
+
+    senderName.style.background =
+      "linear-gradient(90deg, red, orange, green, blue, purple)";
+
+    senderName.style.webkitBackgroundClip =
+      "text";
+
+    senderName.style.backgroundClip =
+      "text";
+
+    senderName.classList.add(
+      "friendszone-rainbow-name"
+    );
+
+  } else {
+
+    senderName.style.color =
+      currentNameColor;
+
+  }
+
+}
 
           // ======================
           // REPLY BUTTON
@@ -11495,3 +11581,636 @@ if (animationsOffBtn) {
   }
 
 })();
+// =====================================
+// CHAT CUSTOMIZATION PANEL
+// =====================================
+
+const chatCustomizationBtn =
+  document.getElementById(
+    "chatCustomizationBtn"
+  );
+
+const chatCustomizationPanel =
+  document.getElementById(
+    "chatCustomizationPanel"
+  );
+
+const chatCustomizationCloseBtn =
+  document.getElementById(
+    "chatCustomizationCloseBtn"
+  );
+
+
+// =====================================
+// OPEN CHAT CUSTOMIZATION
+// =====================================
+
+if (
+  chatCustomizationBtn &&
+  chatCustomizationPanel
+) {
+
+  chatCustomizationBtn.addEventListener(
+    "click",
+    function () {
+
+      chatCustomizationPanel.classList.add(
+        "show"
+      );
+
+    }
+  );
+
+}
+
+
+// =====================================
+// CLOSE CHAT CUSTOMIZATION
+// =====================================
+
+if (
+  chatCustomizationCloseBtn &&
+  chatCustomizationPanel
+) {
+
+  chatCustomizationCloseBtn.addEventListener(
+    "click",
+    function () {
+
+      chatCustomizationPanel.classList.remove(
+        "show"
+      );
+
+    }
+  );
+
+}
+// =====================================
+// CHAT THEME PANEL
+// =====================================
+
+const chatThemeOption =
+  document.getElementById(
+    "chatThemeOption"
+  );
+
+const chatThemePanel =
+  document.getElementById(
+    "chatThemePanel"
+  );
+
+const chatThemeCloseBtn =
+  document.getElementById(
+    "chatThemeCloseBtn"
+  );
+
+
+// OPEN
+
+if (
+  chatThemeOption &&
+  chatThemePanel
+) {
+
+  chatThemeOption.addEventListener(
+    "click",
+    function () {
+
+      chatThemePanel.classList.add(
+        "show"
+      );
+
+    }
+  );
+
+}
+
+
+// CLOSE
+
+if (
+  chatThemeCloseBtn &&
+  chatThemePanel
+) {
+
+  chatThemeCloseBtn.addEventListener(
+    "click",
+    function () {
+
+      chatThemePanel.classList.remove(
+        "show"
+      );
+
+    }
+  );
+
+}
+// =====================================
+// CHAT THEME SYSTEM
+// =====================================
+
+const chatThemeButtons =
+  document.querySelectorAll(
+    ".chat-theme-option"
+  );
+
+
+// =====================================
+// APPLY THEME
+// =====================================
+
+function applyChatTheme(theme) {
+
+  // Remove previous themes
+
+  document.body.classList.remove(
+    "chat-theme-classic",
+    "chat-theme-ocean",
+    "chat-theme-galaxy",
+    "chat-theme-sunset",
+    "chat-theme-nature",
+    "chat-theme-purple",
+    "chat-theme-fire",
+    "chat-theme-glass"
+  );
+
+
+  // Add selected theme
+
+  document.body.classList.add(
+    "chat-theme-" + theme
+  );
+
+
+  // Save theme
+
+  localStorage.setItem(
+    "friendszoneChatTheme",
+    theme
+  );
+
+}
+
+
+// =====================================
+// SELECT THEME
+// =====================================
+
+chatThemeButtons.forEach(
+  function (button) {
+
+    button.addEventListener(
+      "click",
+      function () {
+
+        const theme =
+          button.dataset.theme;
+
+        if (!theme) return;
+
+        applyChatTheme(theme);
+
+      }
+    );
+
+  }
+);
+
+
+// =====================================
+// LOAD SAVED THEME
+// =====================================
+
+const savedChatTheme =
+  localStorage.getItem(
+    "friendszoneChatTheme"
+  );
+
+
+if (savedChatTheme) {
+
+  applyChatTheme(
+    savedChatTheme
+  );
+
+} else {
+
+  applyChatTheme(
+    "classic"
+  );
+}
+// =====================================
+// MESSAGE FONT PANEL
+// =====================================
+
+const messageFontOption =
+  document.getElementById(
+    "messageFontOption"
+  );
+
+const messageFontPanel =
+  document.getElementById(
+    "messageFontPanel"
+  );
+
+const messageFontCloseBtn =
+  document.getElementById(
+    "messageFontCloseBtn"
+  );
+
+
+// OPEN
+
+if (
+  messageFontOption &&
+  messageFontPanel
+) {
+
+  messageFontOption.addEventListener(
+    "click",
+    function () {
+
+      messageFontPanel.classList.add(
+        "show"
+      );
+
+    }
+  );
+
+}
+
+
+// CLOSE
+
+if (
+  messageFontCloseBtn &&
+  messageFontPanel
+) {
+
+  messageFontCloseBtn.addEventListener(
+    "click",
+    function () {
+
+      messageFontPanel.classList.remove(
+        "show"
+      );
+
+    }
+  );
+
+}
+// =====================================
+// MESSAGE FONT SYSTEM
+// =====================================
+
+const messageFontButtons =
+  document.querySelectorAll(
+    ".message-font-option"
+  );
+
+
+// =====================================
+// APPLY MESSAGE FONT
+// =====================================
+
+function applyMessageFont(font) {
+
+  // Save the selected font
+  localStorage.setItem(
+    "friendszoneMessageFont",
+    font
+  );
+
+
+  // Apply font to message areas
+  document.documentElement.style.setProperty(
+    "--friendszone-message-font",
+    font
+  );
+
+
+  // Apply directly to common message elements
+  const messages =
+    document.querySelectorAll(
+      ".message, .message-bubble, .chat-message, .sent, .received"
+    );
+
+  messages.forEach(
+    function (message) {
+
+      message.style.fontFamily =
+        font;
+
+    }
+  );
+
+}
+
+
+// =====================================
+// SELECT FONT
+// =====================================
+
+messageFontButtons.forEach(
+  function (button) {
+
+    button.addEventListener(
+      "click",
+      function () {
+
+        const font =
+          button.dataset.font;
+
+        if (!font) return;
+
+        applyMessageFont(font);
+
+      }
+    );
+
+  }
+);
+
+
+// =====================================
+// LOAD SAVED FONT
+// =====================================
+
+const savedMessageFont =
+  localStorage.getItem(
+    "friendszoneMessageFont"
+  );
+
+
+if (savedMessageFont) {
+
+  applyMessageFont(
+    savedMessageFont
+  );
+
+} else {
+
+  applyMessageFont(
+    "Arial"
+  );
+
+}
+// =====================================
+// NAME COLOR SELECTION
+// =====================================
+
+const nameColorButtons =
+  document.querySelectorAll(
+    ".name-color-option"
+  );
+
+
+nameColorButtons.forEach(
+  function (button) {
+
+    button.addEventListener(
+      "click",
+      function () {
+
+        const color =
+          button.dataset.nameColor;
+
+        if (!color) {
+          return;
+        }
+
+
+        // Save color
+
+        localStorage.setItem(
+          "friendszoneNameColor",
+          color
+        );
+
+
+        // Update names already on screen
+
+        const names =
+          document.querySelectorAll(
+            "#messages .message-sender-name"
+          );
+
+
+        names.forEach(
+          function (name) {
+
+            if (
+              color ===
+              "rainbow"
+            ) {
+
+              name.style.color =
+                "transparent";
+
+              name.style.background =
+                "linear-gradient(90deg, red, orange, green, blue, purple)";
+
+              name.style.webkitBackgroundClip =
+                "text";
+
+              name.style.backgroundClip =
+                "text";
+
+            } else {
+
+              name.style.color =
+                color;
+
+              name.style.background =
+                "";
+
+              name.style.webkitBackgroundClip =
+                "";
+
+              name.style.backgroundClip =
+                "";
+
+            }
+
+          }
+        );
+
+      }
+    );
+
+  }
+);
+// OPEN
+
+if (
+  nameColorOption &&
+  nameColorPanel
+) {
+
+  nameColorOption.addEventListener(
+    "click",
+    function () {
+
+      nameColorPanel.classList.add(
+        "show"
+      );
+
+    }
+  );
+
+}
+
+
+// CLOSE
+
+if (
+  nameColorCloseBtn &&
+  nameColorPanel
+) {
+
+  nameColorCloseBtn.addEventListener(
+    "click",
+    function () {
+
+      nameColorPanel.classList.remove(
+        "show"
+      );
+
+    }
+  );
+
+}
+// =====================================
+// NAME COLOR SYSTEM
+// =====================================
+
+const nameColorButtons =
+  document.querySelectorAll(
+    ".name-color-option"
+  );
+
+
+// =====================================
+// APPLY NAME COLOR
+// =====================================
+
+function applyNameColor(color) {
+
+  // Save selected color
+  localStorage.setItem(
+    "friendszoneNameColor",
+    color
+  );
+
+
+  // Set CSS variable
+  document.documentElement.style.setProperty(
+    "--friendszone-name-color",
+    color === "rainbow"
+      ? "transparent"
+      : color
+  );
+
+
+  // Apply to existing names
+  const names =
+    document.querySelectorAll(
+      "#messages .message > b"
+    );
+
+
+  names.forEach(
+    function (name) {
+
+      if (color === "rainbow") {
+
+        name.classList.add(
+          "friendszone-rainbow-name"
+        );
+
+        name.style.color =
+          "transparent";
+
+        name.style.background =
+          "linear-gradient(90deg, red, orange, green, blue, purple)";
+
+        name.style.webkitBackgroundClip =
+          "text";
+
+        name.style.backgroundClip =
+          "text";
+
+      } else {
+
+        name.classList.remove(
+          "friendszone-rainbow-name"
+        );
+
+        name.style.background =
+          "";
+
+        name.style.webkitBackgroundClip =
+          "";
+
+        name.style.backgroundClip =
+          "";
+
+        name.style.color =
+          color;
+
+      }
+
+    }
+  );
+
+}
+
+
+// =====================================
+// SELECT COLOR
+// =====================================
+
+nameColorButtons.forEach(
+  function (button) {
+
+    button.addEventListener(
+      "click",
+      function () {
+
+        const color =
+          button.dataset.nameColor;
+
+        if (!color) return;
+
+        applyNameColor(color);
+
+      }
+    );
+
+  }
+);
+
+
+// =====================================
+// LOAD SAVED COLOR
+// =====================================
+
+const savedNameColor =
+  localStorage.getItem(
+    "friendszoneNameColor"
+  );
+
+
+if (savedNameColor) {
+
+  applyNameColor(
+    savedNameColor
+  );
+
+} else {
+
+  applyNameColor(
+    "#2196F3"
+  );
+
+}

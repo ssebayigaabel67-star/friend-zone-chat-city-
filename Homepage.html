@@ -4127,7 +4127,7 @@ body.dark-mode .account-option > b {
   }
 
   }
-  /* =====================================
+/* =====================================
    APPEARANCE POPOVER
 ===================================== */
 
@@ -4145,30 +4145,38 @@ body.dark-mode .account-option > b {
   width: 90%;
   max-width: 380px;
 
-  max-height: 85vh;
+  /*
+   * Allows all appearance options
+   * to fit while still scrolling
+   * on smaller screens.
+   */
+  max-height: 90vh;
 
   overflow-y: auto;
 
-  background: white;
+  background: #ffffff;
 
-  color: #222;
+  color: #222222;
 
   padding: 25px 20px;
 
   border-radius: 20px;
 
   box-shadow:
-    0 15px 50px rgba(0,0,0,0.35);
+    0 15px 50px rgba(0, 0, 0, 0.35);
 
   z-index: 999999 !important;
 
   text-align: center;
+
+  box-sizing: border-box;
+
 }
 
 
-/* ==============================
+/* =====================================
    SHOW
-============================== */
+===================================== */
 
 .appearance-popover.show {
 
@@ -4177,9 +4185,9 @@ body.dark-mode .account-option > b {
 }
 
 
-/* ==============================
+/* =====================================
    CLOSE BUTTON
-============================== */
+===================================== */
 
 .appearance-close {
 
@@ -4197,7 +4205,7 @@ body.dark-mode .account-option > b {
 
   background: #eeeeee;
 
-  color: #333;
+  color: #333333;
 
   font-size: 18px;
 
@@ -4208,6 +4216,7 @@ body.dark-mode .account-option > b {
   align-items: center;
 
   justify-content: center;
+
 }
 
 
@@ -4220,9 +4229,9 @@ body.dark-mode .account-option > b {
 }
 
 
-/* ==============================
+/* =====================================
    ICON
-============================== */
+===================================== */
 
 .appearance-icon {
 
@@ -4242,12 +4251,13 @@ body.dark-mode .account-option > b {
   justify-content: center;
 
   font-size: 38px;
+
 }
 
 
-/* ==============================
+/* =====================================
    TITLE
-============================== */
+===================================== */
 
 .appearance-popover h2 {
 
@@ -4258,24 +4268,24 @@ body.dark-mode .account-option > b {
 }
 
 
-/* ==============================
+/* =====================================
    SUBTITLE
-============================== */
+===================================== */
 
 .appearance-subtitle {
 
   margin: 5px 0 20px;
 
-  color: #777;
+  color: #777777;
 
   font-size: 14px;
 
 }
 
 
-/* ==============================
+/* =====================================
    OPTIONS
-============================== */
+===================================== */
 
 .appearance-options {
 
@@ -4286,16 +4296,21 @@ body.dark-mode .account-option > b {
   gap: 10px;
 
   text-align: left;
+
+  padding-bottom: 8px;
+
 }
 
 
-/* ==============================
+/* =====================================
    OPTION
-============================== */
+===================================== */
 
 .appearance-option {
 
   width: 100%;
+
+  min-height: 60px;
 
   display: flex;
 
@@ -4311,7 +4326,7 @@ body.dark-mode .account-option > b {
 
   background: #f8f8f8;
 
-  color: #222;
+  color: #222222;
 
   cursor: pointer;
 
@@ -4320,6 +4335,11 @@ body.dark-mode .account-option > b {
   transition:
     background 0.2s ease,
     transform 0.15s ease;
+
+  box-sizing: border-box;
+
+  flex-shrink: 0;
+
 }
 
 
@@ -4339,9 +4359,9 @@ body.dark-mode .account-option > b {
 }
 
 
-/* ==============================
+/* =====================================
    OPTION ICON
-============================== */
+===================================== */
 
 .appearance-option > span {
 
@@ -4352,7 +4372,7 @@ body.dark-mode .account-option > b {
 
   border-radius: 50%;
 
-  background: white;
+  background: #ffffff;
 
   display: flex;
 
@@ -4361,18 +4381,20 @@ body.dark-mode .account-option > b {
   justify-content: center;
 
   font-size: 20px;
+
 }
 
 
-/* ==============================
+/* =====================================
    OPTION TEXT
-============================== */
+===================================== */
 
 .appearance-option > div {
 
   flex: 1;
 
   min-width: 0;
+
 }
 
 
@@ -4383,6 +4405,7 @@ body.dark-mode .account-option > b {
   font-size: 14px;
 
   margin-bottom: 3px;
+
 }
 
 
@@ -4390,43 +4413,49 @@ body.dark-mode .account-option > b {
 
   display: block;
 
-  color: #777;
+  color: #777777;
 
   font-size: 11px;
+
+  line-height: 1.3;
+
 }
 
 
-/* ==============================
+/* =====================================
    ARROW
-============================== */
+===================================== */
 
 .appearance-option > b {
 
   font-size: 22px;
 
-  color: #888;
+  color: #888888;
 
   flex-shrink: 0;
+
 }
 
 
-/* ==============================
+/* =====================================
    DARK MODE
-============================== */
+===================================== */
 
 body.dark-mode .appearance-popover {
 
   background: #1e1e1e;
 
-  color: white;
+  color: #ffffff;
+
 }
 
 
 body.dark-mode .appearance-close {
 
-  background: #333;
+  background: #333333;
 
-  color: white;
+  color: #ffffff;
+
 }
 
 
@@ -4435,18 +4464,21 @@ body.dark-mode .appearance-close:hover {
   background: #4a2525;
 
   color: #ff6b6b;
+
 }
 
 
 body.dark-mode .appearance-icon {
 
   background: #2a2a2a;
+
 }
 
 
 body.dark-mode .appearance-subtitle {
 
-  color: #aaa;
+  color: #aaaaaa;
+
 }
 
 
@@ -4456,47 +4488,55 @@ body.dark-mode .appearance-option {
 
   border-color: #3a3a3a;
 
-  color: white;
+  color: #ffffff;
+
 }
 
 
 body.dark-mode .appearance-option:hover {
 
   background: #383838;
+
 }
 
 
 body.dark-mode .appearance-option > span {
 
-  background: #333;
+  background: #333333;
+
 }
 
 
 body.dark-mode .appearance-option small {
 
-  color: #aaa;
+  color: #aaaaaa;
+
 }
 
 
 body.dark-mode .appearance-option > b {
 
-  color: #aaa;
+  color: #aaaaaa;
+
 }
 
 
-/* ==============================
+/* =====================================
    MOBILE
-============================== */
+===================================== */
 
 @media (max-width: 480px) {
 
   .appearance-popover {
 
-    width: calc(100% - 24px);
+    width: calc(100% - 20px);
+
+    max-height: 90vh;
 
     padding: 22px 15px;
 
     border-radius: 18px;
+
   }
 
 
@@ -4506,21 +4546,40 @@ body.dark-mode .appearance-option > b {
     height: 60px;
 
     font-size: 32px;
+
   }
 
 
   .appearance-popover h2 {
 
     font-size: 21px;
+
   }
 
 
   .appearance-option {
 
+    min-height: 58px;
+
     padding: 11px;
-  }
 
   }
+
+
+  .appearance-option strong {
+
+    font-size: 13px;
+
+  }
+
+
+  .appearance-option small {
+
+    font-size: 10px;
+
+  }
+
+}
   /* =====================================
    TEXT SIZE POPOVER
 ===================================== */
@@ -7022,6 +7081,1938 @@ body.dark-mode .unblock-user-btn {
   }
 
 }
+  /* ==================================================
+   CLEAN CHAT MESSAGE SPACING
+================================================== */
+
+#messages {
+  gap: 4px;
+  padding: 10px 12px;
+}
+
+
+/* Keep individual bubbles compact */
+
+.message {
+  margin-bottom: 1px;
+}
+
+
+/* Consecutive messages from the same side */
+
+.message.sent + .message.sent,
+.message.received + .message.received {
+  margin-top: -1px;
+}
+
+
+/* ==================================================
+   MOBILE
+================================================== */
+
+@media (max-width: 600px) {
+
+  #messages {
+    gap: 3px;
+    padding: 8px 9px;
+  }
+
+}
+
+
+/* ==================================================
+   VERY SMALL PHONES
+================================================== */
+
+@media (max-width: 400px) {
+
+  #messages {
+    gap: 2px;
+    padding: 7px 8px;
+  }
+
+}
+  /* ==================================================
+   LONG MESSAGE CLEANUP
+================================================== */
+
+.message {
+  max-width: min(72%, 360px);
+
+  white-space: normal;
+
+  overflow-wrap: anywhere;
+
+  word-break: break-word;
+}
+
+
+/* ==================================================
+   MOBILE
+================================================== */
+
+@media (max-width: 600px) {
+
+  .message {
+    max-width: 75%;
+  }
+
+}
+
+
+/* ==================================================
+   VERY SMALL PHONES
+================================================== */
+
+@media (max-width: 400px) {
+
+  .message {
+    max-width: 78%;
+  }
+
+}
+  /* =====================================
+   GROUP ADMIN POPOVER
+===================================== */
+
+.group-admin-popover {
+  display: none;
+
+  position: fixed;
+  top: 70px;
+  right: 20px;
+
+  width: 310px;
+  max-width: calc(100vw - 40px);
+
+  background: rgba(255, 255, 255, 0.98);
+
+  border-radius: 18px;
+
+  padding: 22px;
+
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, 0.30);
+
+  z-index: 99999;
+
+  color: #222;
+
+  animation: groupAdminOpen 0.2s ease;
+}
+
+
+/* SHOW */
+
+.group-admin-popover.show {
+  display: block;
+}
+
+
+/* OPEN ANIMATION */
+
+@keyframes groupAdminOpen {
+
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+}
+
+
+/* =====================================
+   CLOSE BUTTON
+===================================== */
+
+.group-admin-close {
+
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+
+  width: 32px;
+  height: 32px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #eeeeee;
+
+  color: #333;
+
+  font-size: 18px;
+
+  cursor: pointer;
+
+}
+
+
+/* =====================================
+   GROUP ICON
+===================================== */
+
+.group-admin-icon {
+
+  width: 65px;
+  height: 65px;
+
+  margin: 5px auto 10px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #f0f0f0;
+
+  font-size: 32px;
+
+}
+
+
+/* =====================================
+   GROUP NAME
+===================================== */
+
+#adminGroupName {
+
+  margin: 5px 35px 15px;
+
+  text-align: center;
+
+  font-size: 21px;
+
+  font-weight: bold;
+
+  word-break: break-word;
+
+}
+
+
+/* =====================================
+   ADMIN INFORMATION
+===================================== */
+
+#adminGroupAdmin,
+#adminGroupMembers {
+
+  margin: 8px 0;
+
+  padding: 10px 12px;
+
+  border-radius: 10px;
+
+  background: #f5f5f5;
+
+  font-size: 14px;
+
+  font-weight: 500;
+
+}
+
+
+/* =====================================
+   ACTION BUTTONS CONTAINER
+===================================== */
+
+.group-admin-actions {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+
+  margin-top: 16px;
+
+}
+
+
+/* =====================================
+   ACTION BUTTONS
+===================================== */
+
+.group-admin-actions button {
+
+  width: 100%;
+
+  min-height: 44px;
+
+  padding: 10px 13px;
+
+  border: none;
+
+  border-radius: 11px;
+
+  background: #f3f3f3;
+
+  color: #222;
+
+  font-size: 14px;
+
+  font-weight: 500;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.1s ease;
+
+}
+
+
+/* HOVER */
+
+.group-admin-actions button:hover {
+
+  background: #e7e7e7;
+
+}
+
+
+/* PRESS */
+
+.group-admin-actions button:active {
+
+  transform: scale(0.98);
+
+}
+
+
+/* =====================================
+   REMOVE GROUP
+===================================== */
+
+.group-admin-actions button.danger {
+
+  background: #ffe6e6;
+
+  color: #d00000;
+
+}
+
+
+/* =====================================
+   MOBILE
+===================================== */
+
+@media (max-width: 600px) {
+
+  .group-admin-popover {
+
+    top: 65px;
+
+    right: 10px;
+
+    width: calc(100vw - 20px);
+
+    max-width: 330px;
+
+  }
+
+    }
+/* =====================================
+   CHAT CUSTOMIZATION PANEL
+===================================== */
+
+.chat-customization-panel {
+
+  display: none;
+
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: 90%;
+  max-width: 380px;
+
+  max-height: 90vh;
+
+  overflow-y: auto;
+
+  background: #ffffff;
+
+  color: #222222;
+
+  padding: 25px 20px;
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 15px 50px rgba(0, 0, 0, 0.35);
+
+  z-index: 1000000 !important;
+
+  text-align: center;
+
+  box-sizing: border-box;
+
+}
+
+
+/* =====================================
+   SHOW
+===================================== */
+
+.chat-customization-panel.show {
+
+  display: block;
+
+}
+
+
+/* =====================================
+   CLOSE BUTTON
+===================================== */
+
+.chat-customization-close {
+
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+
+  width: 34px;
+  height: 34px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #eeeeee;
+
+  color: #333333;
+
+  font-size: 18px;
+
+  cursor: pointer;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+}
+
+
+.chat-customization-close:hover {
+
+  background: #ffdddd;
+
+  color: red;
+
+}
+
+
+/* =====================================
+   ICON
+===================================== */
+
+.chat-customization-icon {
+
+  width: 70px;
+  height: 70px;
+
+  margin: 5px auto 10px;
+
+  border-radius: 50%;
+
+  background: #f1f3f5;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 38px;
+
+}
+
+
+/* =====================================
+   TITLE
+===================================== */
+
+.chat-customization-panel h2 {
+
+  margin: 5px 0;
+
+  font-size: 23px;
+
+}
+
+
+/* =====================================
+   SUBTITLE
+===================================== */
+
+.chat-customization-subtitle {
+
+  margin: 5px 0 20px;
+
+  color: #777777;
+
+  font-size: 14px;
+
+}
+
+
+/* =====================================
+   OPTIONS
+===================================== */
+
+.chat-customization-options {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+
+  text-align: left;
+
+  padding-bottom: 8px;
+
+}
+
+
+/* =====================================
+   OPTION
+===================================== */
+
+.chat-customization-option {
+
+  width: 100%;
+
+  min-height: 60px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 13px;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 12px;
+
+  background: #f8f8f8;
+
+  color: #222222;
+
+  cursor: pointer;
+
+  text-align: left;
+
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease;
+
+  box-sizing: border-box;
+
+}
+
+
+.chat-customization-option:hover {
+
+  background: #eeeeee;
+
+  transform: translateY(-1px);
+
+}
+
+
+.chat-customization-option:active {
+
+  transform: scale(0.98);
+
+}
+
+
+/* =====================================
+   OPTION ICON
+===================================== */
+
+.chat-customization-option > span {
+
+  width: 38px;
+  height: 38px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: #ffffff;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 20px;
+
+}
+
+
+/* =====================================
+   OPTION TEXT
+===================================== */
+
+.chat-customization-option > div {
+
+  flex: 1;
+
+  min-width: 0;
+
+}
+
+
+.chat-customization-option strong {
+
+  display: block;
+
+  font-size: 14px;
+
+  margin-bottom: 3px;
+
+}
+
+
+.chat-customization-option small {
+
+  display: block;
+
+  color: #777777;
+
+  font-size: 11px;
+
+  line-height: 1.3;
+
+}
+
+
+/* =====================================
+   ARROW
+===================================== */
+
+.chat-customization-option > b {
+
+  font-size: 22px;
+
+  color: #888888;
+
+  flex-shrink: 0;
+
+}
+
+
+/* =====================================
+   RESET BUTTON
+===================================== */
+
+.chat-customization-option.reset {
+
+  border-color: #ffd6d6;
+
+  background: #fff5f5;
+
+  color: #c40000;
+
+}
+
+
+.chat-customization-option.reset small {
+
+  color: #a66a6a;
+
+}
+
+
+/* =====================================
+   DARK MODE
+===================================== */
+
+body.dark-mode .chat-customization-panel {
+
+  background: #1e1e1e;
+
+  color: #ffffff;
+
+}
+
+
+body.dark-mode .chat-customization-close {
+
+  background: #333333;
+
+  color: #ffffff;
+
+}
+
+
+body.dark-mode .chat-customization-close:hover {
+
+  background: #4a2525;
+
+  color: #ff6b6b;
+
+}
+
+
+body.dark-mode .chat-customization-icon {
+
+  background: #2a2a2a;
+
+}
+
+
+body.dark-mode .chat-customization-subtitle {
+
+  color: #aaaaaa;
+
+}
+
+
+body.dark-mode .chat-customization-option {
+
+  background: #2a2a2a;
+
+  border-color: #3a3a3a;
+
+  color: #ffffff;
+
+}
+
+
+body.dark-mode .chat-customization-option:hover {
+
+  background: #383838;
+
+}
+
+
+body.dark-mode .chat-customization-option > span {
+
+  background: #333333;
+
+}
+
+
+body.dark-mode .chat-customization-option small {
+
+  color: #aaaaaa;
+
+}
+
+
+body.dark-mode .chat-customization-option > b {
+
+  color: #aaaaaa;
+
+}
+
+
+body.dark-mode .chat-customization-option.reset {
+
+  background: #351f1f;
+
+  border-color: #5a3030;
+
+  color: #ff7070;
+
+}
+
+
+/* =====================================
+   MOBILE
+===================================== */
+
+@media (max-width: 480px) {
+
+  .chat-customization-panel {
+
+    width: calc(100% - 20px);
+
+    max-height: 90vh;
+
+    padding: 22px 15px;
+
+    border-radius: 18px;
+
+  }
+
+
+  .chat-customization-icon {
+
+    width: 60px;
+    height: 60px;
+
+    font-size: 32px;
+
+  }
+
+
+  .chat-customization-panel h2 {
+
+    font-size: 21px;
+
+  }
+
+
+  .chat-customization-option {
+
+    min-height: 58px;
+
+    padding: 11px;
+
+  }
+
+
+  .chat-customization-option strong {
+
+    font-size: 13px;
+
+  }
+
+
+  .chat-customization-option small {
+
+    font-size: 10px;
+
+  }
+
+}
+  /* =====================================
+   CHAT THEME PANEL
+===================================== */
+
+.chat-theme-panel {
+
+  display: none;
+
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: 90%;
+  max-width: 380px;
+
+  max-height: 90vh;
+
+  overflow-y: auto;
+
+  padding: 25px 20px;
+
+  background: #ffffff;
+
+  color: #222222;
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 15px 50px rgba(0, 0, 0, 0.35);
+
+  z-index: 1000001 !important;
+
+  text-align: center;
+
+  box-sizing: border-box;
+
+}
+
+
+.chat-theme-panel.show {
+
+  display: block;
+
+}
+
+
+/* CLOSE */
+
+.chat-theme-close {
+
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+
+  width: 34px;
+  height: 34px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #eeeeee;
+
+  color: #333333;
+
+  font-size: 18px;
+
+  cursor: pointer;
+
+}
+
+
+/* ICON */
+
+.chat-theme-icon {
+
+  width: 70px;
+  height: 70px;
+
+  margin: 5px auto 10px;
+
+  border-radius: 50%;
+
+  background: #f1f3f5;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 38px;
+
+}
+
+
+/* TITLE */
+
+.chat-theme-panel h2 {
+
+  margin: 5px 0;
+
+  font-size: 23px;
+
+}
+
+
+/* SUBTITLE */
+
+.chat-theme-subtitle {
+
+  margin: 5px 0 20px;
+
+  color: #777777;
+
+  font-size: 14px;
+
+}
+
+
+/* OPTIONS */
+
+.chat-theme-options {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+
+}
+
+
+/* OPTION */
+
+.chat-theme-option {
+
+  width: 100%;
+
+  min-height: 60px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 11px;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 13px;
+
+  background: #f8f8f8;
+
+  color: #222222;
+
+  cursor: pointer;
+
+  text-align: left;
+
+  box-sizing: border-box;
+
+}
+
+
+/* PREVIEW */
+
+.theme-preview {
+
+  width: 45px;
+  height: 45px;
+
+  flex-shrink: 0;
+
+  border-radius: 11px;
+
+}
+
+
+/* TEXT */
+
+.chat-theme-option > div {
+
+  flex: 1;
+
+}
+
+
+.chat-theme-option strong {
+
+  display: block;
+
+  font-size: 14px;
+
+  margin-bottom: 3px;
+
+}
+
+
+.chat-theme-option small {
+
+  display: block;
+
+  color: #777777;
+
+  font-size: 11px;
+
+}
+
+
+/* ARROW */
+
+.chat-theme-option > b {
+
+  font-size: 22px;
+
+  color: #888888;
+
+}
+
+
+/* =====================================
+   THEME PREVIEWS
+===================================== */
+
+.theme-classic {
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff,
+      #dddddd
+    );
+
+}
+
+
+.theme-ocean {
+
+  background:
+    linear-gradient(
+      135deg,
+      #00c6ff,
+      #0072ff
+    );
+
+}
+
+
+.theme-galaxy {
+
+  background:
+    linear-gradient(
+      135deg,
+      #141e30,
+      #6a11cb
+    );
+
+}
+
+
+.theme-sunset {
+
+  background:
+    linear-gradient(
+      135deg,
+      #ff9966,
+      #ff5e62
+    );
+
+}
+
+
+.theme-nature {
+
+  background:
+    linear-gradient(
+      135deg,
+      #56ab2f,
+      #a8e063
+    );
+
+}
+
+
+.theme-purple {
+
+  background:
+    linear-gradient(
+      135deg,
+      #8e2de2,
+      #4a00e0
+    );
+
+}
+
+
+.theme-fire {
+
+  background:
+    linear-gradient(
+      135deg,
+      #ff512f,
+      #dd2476
+    );
+
+}
+
+
+.theme-glass {
+
+  background:
+    linear-gradient(
+      135deg,
+      #74ebd5,
+      #acb6e5
+    );
+
+}
+
+
+/* =====================================
+   MOBILE
+===================================== */
+
+@media (max-width: 480px) {
+
+  .chat-theme-panel {
+
+    width: calc(100% - 20px);
+
+    max-height: 90vh;
+
+    padding: 22px 15px;
+
+    border-radius: 18px;
+
+  }
+
+}
+  /* =====================================
+   ACTIVE CHAT THEMES
+===================================== */
+
+/* CLASSIC */
+
+body.chat-theme-classic {
+  --chat-theme-bg: #ffffff;
+  --chat-theme-header: #f5f5f5;
+  --chat-theme-own: #d9fdd3;
+  --chat-theme-other: #ffffff;
+  --chat-theme-text: #222222;
+}
+
+
+/* OCEAN */
+
+body.chat-theme-ocean {
+  --chat-theme-bg: #e8f7ff;
+  --chat-theme-header: #0077b6;
+  --chat-theme-own: #90e0ef;
+  --chat-theme-other: #ffffff;
+  --chat-theme-text: #073b4c;
+}
+
+
+/* GALAXY */
+
+body.chat-theme-galaxy {
+  --chat-theme-bg: #17152b;
+  --chat-theme-header: #302b63;
+  --chat-theme-own: #6c5ce7;
+  --chat-theme-other: #292449;
+  --chat-theme-text: #ffffff;
+}
+
+
+/* SUNSET */
+
+body.chat-theme-sunset {
+  --chat-theme-bg: #fff0e6;
+  --chat-theme-header: #ff7043;
+  --chat-theme-own: #ffab91;
+  --chat-theme-other: #ffffff;
+  --chat-theme-text: #4a2419;
+}
+
+
+/* NATURE */
+
+body.chat-theme-nature {
+  --chat-theme-bg: #edf7ed;
+  --chat-theme-header: #4caf50;
+  --chat-theme-own: #a5d6a7;
+  --chat-theme-other: #ffffff;
+  --chat-theme-text: #183a1d;
+}
+
+
+/* PURPLE */
+
+body.chat-theme-purple {
+  --chat-theme-bg: #f3eaff;
+  --chat-theme-header: #7b2cbf;
+  --chat-theme-own: #c77dff;
+  --chat-theme-other: #ffffff;
+  --chat-theme-text: #27113f;
+}
+
+
+/* FIRE */
+
+body.chat-theme-fire {
+  --chat-theme-bg: #fff0ed;
+  --chat-theme-header: #e63946;
+  --chat-theme-own: #ff8a65;
+  --chat-theme-other: #ffffff;
+  --chat-theme-text: #3d1111;
+}
+
+
+/* GLASS */
+
+body.chat-theme-glass {
+  --chat-theme-bg: rgba(255,255,255,0.45);
+  --chat-theme-header: rgba(255,255,255,0.55);
+  --chat-theme-own: rgba(116,235,213,0.55);
+  --chat-theme-other: rgba(255,255,255,0.65);
+  --chat-theme-text: #222222;
+}
+
+
+/* =====================================
+   APPLY THEME TO CHAT
+===================================== */
+
+/*
+ * These selectors intentionally target
+ * common chat containers.
+ */
+
+body[class*="chat-theme-"] .chat-area,
+body[class*="chat-theme-"] .chat-container {
+
+  background: var(--chat-theme-bg);
+
+}
+
+
+body[class*="chat-theme-"] .chat-header {
+
+  background: var(--chat-theme-header);
+
+}
+
+
+body[class*="chat-theme-"] .message.sent,
+body[class*="chat-theme-"] .sent {
+
+  background: var(--chat-theme-own);
+
+  color: var(--chat-theme-text);
+
+}
+
+
+body[class*="chat-theme-"] .message.received,
+body[class*="chat-theme-"] .received {
+
+  background: var(--chat-theme-other);
+
+  color: var(--chat-theme-text);
+
+  }
+  /* =====================================
+   MESSAGE FONT PANEL
+===================================== */
+
+.message-font-panel {
+
+  display: none;
+
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: 90%;
+  max-width: 380px;
+
+  max-height: 90vh;
+
+  overflow-y: auto;
+
+  padding: 25px 20px;
+
+  background: #ffffff;
+
+  color: #222222;
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 15px 50px rgba(0,0,0,0.35);
+
+  z-index: 1000002 !important;
+
+  text-align: center;
+
+  box-sizing: border-box;
+
+}
+
+
+.message-font-panel.show {
+
+  display: block;
+
+}
+
+
+.message-font-close {
+
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+
+  width: 34px;
+  height: 34px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #eeeeee;
+
+  font-size: 18px;
+
+  cursor: pointer;
+
+}
+
+
+.message-font-icon {
+
+  width: 70px;
+  height: 70px;
+
+  margin: 5px auto 10px;
+
+  border-radius: 50%;
+
+  background: #f1f3f5;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 38px;
+
+}
+
+
+.message-font-panel h2 {
+
+  margin: 5px 0;
+
+  font-size: 23px;
+
+}
+
+
+.message-font-subtitle {
+
+  margin: 5px 0 20px;
+
+  color: #777;
+
+  font-size: 14px;
+
+}
+
+
+.message-font-options {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+
+}
+
+
+.message-font-option {
+
+  width: 100%;
+
+  min-height: 60px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 11px;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 13px;
+
+  background: #f8f8f8;
+
+  color: #222;
+
+  cursor: pointer;
+
+  text-align: left;
+
+  box-sizing: border-box;
+
+}
+
+
+.message-font-option > span {
+
+  width: 45px;
+  height: 45px;
+
+  flex-shrink: 0;
+
+  border-radius: 11px;
+
+  background: #ffffff;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 20px;
+
+}
+
+
+.message-font-option > div {
+
+  flex: 1;
+
+}
+
+
+.message-font-option strong {
+
+  display: block;
+
+  font-size: 14px;
+
+  margin-bottom: 3px;
+
+}
+
+
+.message-font-option small {
+
+  display: block;
+
+  color: #777;
+
+  font-size: 11px;
+
+}
+
+
+.message-font-option > b {
+
+  font-size: 22px;
+
+  color: #888;
+
+}
+
+
+/* DARK MODE */
+
+body.dark-mode .message-font-panel {
+
+  background: #1e1e1e;
+
+  color: white;
+
+}
+
+
+body.dark-mode .message-font-close {
+
+  background: #333;
+
+  color: white;
+
+}
+
+
+body.dark-mode .message-font-icon {
+
+  background: #2a2a2a;
+
+}
+
+
+body.dark-mode .message-font-subtitle {
+
+  color: #aaa;
+
+}
+
+
+body.dark-mode .message-font-option {
+
+  background: #2a2a2a;
+
+  border-color: #3a3a3a;
+
+  color: white;
+
+}
+
+
+body.dark-mode .message-font-option > span {
+
+  background: #333;
+
+}
+
+
+body.dark-mode .message-font-option small {
+
+  color: #aaa;
+
+}
+
+
+/* MOBILE */
+
+@media (max-width: 480px) {
+
+  .message-font-panel {
+
+    width: calc(100% - 20px);
+
+    padding: 22px 15px;
+
+  }
+
+    }
+  /* =====================================
+   FRIENDSZONE MESSAGE FONT
+===================================== */
+
+:root {
+
+  --friendszone-message-font:
+    Arial, sans-serif;
+
+}
+
+
+/* Message text */
+
+.message,
+.message-bubble,
+.chat-message,
+.sent,
+.received {
+
+  font-family:
+    var(--friendszone-message-font);
+
+}
+  /* =====================================
+   NAME COLOR PANEL
+===================================== */
+
+.name-color-panel {
+
+  display: none;
+
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: 90%;
+  max-width: 380px;
+
+  max-height: 90vh;
+
+  overflow-y: auto;
+
+  padding: 25px 20px;
+
+  background: #ffffff;
+
+  color: #222222;
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 15px 50px rgba(0,0,0,0.35);
+
+  z-index: 1000003 !important;
+
+  text-align: center;
+
+  box-sizing: border-box;
+
+}
+
+
+.name-color-panel.show {
+
+  display: block;
+
+}
+
+
+/* CLOSE */
+
+.name-color-close {
+
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+
+  width: 34px;
+  height: 34px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #eeeeee;
+
+  color: #333;
+
+  font-size: 18px;
+
+  cursor: pointer;
+
+}
+
+
+/* ICON */
+
+.name-color-icon {
+
+  width: 70px;
+  height: 70px;
+
+  margin: 5px auto 10px;
+
+  border-radius: 50%;
+
+  background: #f1f3f5;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 38px;
+
+}
+
+
+/* TITLE */
+
+.name-color-panel h2 {
+
+  margin: 5px 0;
+
+  font-size: 23px;
+
+}
+
+
+.name-color-subtitle {
+
+  margin: 5px 0 20px;
+
+  color: #777;
+
+  font-size: 14px;
+
+}
+
+
+/* OPTIONS */
+
+.name-color-options {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+
+}
+
+
+/* OPTION */
+
+.name-color-option {
+
+  width: 100%;
+
+  min-height: 60px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 11px;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 13px;
+
+  background: #f8f8f8;
+
+  color: #222;
+
+  cursor: pointer;
+
+  text-align: left;
+
+  box-sizing: border-box;
+
+}
+
+
+/* COLOR PREVIEW */
+
+.name-color-preview {
+
+  width: 45px;
+  height: 45px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  border: 2px solid #dddddd;
+
+}
+
+
+/* RAINBOW */
+
+.rainbow-preview {
+
+  background:
+    linear-gradient(
+      135deg,
+      red,
+      orange,
+      yellow,
+      green,
+      blue,
+      purple
+    );
+
+}
+
+
+/* TEXT */
+
+.name-color-option > div {
+
+  flex: 1;
+
+}
+
+
+.name-color-option strong {
+
+  display: block;
+
+  font-size: 14px;
+
+  margin-bottom: 3px;
+
+}
+
+
+.name-color-option small {
+
+  display: block;
+
+  color: #777;
+
+  font-size: 11px;
+
+}
+
+
+/* ARROW */
+
+.name-color-option > b {
+
+  font-size: 22px;
+
+  color: #888;
+
+}
+
+
+/* MOBILE */
+
+@media (max-width: 480px) {
+
+  .name-color-panel {
+
+    width: calc(100% - 20px);
+
+    padding: 22px 15px;
+
+  }
+
+  }
+  /* =====================================
+   FRIENDSZONE NAME COLOR
+===================================== */
+
+#messages .message > b {
+
+  color:
+    var(--friendszone-name-color, #2196F3);
+
+}
+
+
+/* =====================================
+   RAINBOW NAME
+===================================== */
+
+#messages .message > b.friendszone-rainbow-name {
+
+  animation:
+    friendszoneNameRainbow 4s linear infinite;
+
+}
+
+
+@keyframes friendszoneNameRainbow {
+
+  0% {
+    background:
+      linear-gradient(
+        90deg,
+        red,
+        orange
+      );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+  50% {
+    background:
+      linear-gradient(
+        90deg,
+        green,
+        blue
+      );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+  100% {
+    background:
+      linear-gradient(
+        90deg,
+        purple,
+        red
+      );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+        }
 </style>
  </head>
 <body>
@@ -8741,7 +10732,31 @@ body.dark-mode .unblock-user-btn {
 
 
   <div class="appearance-options">
+<!-- =====================================
+     CHAT CUSTOMIZATION
+===================================== -->
 
+<button
+  class="appearance-option"
+  id="chatCustomizationBtn"
+  type="button"
+>
+
+  <span>🎨</span>
+
+  <div>
+
+    <strong>Chat Customization</strong>
+
+    <small>
+      Themes, fonts, colors, bubbles and more
+    </small>
+
+  </div>
+
+  <b>›</b>
+
+</button>
 
     <!-- DARK MODE -->
     <button
@@ -8841,6 +10856,805 @@ body.dark-mode .unblock-user-btn {
         <small>
           Control interface animations
         </small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+  </div>
+
+</div>
+  <!-- =====================================
+     CHAT CUSTOMIZATION PANEL
+===================================== -->
+
+<div
+  id="chatCustomizationPanel"
+  class="chat-customization-panel"
+>
+
+  <!-- CLOSE -->
+  <button
+    id="chatCustomizationCloseBtn"
+    class="chat-customization-close"
+    type="button"
+  >
+    ✕
+  </button>
+
+
+  <!-- ICON -->
+  <div class="chat-customization-icon">
+    🎨
+  </div>
+
+
+  <h2>Chat Customization</h2>
+
+  <p class="chat-customization-subtitle">
+    Make your conversations your own
+  </p>
+
+
+  <div class="chat-customization-options">
+
+
+    <!-- CHAT THEME -->
+
+    <button
+      class="chat-customization-option"
+      id="chatThemeOption"
+      type="button"
+    >
+
+      <span>🎨</span>
+
+      <div>
+
+        <strong>Chat Theme</strong>
+
+        <small>
+          Choose your chat colors and style
+        </small>
+
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- MESSAGE FONT -->
+
+    <button
+      class="chat-customization-option"
+      id="messageFontOption"
+      type="button"
+    >
+
+      <span>🔤</span>
+
+      <div>
+
+        <strong>Message Font</strong>
+
+        <small>
+          Choose the font used for messages
+        </small>
+
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- MESSAGE SIZE -->
+
+    <button
+      class="chat-customization-option"
+      id="messageSizeOption"
+      type="button"
+    >
+
+      <span>🔠</span>
+
+      <div>
+
+        <strong>Message Size</strong>
+
+        <small>
+          Small, medium or large
+        </small>
+
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- NAME COLOR -->
+
+    <button
+      class="chat-customization-option"
+      id="nameColorOption"
+      type="button"
+    >
+
+      <span>🌈</span>
+
+      <div>
+
+        <strong>Name Color</strong>
+
+        <small>
+          Choose your displayed name color
+        </small>
+
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- BUBBLE STYLE -->
+
+    <button
+      class="chat-customization-option"
+      id="bubbleStyleOption"
+      type="button"
+    >
+
+      <span>💬</span>
+
+      <div>
+
+        <strong>Message Bubble</strong>
+
+        <small>
+          Change the shape and style
+        </small>
+
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- CHAT BACKGROUND -->
+
+    <button
+      class="chat-customization-option"
+      id="chatBackgroundOption"
+      type="button"
+    >
+
+      <span>🖼️</span>
+
+      <div>
+
+        <strong>Chat Background</strong>
+
+        <small>
+          Choose a background for conversations
+        </small>
+
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- MESSAGE EFFECTS -->
+
+    <button
+      class="chat-customization-option"
+      id="messageEffectsOption"
+      type="button"
+    >
+
+      <span>✨</span>
+
+      <div>
+
+        <strong>Message Effects</strong>
+
+        <small>
+          Add effects to your conversations
+        </small>
+
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- RESET -->
+
+    <button
+      class="chat-customization-option reset"
+      id="resetChatCustomization"
+      type="button"
+    >
+
+      <span>🔄</span>
+
+      <div>
+
+        <strong>Reset Customization</strong>
+
+        <small>
+          Restore the default chat appearance
+        </small>
+
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+  </div>
+
+</div>
+  <!-- =====================================
+     CHAT THEME PANEL
+===================================== -->
+
+<div
+  id="chatThemePanel"
+  class="chat-theme-panel"
+>
+
+  <button
+    id="chatThemeCloseBtn"
+    class="chat-theme-close"
+    type="button"
+  >
+    ✕
+  </button>
+
+
+  <div class="chat-theme-icon">
+    🎨
+  </div>
+
+
+  <h2>Chat Theme</h2>
+
+  <p class="chat-theme-subtitle">
+    Choose how your conversations look
+  </p>
+
+
+  <div class="chat-theme-options">
+
+
+    <!-- CLASSIC -->
+
+    <button
+      class="chat-theme-option"
+      data-theme="classic"
+      type="button"
+    >
+
+      <span class="theme-preview theme-classic"></span>
+
+      <div>
+        <strong>⚪ Classic</strong>
+        <small>Default FriendsZone style</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- OCEAN -->
+
+    <button
+      class="chat-theme-option"
+      data-theme="ocean"
+      type="button"
+    >
+
+      <span class="theme-preview theme-ocean"></span>
+
+      <div>
+        <strong>🌊 Ocean</strong>
+        <small>Cool blue conversation</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- GALAXY -->
+
+    <button
+      class="chat-theme-option"
+      data-theme="galaxy"
+      type="button"
+    >
+
+      <span class="theme-preview theme-galaxy"></span>
+
+      <div>
+        <strong>🌌 Galaxy</strong>
+        <small>Deep space style</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- SUNSET -->
+
+    <button
+      class="chat-theme-option"
+      data-theme="sunset"
+      type="button"
+    >
+
+      <span class="theme-preview theme-sunset"></span>
+
+      <div>
+        <strong>🌅 Sunset</strong>
+        <small>Warm evening colors</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- NATURE -->
+
+    <button
+      class="chat-theme-option"
+      data-theme="nature"
+      type="button"
+    >
+
+      <span class="theme-preview theme-nature"></span>
+
+      <div>
+        <strong>🌿 Nature</strong>
+        <small>Fresh natural colors</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- PURPLE -->
+
+    <button
+      class="chat-theme-option"
+      data-theme="purple"
+      type="button"
+    >
+
+      <span class="theme-preview theme-purple"></span>
+
+      <div>
+        <strong>💜 Purple</strong>
+        <small>Modern purple style</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- FIRE -->
+
+    <button
+      class="chat-theme-option"
+      data-theme="fire"
+      type="button"
+    >
+
+      <span class="theme-preview theme-fire"></span>
+
+      <div>
+        <strong>🔥 Fire</strong>
+        <small>Bold energetic colors</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- GLASS -->
+
+    <button
+      class="chat-theme-option"
+      data-theme="glass"
+      type="button"
+    >
+
+      <span class="theme-preview theme-glass"></span>
+
+      <div>
+        <strong>✨ Glass</strong>
+        <small>Clean transparent style</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+  </div>
+
+</div>
+  <!-- =====================================
+     MESSAGE FONT PANEL
+===================================== -->
+
+<div
+  id="messageFontPanel"
+  class="message-font-panel"
+>
+
+  <button
+    id="messageFontCloseBtn"
+    class="message-font-close"
+    type="button"
+  >
+    ✕
+  </button>
+
+
+  <div class="message-font-icon">
+    🔤
+  </div>
+
+
+  <h2>Message Font</h2>
+
+  <p class="message-font-subtitle">
+    Choose how your messages look
+  </p>
+
+
+  <div class="message-font-options">
+
+
+    <!-- ARIAL -->
+
+    <button
+      class="message-font-option"
+      data-font="Arial"
+      type="button"
+    >
+
+      <span style="font-family: Arial;">
+        Aa
+      </span>
+
+      <div>
+        <strong>Arial</strong>
+        <small>Clean and simple</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- ROBOTO -->
+
+    <button
+      class="message-font-option"
+      data-font="Roboto"
+      type="button"
+    >
+
+      <span style="font-family: Roboto;">
+        Aa
+      </span>
+
+      <div>
+        <strong>Roboto</strong>
+        <small>Modern and friendly</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- GEORGIA -->
+
+    <button
+      class="message-font-option"
+      data-font="Georgia"
+      type="button"
+    >
+
+      <span style="font-family: Georgia;">
+        Aa
+      </span>
+
+      <div>
+        <strong>Georgia</strong>
+        <small>Classic and elegant</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- COURIER -->
+
+    <button
+      class="message-font-option"
+      data-font="Courier New"
+      type="button"
+    >
+
+      <span style="font-family: 'Courier New';">
+        Aa
+      </span>
+
+      <div>
+        <strong>Courier</strong>
+        <small>Typewriter style</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- TREBUCHET -->
+
+    <button
+      class="message-font-option"
+      data-font="Trebuchet MS"
+      type="button"
+    >
+
+      <span style="font-family: 'Trebuchet MS';">
+        Aa
+      </span>
+
+      <div>
+        <strong>Trebuchet</strong>
+        <small>Soft and modern</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+  </div>
+
+</div>
+  <!-- =====================================
+     NAME COLOR PANEL
+===================================== -->
+
+<div
+  id="nameColorPanel"
+  class="name-color-panel"
+>
+
+  <button
+    id="nameColorCloseBtn"
+    class="name-color-close"
+    type="button"
+  >
+    ✕
+  </button>
+
+
+  <div class="name-color-icon">
+    🌈
+  </div>
+
+
+  <h2>Name Color</h2>
+
+  <p class="name-color-subtitle">
+    Choose how your name appears in chat
+  </p>
+
+
+  <div class="name-color-options">
+
+
+    <!-- BLUE -->
+
+    <button
+      class="name-color-option"
+      data-name-color="#2196F3"
+      type="button"
+    >
+
+      <span
+        class="name-color-preview"
+        style="background:#2196F3;"
+      ></span>
+
+      <div>
+        <strong>Blue</strong>
+        <small>Classic blue</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- PURPLE -->
+
+    <button
+      class="name-color-option"
+      data-name-color="#9C27B0"
+      type="button"
+    >
+
+      <span
+        class="name-color-preview"
+        style="background:#9C27B0;"
+      ></span>
+
+      <div>
+        <strong>Purple</strong>
+        <small>Royal purple</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- GREEN -->
+
+    <button
+      class="name-color-option"
+      data-name-color="#4CAF50"
+      type="button"
+    >
+
+      <span
+        class="name-color-preview"
+        style="background:#4CAF50;"
+      ></span>
+
+      <div>
+        <strong>Green</strong>
+        <small>Fresh green</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- ORANGE -->
+
+    <button
+      class="name-color-option"
+      data-name-color="#FF9800"
+      type="button"
+    >
+
+      <span
+        class="name-color-preview"
+        style="background:#FF9800;"
+      ></span>
+
+      <div>
+        <strong>Orange</strong>
+        <small>Warm orange</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- RED -->
+
+    <button
+      class="name-color-option"
+      data-name-color="#F44336"
+      type="button"
+    >
+
+      <span
+        class="name-color-preview"
+        style="background:#F44336;"
+      ></span>
+
+      <div>
+        <strong>Red</strong>
+        <small>Bright red</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- PINK -->
+
+    <button
+      class="name-color-option"
+      data-name-color="#E91E63"
+      type="button"
+    >
+
+      <span
+        class="name-color-preview"
+        style="background:#E91E63;"
+      ></span>
+
+      <div>
+        <strong>Pink</strong>
+        <small>Soft pink</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- WHITE -->
+
+    <button
+      class="name-color-option"
+      data-name-color="#FFFFFF"
+      type="button"
+    >
+
+      <span
+        class="name-color-preview"
+        style="background:#FFFFFF;"
+      ></span>
+
+      <div>
+        <strong>White</strong>
+        <small>Clean white</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- RAINBOW -->
+
+    <button
+      class="name-color-option"
+      data-name-color="rainbow"
+      type="button"
+    >
+
+      <span
+        class="name-color-preview rainbow-preview"
+      ></span>
+
+      <div>
+        <strong>Rainbow</strong>
+        <small>Color-changing name</small>
       </div>
 
       <b>›</b>
