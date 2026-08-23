@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en"><head>  <meta charset="UTF-8">  
-<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Friend Zone Chat</title>
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content"
+><title>Friend Zone Chat</title>
 <style>
 
 /* ==================================================
@@ -6602,6 +6605,40 @@ body.dark-mode .unblock-user-btn {
 #callScreen.show {
   display: block;
 }
+  /* ==================================================
+   CHROME MOBILE KEYBOARD FIX
+   DOES NOT FIX/POSITION THE WHOLE APP
+================================================== */
+
+@media (max-width: 600px) {
+
+  html,
+  body {
+    height: 100dvh;
+  }
+
+
+  .container {
+    height: calc(100dvh - 55px);
+  }
+
+
+  .chat-area {
+    min-height: 0;
+  }
+
+
+  #messages {
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+
+  .bottom {
+    flex-shrink: 0;
+  }
+
+  }
 </style>
  </head>
 <body>
