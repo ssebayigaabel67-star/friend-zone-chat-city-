@@ -11956,90 +11956,25 @@ if (savedMessageFont) {
 
 }
 // =====================================
-// NAME COLOR SELECTION
+// NAME COLOR PANEL
 // =====================================
 
-const nameColorButtons =
-  document.querySelectorAll(
-    ".name-color-option"
+const nameColorOption =
+  document.getElementById(
+    "nameColorOption"
+  );
+
+const nameColorPanel =
+  document.getElementById(
+    "nameColorPanel"
+  );
+
+const nameColorCloseBtn =
+  document.getElementById(
+    "nameColorCloseBtn"
   );
 
 
-nameColorButtons.forEach(
-  function (button) {
-
-    button.addEventListener(
-      "click",
-      function () {
-
-        const color =
-          button.dataset.nameColor;
-
-        if (!color) {
-          return;
-        }
-
-
-        // Save color
-
-        localStorage.setItem(
-          "friendszoneNameColor",
-          color
-        );
-
-
-        // Update names already on screen
-
-        const names =
-          document.querySelectorAll(
-            "#messages .message-sender-name"
-          );
-
-
-        names.forEach(
-          function (name) {
-
-            if (
-              color ===
-              "rainbow"
-            ) {
-
-              name.style.color =
-                "transparent";
-
-              name.style.background =
-                "linear-gradient(90deg, red, orange, green, blue, purple)";
-
-              name.style.webkitBackgroundClip =
-                "text";
-
-              name.style.backgroundClip =
-                "text";
-
-            } else {
-
-              name.style.color =
-                color;
-
-              name.style.background =
-                "";
-
-              name.style.webkitBackgroundClip =
-                "";
-
-              name.style.backgroundClip =
-                "";
-
-            }
-
-          }
-        );
-
-      }
-    );
-
-  }
-);
 // OPEN
 
 if (
