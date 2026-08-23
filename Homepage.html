@@ -159,26 +159,29 @@ body {
    LOGOUT BUTTON
 ================================================== */
 
-#logoutBtn {
-  flex-shrink: 0;
+.right-feature-bar #logoutBtn {
 
-  background: red;
+  width: 42px;
+  height: 42px;
 
-  color: white;
+  padding: 0;
 
   border: none;
 
-  padding: 9px 15px;
+  border-radius: 12px;
 
-  border-radius: 50px;
+  background:red;
 
-  cursor: pointer;
+  color: #d32f2f;
 
-  font-size: 14px;
+  font-size: 19px;
 
-  font-weight: bold;
+  display: flex;
 
-  pointer-events: auto;
+  align-items: center;
+
+  justify-content: center;
+
 }
 
 #logoutBtn:active {
@@ -933,31 +936,230 @@ body {
   background: rgba(245,245,245,0.75);
 }
 
+/* ======================
+   CHAT MESSAGES
+====================== */
 
-/* ==================================================
-   MESSAGE
-================================================== */
-
-.message {
-  background: white;
-
-  padding: 10px;
-
-  margin-bottom: 10px;
-
-  border-radius: 8px;
-
-  max-width: 95%;
-
-  word-wrap: break-word;
-
-  overflow-wrap: break-word;
-
-  box-shadow:
-    0 1px 3px rgba(0,0,0,0.08);
+#messages {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
+/* ======================
+   BASE MESSAGE
+====================== */
 
+.message {
+  width: fit-content;
+  max-width: 50%;
+
+  padding: 8px 11px;
+
+  margin-bottom: 4px;
+
+  border-radius: 14px;
+
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+
+  font-size: 15px;
+  line-height: 1.35;
+
+  box-shadow:
+    0 1px 3px rgba(0,0,0,0.12);
+}
+
+/* ======================
+   RECEIVED MESSAGE
+====================== */
+
+.message.received {
+  align-self: flex-start;
+
+  background: #ffffff;
+
+  color: #222;
+
+  border-bottom-left-radius: 4px;
+}
+
+/* ======================
+   SENT MESSAGE
+====================== */
+
+.message.sent {
+  align-self: flex-end;
+
+  background: #2196F3;
+
+  color: white;
+
+  border-bottom-right-radius: 4px;
+}
+
+/* ======================
+   SENDER NAME
+====================== */
+
+.message b {
+  display: block;
+
+  font-size: 11px;
+
+  margin-bottom: 3px;
+
+  opacity: 0.75;
+}
+
+/* Hide your own name */
+
+.message.sent b {
+  display: none;
+}
+
+/* ======================
+   MESSAGE TEXT
+====================== */
+
+.message > div {
+  font-size: 15px;
+
+  line-height: 1.4;
+}
+
+/* ======================
+   TIME / READ RECEIPT
+====================== */
+
+.message small {
+  display: block;
+
+  margin-top: 4px;
+
+  font-size: 10px;
+
+  text-align: right;
+
+  color: #777;
+}
+
+.message.sent small {
+  color: rgba(255,255,255,0.75);
+}
+
+/* ======================
+   REPLY PREVIEW
+====================== */
+
+.message .reply-preview {
+  border-left: 3px solid #25D366;
+
+  padding-left: 7px;
+
+  margin-bottom: 6px;
+
+  font-size: 11px;
+
+  color: #666;
+}
+
+.message.sent .reply-preview {
+  color: rgba(255,255,255,0.8);
+}
+
+/* ======================
+   MESSAGE IMAGE
+====================== */
+
+.message img {
+  display: block;
+
+  max-width: 200px;
+
+  max-height: 250px;
+
+  border-radius: 10px;
+
+  margin-top: 6px;
+}
+
+/* ======================
+   AUDIO
+====================== */
+
+.message audio {
+  width: 200px;
+
+  max-width: 100%;
+
+  margin-top: 6px;
+}
+
+/* ======================
+   MESSAGE BUTTONS
+====================== */
+
+.message button {
+  margin-top: 5px;
+
+  margin-right: 3px;
+
+  padding: 4px 7px;
+
+  border: none;
+
+  border-radius: 6px;
+
+  cursor: pointer;
+
+  font-size: 10px;
+}
+
+.message.received button {
+  background: #eeeeee;
+
+  color: #333;
+}
+
+.message.sent button {
+  background: rgba(255,255,255,0.18);
+
+  color: white;
+}
+
+/* ======================
+   MOBILE
+====================== */
+
+@media (max-width: 600px) {
+
+  .message {
+    max-width: 78%;
+
+    padding: 7px 10px;
+
+    font-size: 14px;
+
+    border-radius: 13px;
+  }
+
+  .message > div {
+    font-size: 14px;
+
+    line-height: 1.35;
+  }
+
+  .message img {
+    max-width: 180px;
+
+    max-height: 220px;
+  }
+
+  .message audio {
+    width: 180px;
+  }
+}
 /* ==================================================
    MESSAGE TIME / SMALL TEXT
 ================================================== */
@@ -1034,7 +1236,7 @@ body {
 
   font-size: 16px;
 
-  height: 50px;
+  height:30px;
 
   border: 1px solid #ccc;
 
@@ -2020,7 +2222,30 @@ body.dark-mode .message {
 body.dark-mode .message small {
   color: #aaa;
 }
+/* ==================================================
+   CHAT SPACE FOR RIGHT FEATURE BAR
+================================================== */
 
+.chat-area {
+
+  margin-right: 58px;
+
+}
+
+
+/* ==================================================
+   MOBILE CHAT SPACE
+================================================== */
+
+@media (max-width: 600px) {
+
+  .chat-area {
+
+    margin-right: 48px;
+
+  }
+
+  }
 
 /* ======================
    MESSAGE BAR
@@ -2602,6 +2827,3837 @@ body.dark-mode #darkModeBtn {
 .sidebar .create-group-main-btn {
   pointer-events: auto;
 }
+  /* ==================================================
+   RIGHT FEATURE SIDEBAR
+================================================== */
+
+.right-feature-bar {
+
+  position: fixed;
+
+  top: 60px;
+  right: 0;
+  bottom: 0;
+
+  width: 58px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 10px 6px;
+
+  background: rgba(255,255,255,0.96);
+
+  border-left: 1px solid #ddd;
+
+  box-shadow:
+    -2px 0 8px rgba(0,0,0,0.12);
+
+  z-index: 1000;
+
+  overflow-y: auto;
+}
+
+
+/* ==================================================
+   RIGHT FEATURE BUTTONS
+================================================== */
+
+.right-feature-bar button {
+
+  width: 42px;
+  height: 42px;
+
+  min-width: 42px;
+  min-height: 42px;
+
+  flex-shrink: 0;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background: #eeeeee;
+
+  color: #222;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 19px;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
+}
+
+
+.right-feature-bar button:hover {
+
+  background: #dddddd;
+
+}
+
+
+.right-feature-bar button:active {
+
+  transform: scale(0.92);
+
+}
+
+
+/* ==================================================
+   LOGOUT
+================================================== */
+
+.right-feature-bar #logoutBtn {
+
+  background: #eeeeee;
+
+  color: #d32f2f;
+
+  font-size: 20px;
+
+}
+
+
+/* ==================================================
+   DELETE ACCOUNT
+================================================== */
+
+.right-feature-bar .delete-feature-btn {
+
+  color: #d32f2f;
+
+}
+
+
+/* ==================================================
+   MOBILE RIGHT FEATURE BAR
+================================================== */
+
+@media (max-width: 600px) {
+
+  .right-feature-bar {
+
+    top: 55px;
+
+    width: 48px;
+
+    padding: 8px 4px;
+
+    gap: 7px;
+
+  }
+
+
+  .right-feature-bar button {
+
+    width: 36px;
+
+    height: 36px;
+
+    min-width: 36px;
+
+    min-height: 36px;
+
+    border-radius: 9px;
+
+    font-size: 16px;
+
+  }
+
+}
+   /* =================================
+   SETTINGS POPOVER
+================================= */
+
+.settings-popover {
+
+  display: none;
+
+  position: fixed;
+
+  top: 50%;
+
+  left: 50%;
+
+  transform:
+    translate(-50%, -50%);
+
+  width: calc(100% - 30px);
+
+  max-width: 360px;
+
+  max-height: 85vh;
+
+  overflow-y: auto;
+
+  padding: 24px 18px;
+
+  background: white;
+
+  color: #222;
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 15px 50px
+    rgba(0,0,0,0.4);
+
+  z-index: 100000;
+
+  text-align: center;
+}
+
+
+.settings-popover.show {
+
+  display: block;
+
+}
+
+
+/* CLOSE */
+
+.settings-close {
+
+  position: absolute;
+
+  top: 10px;
+
+  right: 10px;
+
+  width: 34px;
+
+  height: 34px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #eeeeee;
+
+  color: #333;
+
+  font-size: 17px;
+
+  cursor: pointer;
+
+}
+
+
+.settings-close:hover {
+
+  background: #ddd;
+
+}
+
+
+/* ICON */
+
+.settings-icon {
+
+  font-size: 42px;
+
+  margin-bottom: 5px;
+
+}
+
+
+.settings-popover h2 {
+
+  margin: 5px 0;
+
+  font-size: 22px;
+
+}
+
+
+.settings-subtitle {
+
+  margin: 5px 0 20px;
+
+  color: #777;
+
+  font-size: 13px;
+
+}
+
+
+/* OPTIONS */
+
+.settings-options {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 9px;
+
+}
+
+
+.settings-option {
+
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 12px;
+
+  border: none;
+
+  border-radius: 12px;
+
+  background: #f3f3f3;
+
+  cursor: pointer;
+
+  text-align: left;
+
+}
+
+
+.settings-option:hover {
+
+  background: #e7e7e7;
+
+}
+
+
+.settings-option > span {
+
+  width: 38px;
+
+  height: 38px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background: white;
+
+  border-radius: 10px;
+
+  font-size: 19px;
+
+}
+
+
+.settings-option div {
+
+  flex: 1;
+
+}
+
+
+.settings-option strong {
+
+  display: block;
+
+  font-size: 14px;
+
+}
+
+
+.settings-option small {
+
+  display: block;
+
+  margin-top: 3px;
+
+  color: #777;
+
+  font-size: 11px;
+
+}
+
+
+.settings-option b {
+
+  font-size: 22px;
+
+  color: #888;
+
+}
+
+
+/* =================================
+   DARK MODE
+================================= */
+
+body.dark-mode .settings-popover {
+
+  background: #1e1e1e;
+
+  color: white;
+
+}
+
+
+body.dark-mode .settings-close {
+
+  background: #333;
+
+  color: white;
+
+}
+
+
+body.dark-mode .settings-option {
+
+  background: #2a2a2a;
+
+  color: white;
+
+}
+
+
+body.dark-mode .settings-option:hover {
+
+  background: #383838;
+
+}
+
+
+body.dark-mode .settings-option > span {
+
+  background: #333;
+
+}
+
+
+body.dark-mode .settings-option small {
+
+  color: #aaa;
+
+}
+
+
+/* =================================
+   MOBILE
+================================= */
+
+@media (max-width: 600px) {
+
+  .settings-popover {
+
+    width: calc(100% - 24px);
+
+    padding: 22px 14px;
+
+  }
+
+}
+  /* =====================================
+   NOTIFICATIONS POPOVER
+===================================== */
+
+.notifications-popover {
+
+  display: none;
+
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: 90%;
+  max-width: 360px;
+
+  max-height: 75vh;
+
+  overflow-y: auto;
+
+  background: white;
+
+  color: #222;
+
+  padding: 22px;
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 10px 40px rgba(0,0,0,0.35);
+
+  z-index: 999999 !important;
+
+  text-align: center;
+}
+
+
+/* SHOW */
+
+.notifications-popover.show {
+
+  display: block;
+
+}
+
+
+/* CLOSE BUTTON */
+
+.notifications-close {
+
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+
+  width: 32px;
+  height: 32px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #eeeeee;
+
+  color: #333;
+
+  font-size: 17px;
+
+  cursor: pointer;
+
+}
+
+
+/* NOTIFICATION ICON */
+
+.notifications-icon {
+
+  font-size: 42px;
+
+  margin-bottom: 5px;
+
+}
+
+
+/* TITLE */
+
+.notifications-popover h2 {
+
+  margin: 5px 0;
+
+  font-size: 21px;
+
+}
+
+
+/* SUBTITLE */
+
+.notifications-subtitle {
+
+  margin: 5px 0 15px;
+
+  color: #777;
+
+  font-size: 14px;
+
+}
+
+
+/* NOTIFICATION LIST */
+
+.notifications-list {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+
+}
+
+
+/* EMPTY MESSAGE */
+
+.notification-empty {
+
+  padding: 25px 10px;
+
+  color: #777;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 8px;
+
+  font-size: 14px;
+
+}
+
+
+/* =====================================
+   DARK MODE
+===================================== */
+
+body.dark-mode .notifications-popover {
+
+  background: #1e1e1e;
+
+  color: white;
+
+}
+
+
+body.dark-mode .notifications-close {
+
+  background: #333;
+
+  color: white;
+
+}
+
+
+body.dark-mode .notifications-subtitle {
+
+  color: #aaa;
+
+}
+
+
+body.dark-mode .notification-empty {
+
+  color: #aaa;
+
+}
+  /* =====================================
+   PRIVACY POPOVER
+===================================== */
+
+.privacy-popover {
+
+  display: none;
+
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: 90%;
+  max-width: 360px;
+
+  max-height: 80vh;
+
+  overflow-y: auto;
+
+  background: white;
+
+  color: #222;
+
+  padding: 22px;
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 10px 40px rgba(0,0,0,0.35);
+
+  z-index: 999999 !important;
+
+  text-align: center;
+}
+
+
+/* SHOW */
+
+.privacy-popover.show {
+
+  display: block;
+
+}
+
+
+/* CLOSE BUTTON */
+
+.privacy-close {
+
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+
+  width: 32px;
+  height: 32px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #eeeeee;
+
+  color: #333;
+
+  font-size: 17px;
+
+  cursor: pointer;
+}
+
+
+/* ICON */
+
+.privacy-icon {
+
+  font-size: 42px;
+
+  margin-bottom: 5px;
+
+}
+
+
+/* TITLE */
+
+.privacy-popover h2 {
+
+  margin: 5px 0;
+
+  font-size: 21px;
+
+}
+
+
+/* SUBTITLE */
+
+.privacy-subtitle {
+
+  margin: 5px 0 18px;
+
+  color: #777;
+
+  font-size: 14px;
+
+}
+
+
+/* OPTIONS */
+
+.privacy-options {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 9px;
+
+}
+
+
+/* OPTION */
+
+.privacy-option {
+
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 12px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background: #f5f5f5;
+
+  color: #222;
+
+  cursor: pointer;
+
+  text-align: left;
+}
+
+
+/* ICON */
+
+.privacy-option > span {
+
+  font-size: 22px;
+
+  flex-shrink: 0;
+
+}
+
+
+/* TEXT */
+
+.privacy-option > div {
+
+  flex: 1;
+
+  min-width: 0;
+
+}
+
+
+.privacy-option strong {
+
+  display: block;
+
+  font-size: 14px;
+
+}
+
+
+.privacy-option small {
+
+  display: block;
+
+  margin-top: 3px;
+
+  color: #777;
+
+  font-size: 11px;
+
+}
+
+
+/* ARROW */
+
+.privacy-option > b {
+
+  font-size: 20px;
+
+  color: #777;
+
+}
+
+
+/* HOVER */
+
+.privacy-option:hover {
+
+  background: #eeeeee;
+
+}
+
+
+/* =====================================
+   DARK MODE
+===================================== */
+
+body.dark-mode .privacy-popover {
+
+  background: #1e1e1e;
+
+  color: white;
+
+}
+
+
+body.dark-mode .privacy-close {
+
+  background: #333;
+
+  color: white;
+
+}
+
+
+body.dark-mode .privacy-subtitle {
+
+  color: #aaa;
+
+}
+
+
+body.dark-mode .privacy-option {
+
+  background: #2a2a2a;
+
+  color: white;
+
+}
+
+
+body.dark-mode .privacy-option:hover {
+
+  background: #383838;
+
+}
+
+
+body.dark-mode .privacy-option small {
+
+  color: #aaa;
+
+}
+
+
+body.dark-mode .privacy-option > b {
+
+  color: #aaa;
+
+}
+  /* =====================================
+   ACCOUNT POPOVER
+===================================== */
+
+.account-popover {
+
+  display: none;
+
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: 90%;
+  max-width: 380px;
+
+  max-height: 85vh;
+
+  overflow-y: auto;
+
+  background: white;
+
+  color: #222;
+
+  padding: 25px 20px;
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 15px 50px rgba(0,0,0,0.35);
+
+  z-index: 999999 !important;
+
+  text-align: center;
+}
+
+
+/* ==============================
+   SHOW ACCOUNT POPOVER
+============================== */
+
+.account-popover.show {
+
+  display: block;
+
+}
+
+
+/* ==============================
+   CLOSE BUTTON
+============================== */
+
+.account-close {
+
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+
+  width: 34px;
+  height: 34px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #eeeeee;
+
+  color: #333;
+
+  font-size: 18px;
+
+  cursor: pointer;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+}
+
+
+.account-close:hover {
+
+  background: #ffdddd;
+
+  color: red;
+
+}
+
+
+/* ==============================
+   ACCOUNT ICON
+============================== */
+
+.account-icon {
+
+  width: 70px;
+  height: 70px;
+
+  margin: 5px auto 10px;
+
+  border-radius: 50%;
+
+  background: #f1f3f5;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 38px;
+}
+
+
+/* ==============================
+   TITLE
+============================== */
+
+.account-popover h2 {
+
+  margin: 5px 0;
+
+  font-size: 23px;
+
+}
+
+
+/* ==============================
+   SUBTITLE
+============================== */
+
+.account-subtitle {
+
+  margin: 5px 0 20px;
+
+  color: #777;
+
+  font-size: 14px;
+
+}
+
+
+/* ==============================
+   OPTIONS
+============================== */
+
+.account-options {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+
+  text-align: left;
+}
+
+
+/* ==============================
+   OPTION BUTTON
+============================== */
+
+.account-option {
+
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 13px;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 12px;
+
+  background: #f8f8f8;
+
+  color: #222;
+
+  cursor: pointer;
+
+  text-align: left;
+
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease;
+}
+
+
+.account-option:hover {
+
+  background: #eeeeee;
+
+  transform: translateY(-1px);
+
+}
+
+
+.account-option:active {
+
+  transform: scale(0.98);
+
+}
+
+
+/* ==============================
+   OPTION ICON
+============================== */
+
+.account-option > span {
+
+  width: 38px;
+  height: 38px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: white;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 20px;
+}
+
+
+/* ==============================
+   OPTION TEXT
+============================== */
+
+.account-option > div {
+
+  flex: 1;
+
+  min-width: 0;
+
+}
+
+
+.account-option strong {
+
+  display: block;
+
+  font-size: 14px;
+
+  margin-bottom: 3px;
+}
+
+
+.account-option small {
+
+  display: block;
+
+  color: #777;
+
+  font-size: 11px;
+
+}
+
+
+/* ==============================
+   ARROW
+============================== */
+
+.account-option > b {
+
+  font-size: 22px;
+
+  color: #888;
+
+  flex-shrink: 0;
+}
+
+
+/* ==============================
+   DARK MODE
+============================== */
+
+body.dark-mode .account-popover {
+
+  background: #1e1e1e;
+
+  color: white;
+
+}
+
+
+body.dark-mode .account-close {
+
+  background: #333;
+
+  color: white;
+
+}
+
+
+body.dark-mode .account-close:hover {
+
+  background: #4a2525;
+
+  color: #ff6b6b;
+
+}
+
+
+body.dark-mode .account-icon {
+
+  background: #2a2a2a;
+
+}
+
+
+body.dark-mode .account-subtitle {
+
+  color: #aaa;
+
+}
+
+
+body.dark-mode .account-option {
+
+  background: #2a2a2a;
+
+  border-color: #3a3a3a;
+
+  color: white;
+
+}
+
+
+body.dark-mode .account-option:hover {
+
+  background: #383838;
+
+}
+
+
+body.dark-mode .account-option > span {
+
+  background: #333;
+
+}
+
+
+body.dark-mode .account-option small {
+
+  color: #aaa;
+
+}
+
+
+body.dark-mode .account-option > b {
+
+  color: #aaa;
+
+}
+
+
+/* ==============================
+   MOBILE
+============================== */
+
+@media (max-width: 480px) {
+
+  .account-popover {
+
+    width: calc(100% - 24px);
+
+    padding: 22px 15px;
+
+    border-radius: 18px;
+
+  }
+
+  .account-icon {
+
+    width: 60px;
+    height: 60px;
+
+    font-size: 32px;
+
+  }
+
+  .account-popover h2 {
+
+    font-size: 21px;
+
+  }
+
+  .account-option {
+
+    padding: 11px;
+
+  }
+
+  }
+  /* =====================================
+   APPEARANCE POPOVER
+===================================== */
+
+.appearance-popover {
+
+  display: none;
+
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: 90%;
+  max-width: 380px;
+
+  max-height: 85vh;
+
+  overflow-y: auto;
+
+  background: white;
+
+  color: #222;
+
+  padding: 25px 20px;
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 15px 50px rgba(0,0,0,0.35);
+
+  z-index: 999999 !important;
+
+  text-align: center;
+}
+
+
+/* ==============================
+   SHOW
+============================== */
+
+.appearance-popover.show {
+
+  display: block;
+
+}
+
+
+/* ==============================
+   CLOSE BUTTON
+============================== */
+
+.appearance-close {
+
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+
+  width: 34px;
+  height: 34px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #eeeeee;
+
+  color: #333;
+
+  font-size: 18px;
+
+  cursor: pointer;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+}
+
+
+.appearance-close:hover {
+
+  background: #ffdddd;
+
+  color: red;
+
+}
+
+
+/* ==============================
+   ICON
+============================== */
+
+.appearance-icon {
+
+  width: 70px;
+  height: 70px;
+
+  margin: 5px auto 10px;
+
+  border-radius: 50%;
+
+  background: #f1f3f5;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 38px;
+}
+
+
+/* ==============================
+   TITLE
+============================== */
+
+.appearance-popover h2 {
+
+  margin: 5px 0;
+
+  font-size: 23px;
+
+}
+
+
+/* ==============================
+   SUBTITLE
+============================== */
+
+.appearance-subtitle {
+
+  margin: 5px 0 20px;
+
+  color: #777;
+
+  font-size: 14px;
+
+}
+
+
+/* ==============================
+   OPTIONS
+============================== */
+
+.appearance-options {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+
+  text-align: left;
+}
+
+
+/* ==============================
+   OPTION
+============================== */
+
+.appearance-option {
+
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 13px;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 12px;
+
+  background: #f8f8f8;
+
+  color: #222;
+
+  cursor: pointer;
+
+  text-align: left;
+
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease;
+}
+
+
+.appearance-option:hover {
+
+  background: #eeeeee;
+
+  transform: translateY(-1px);
+
+}
+
+
+.appearance-option:active {
+
+  transform: scale(0.98);
+
+}
+
+
+/* ==============================
+   OPTION ICON
+============================== */
+
+.appearance-option > span {
+
+  width: 38px;
+  height: 38px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: white;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 20px;
+}
+
+
+/* ==============================
+   OPTION TEXT
+============================== */
+
+.appearance-option > div {
+
+  flex: 1;
+
+  min-width: 0;
+}
+
+
+.appearance-option strong {
+
+  display: block;
+
+  font-size: 14px;
+
+  margin-bottom: 3px;
+}
+
+
+.appearance-option small {
+
+  display: block;
+
+  color: #777;
+
+  font-size: 11px;
+}
+
+
+/* ==============================
+   ARROW
+============================== */
+
+.appearance-option > b {
+
+  font-size: 22px;
+
+  color: #888;
+
+  flex-shrink: 0;
+}
+
+
+/* ==============================
+   DARK MODE
+============================== */
+
+body.dark-mode .appearance-popover {
+
+  background: #1e1e1e;
+
+  color: white;
+}
+
+
+body.dark-mode .appearance-close {
+
+  background: #333;
+
+  color: white;
+}
+
+
+body.dark-mode .appearance-close:hover {
+
+  background: #4a2525;
+
+  color: #ff6b6b;
+}
+
+
+body.dark-mode .appearance-icon {
+
+  background: #2a2a2a;
+}
+
+
+body.dark-mode .appearance-subtitle {
+
+  color: #aaa;
+}
+
+
+body.dark-mode .appearance-option {
+
+  background: #2a2a2a;
+
+  border-color: #3a3a3a;
+
+  color: white;
+}
+
+
+body.dark-mode .appearance-option:hover {
+
+  background: #383838;
+}
+
+
+body.dark-mode .appearance-option > span {
+
+  background: #333;
+}
+
+
+body.dark-mode .appearance-option small {
+
+  color: #aaa;
+}
+
+
+body.dark-mode .appearance-option > b {
+
+  color: #aaa;
+}
+
+
+/* ==============================
+   MOBILE
+============================== */
+
+@media (max-width: 480px) {
+
+  .appearance-popover {
+
+    width: calc(100% - 24px);
+
+    padding: 22px 15px;
+
+    border-radius: 18px;
+  }
+
+
+  .appearance-icon {
+
+    width: 60px;
+    height: 60px;
+
+    font-size: 32px;
+  }
+
+
+  .appearance-popover h2 {
+
+    font-size: 21px;
+  }
+
+
+  .appearance-option {
+
+    padding: 11px;
+  }
+
+  }
+  /* =====================================
+   TEXT SIZE POPOVER
+===================================== */
+
+.text-size-popover {
+
+  display: none;
+
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: 90%;
+  max-width: 350px;
+
+  background: white;
+
+  color: #222;
+
+  padding: 24px 18px;
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 15px 50px rgba(0,0,0,0.35);
+
+  z-index: 999999 !important;
+
+  text-align: center;
+}
+
+
+/* ==============================
+   SHOW
+============================== */
+
+.text-size-popover.show {
+
+  display: block;
+
+}
+
+
+/* ==============================
+   CLOSE
+============================== */
+
+.text-size-close {
+
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+
+  width: 34px;
+  height: 34px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #eeeeee;
+
+  color: #333;
+
+  font-size: 18px;
+
+  cursor: pointer;
+}
+
+
+.text-size-close:hover {
+
+  background: #ffdddd;
+
+  color: red;
+
+}
+
+
+/* ==============================
+   ICON
+============================== */
+
+.text-size-icon {
+
+  width: 65px;
+  height: 65px;
+
+  margin: 5px auto 10px;
+
+  border-radius: 50%;
+
+  background: #f1f3f5;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 34px;
+}
+
+
+/* ==============================
+   TITLE
+============================== */
+
+.text-size-popover h2 {
+
+  margin: 5px 0;
+
+  font-size: 22px;
+
+}
+
+
+.text-size-subtitle {
+
+  margin: 5px 0 20px;
+
+  color: #777;
+
+  font-size: 14px;
+
+}
+
+
+/* ==============================
+   OPTIONS
+============================== */
+
+.text-size-options {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+
+}
+
+
+.text-size-option {
+
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 13px;
+
+  padding: 13px;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 12px;
+
+  background: #f8f8f8;
+
+  color: #222;
+
+  cursor: pointer;
+
+  text-align: left;
+}
+
+
+.text-size-option:hover {
+
+  background: #eeeeee;
+
+}
+
+
+/* ==============================
+   SIZE ICON
+============================== */
+
+.text-size-option > span {
+
+  width: 40px;
+  height: 40px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: white;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-weight: bold;
+}
+
+
+/* ==============================
+   DIFFERENT A SIZES
+============================== */
+
+#textSmallBtn span {
+
+  font-size: 14px;
+
+}
+
+
+#textNormalBtn span {
+
+  font-size: 20px;
+
+}
+
+
+#textLargeBtn span {
+
+  font-size: 27px;
+
+}
+
+
+/* ==============================
+   TEXT
+============================== */
+
+.text-size-option div {
+
+  flex: 1;
+
+}
+
+
+.text-size-option strong {
+
+  display: block;
+
+  font-size: 14px;
+
+  margin-bottom: 3px;
+
+}
+
+
+.text-size-option small {
+
+  color: #777;
+
+  font-size: 11px;
+
+}
+
+
+/* ==============================
+   DARK MODE
+============================== */
+
+body.dark-mode .text-size-popover {
+
+  background: #1e1e1e;
+
+  color: white;
+}
+
+
+body.dark-mode .text-size-close {
+
+  background: #333;
+
+  color: white;
+}
+
+
+body.dark-mode .text-size-icon {
+
+  background: #2a2a2a;
+}
+
+
+body.dark-mode .text-size-subtitle {
+
+  color: #aaa;
+}
+
+
+body.dark-mode .text-size-option {
+
+  background: #2a2a2a;
+
+  border-color: #3a3a3a;
+
+  color: white;
+}
+
+
+body.dark-mode .text-size-option:hover {
+
+  background: #383838;
+}
+
+
+body.dark-mode .text-size-option > span {
+
+  background: #333;
+}
+
+
+body.dark-mode .text-size-option small {
+
+  color: #aaa;
+
+}
+
+
+/* ==============================
+   MOBILE
+============================== */
+
+@media (max-width: 480px) {
+
+  .text-size-popover {
+
+    width: calc(100% - 24px);
+
+    padding: 22px 15px;
+
+    border-radius: 18px;
+
+  }
+
+}
+  /* =====================================
+   TEXT SIZE MODES
+===================================== */
+
+
+/* SMALL */
+
+body.text-size-small .message {
+
+  font-size: 13px;
+
+}
+
+
+/* NORMAL */
+
+body.text-size-normal .message {
+
+  font-size: 15px;
+
+}
+
+
+/* LARGE */
+
+body.text-size-large .message {
+
+  font-size: 18px;
+
+}
+
+
+/* MESSAGE TIME */
+
+body.text-size-small .message small {
+
+  font-size: 9px;
+
+}
+
+
+body.text-size-normal .message small {
+
+  font-size: 11px;
+
+}
+
+
+body.text-size-large .message small {
+
+  font-size: 13px;
+
+  }
+  /* =====================================
+   ANIMATIONS POPOVER
+===================================== */
+
+.animation-popover {
+
+  display: none;
+
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: 90%;
+  max-width: 350px;
+
+  background: white;
+
+  color: #222;
+
+  padding: 24px 18px;
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 15px 50px rgba(0,0,0,0.35);
+
+  z-index: 999999 !important;
+
+  text-align: center;
+}
+
+
+/* ==============================
+   SHOW
+============================== */
+
+.animation-popover.show {
+
+  display: block;
+
+}
+
+
+/* ==============================
+   CLOSE BUTTON
+============================== */
+
+.animation-close {
+
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+
+  width: 34px;
+  height: 34px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #eeeeee;
+
+  color: #333;
+
+  font-size: 18px;
+
+  cursor: pointer;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+}
+
+
+.animation-close:hover {
+
+  background: #ffdddd;
+
+  color: red;
+
+}
+
+
+/* ==============================
+   ICON
+============================== */
+
+.animation-icon {
+
+  width: 65px;
+  height: 65px;
+
+  margin: 5px auto 10px;
+
+  border-radius: 50%;
+
+  background: #f1f3f5;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 34px;
+}
+
+
+/* ==============================
+   TITLE
+============================== */
+
+.animation-popover h2 {
+
+  margin: 5px 0;
+
+  font-size: 22px;
+
+}
+
+
+.animation-subtitle {
+
+  margin: 5px 0 20px;
+
+  color: #777;
+
+  font-size: 14px;
+
+}
+
+
+/* ==============================
+   OPTIONS
+============================== */
+
+.animation-options {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+
+}
+
+
+.animation-option {
+
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 13px;
+
+  padding: 13px;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 12px;
+
+  background: #f8f8f8;
+
+  color: #222;
+
+  cursor: pointer;
+
+  text-align: left;
+
+}
+
+
+.animation-option:hover {
+
+  background: #eeeeee;
+
+}
+
+
+/* ==============================
+   OPTION ICON
+============================== */
+
+.animation-option > span {
+
+  width: 40px;
+  height: 40px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: white;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 20px;
+}
+
+
+/* ==============================
+   OPTION TEXT
+============================== */
+
+.animation-option > div {
+
+  flex: 1;
+
+}
+
+
+.animation-option strong {
+
+  display: block;
+
+  font-size: 14px;
+
+  margin-bottom: 3px;
+
+}
+
+
+.animation-option small {
+
+  color: #777;
+
+  font-size: 11px;
+
+}
+
+
+/* ==============================
+   ARROW
+============================== */
+
+.animation-option > b {
+
+  font-size: 22px;
+
+  color: #888;
+
+}
+
+
+/* ==============================
+   DARK MODE
+============================== */
+
+body.dark-mode .animation-popover {
+
+  background: #1e1e1e;
+
+  color: white;
+}
+
+
+body.dark-mode .animation-close {
+
+  background: #333;
+
+  color: white;
+}
+
+
+body.dark-mode .animation-icon {
+
+  background: #2a2a2a;
+}
+
+
+body.dark-mode .animation-subtitle {
+
+  color: #aaa;
+}
+
+
+body.dark-mode .animation-option {
+
+  background: #2a2a2a;
+
+  border-color: #3a3a3a;
+
+  color: white;
+}
+
+
+body.dark-mode .animation-option:hover {
+
+  background: #383838;
+}
+
+
+body.dark-mode .animation-option > span {
+
+  background: #333;
+}
+
+
+body.dark-mode .animation-option small {
+
+  color: #aaa;
+}
+
+
+/* ==============================
+   MOBILE
+============================== */
+
+@media (max-width: 480px) {
+
+  .animation-popover {
+
+    width: calc(100% - 24px);
+
+    padding: 22px 15px;
+
+    border-radius: 18px;
+
+  }
+
+}
+  /* =====================================
+   DISABLE ANIMATIONS
+===================================== */
+
+body.animations-off *,
+body.animations-off *::before,
+body.animations-off *::after {
+
+  animation: none !important;
+
+  transition: none !important;
+
+  scroll-behavior: auto !important;
+}
+  /* =====================================
+   PRIVACY POPOVER
+===================================== */
+
+.privacy-popover {
+
+  display: none;
+
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: 90%;
+  max-width: 380px;
+
+  max-height: 85vh;
+
+  overflow-y: auto;
+
+  background: white;
+
+  color: #222;
+
+  padding: 25px 20px;
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 15px 50px rgba(0,0,0,0.35);
+
+  z-index: 999999 !important;
+
+  text-align: center;
+}
+
+
+/* ==============================
+   SHOW
+============================== */
+
+.privacy-popover.show {
+
+  display: block;
+
+}
+
+
+/* ==============================
+   CLOSE BUTTON
+============================== */
+
+.privacy-close {
+
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+
+  width: 34px;
+  height: 34px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #eeeeee;
+
+  color: #333;
+
+  font-size: 18px;
+
+  cursor: pointer;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+}
+
+
+.privacy-close:hover {
+
+  background: #ffdddd;
+
+  color: red;
+
+}
+
+
+.privacy-close:active {
+
+  transform: scale(0.9);
+
+}
+
+
+/* ==============================
+   PRIVACY ICON
+============================== */
+
+.privacy-icon {
+
+  width: 70px;
+  height: 70px;
+
+  margin: 5px auto 10px;
+
+  border-radius: 50%;
+
+  background: #f1f3f5;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 38px;
+}
+
+
+/* ==============================
+   TITLE
+============================== */
+
+.privacy-popover h2 {
+
+  margin: 5px 0;
+
+  font-size: 23px;
+
+}
+
+
+/* ==============================
+   SUBTITLE
+============================== */
+
+.privacy-subtitle {
+
+  margin: 5px 0 20px;
+
+  color: #777;
+
+  font-size: 14px;
+
+}
+
+
+/* ==============================
+   OPTIONS
+============================== */
+
+.privacy-options {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+
+  text-align: left;
+}
+
+
+/* ==============================
+   OPTION
+============================== */
+
+.privacy-option {
+
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 13px;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 12px;
+
+  background: #f8f8f8;
+
+  color: #222;
+
+  cursor: pointer;
+
+  text-align: left;
+
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease;
+}
+
+
+.privacy-option:hover {
+
+  background: #eeeeee;
+
+  transform: translateY(-1px);
+
+}
+
+
+.privacy-option:active {
+
+  transform: scale(0.98);
+
+}
+
+
+/* ==============================
+   OPTION ICON
+============================== */
+
+.privacy-option > span {
+
+  width: 38px;
+  height: 38px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: white;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 19px;
+}
+
+
+/* ==============================
+   OPTION TEXT
+============================== */
+
+.privacy-option > div {
+
+  flex: 1;
+
+  min-width: 0;
+}
+
+
+.privacy-option strong {
+
+  display: block;
+
+  font-size: 14px;
+
+  margin-bottom: 3px;
+}
+
+
+.privacy-option small {
+
+  display: block;
+
+  color: #777;
+
+  font-size: 11px;
+
+  line-height: 1.3;
+}
+
+
+/* ==============================
+   ARROW
+============================== */
+
+.privacy-option > b {
+
+  font-size: 22px;
+
+  color: #888;
+
+  flex-shrink: 0;
+}
+
+
+/* ==============================
+   DARK MODE
+============================== */
+
+body.dark-mode .privacy-popover {
+
+  background: #1e1e1e;
+
+  color: white;
+}
+
+
+body.dark-mode .privacy-close {
+
+  background: #333;
+
+  color: white;
+}
+
+
+body.dark-mode .privacy-close:hover {
+
+  background: #4a2525;
+
+  color: #ff6b6b;
+}
+
+
+body.dark-mode .privacy-icon {
+
+  background: #2a2a2a;
+}
+
+
+body.dark-mode .privacy-subtitle {
+
+  color: #aaa;
+}
+
+
+body.dark-mode .privacy-option {
+
+  background: #2a2a2a;
+
+  border-color: #3a3a3a;
+
+  color: white;
+}
+
+
+body.dark-mode .privacy-option:hover {
+
+  background: #383838;
+}
+
+
+body.dark-mode .privacy-option > span {
+
+  background: #333;
+}
+
+
+body.dark-mode .privacy-option small {
+
+  color: #aaa;
+}
+
+
+body.dark-mode .privacy-option > b {
+
+  color: #aaa;
+}
+
+
+/* ==============================
+   MOBILE
+============================== */
+
+@media (max-width: 480px) {
+
+  .privacy-popover {
+
+    width: calc(100% - 24px);
+
+    padding: 22px 15px;
+
+    border-radius: 18px;
+
+  }
+
+
+  .privacy-icon {
+
+    width: 60px;
+    height: 60px;
+
+    font-size: 32px;
+
+  }
+
+
+  .privacy-popover h2 {
+
+    font-size: 21px;
+
+  }
+
+
+  .privacy-option {
+
+    padding: 11px;
+
+  }
+
+  }
+  /* =====================================
+   PRIVACY SUB POPOVER
+===================================== */
+
+.privacy-sub-popover {
+
+  display: none;
+
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: 90%;
+  max-width: 350px;
+
+  background: white;
+
+  color: #222;
+
+  padding: 24px 18px;
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 15px 50px rgba(0,0,0,0.35);
+
+  z-index: 1000000 !important;
+
+  text-align: center;
+}
+
+
+/* ==============================
+   SHOW
+============================== */
+
+.privacy-sub-popover.show {
+
+  display: block;
+
+}
+
+
+/* ==============================
+   CLOSE
+============================== */
+
+.privacy-sub-close {
+
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+
+  width: 34px;
+  height: 34px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #eeeeee;
+
+  color: #333;
+
+  font-size: 18px;
+
+  cursor: pointer;
+}
+
+
+.privacy-sub-close:hover {
+
+  background: #ffdddd;
+
+  color: red;
+
+}
+
+
+/* ==============================
+   ICON
+============================== */
+
+.privacy-sub-icon {
+
+  width: 65px;
+  height: 65px;
+
+  margin: 5px auto 10px;
+
+  border-radius: 50%;
+
+  background: #f1f3f5;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 34px;
+}
+
+
+/* ==============================
+   TITLE
+============================== */
+
+.privacy-sub-popover h2 {
+
+  margin: 5px 0;
+
+  font-size: 22px;
+
+}
+
+
+.privacy-sub-popover > p {
+
+  margin: 5px 0 20px;
+
+  color: #777;
+
+  font-size: 13px;
+
+}
+
+
+/* ==============================
+   CHOICES
+============================== */
+
+.privacy-choice-list {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+
+}
+
+
+.privacy-choice {
+
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 13px;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 12px;
+
+  background: #f8f8f8;
+
+  color: #222;
+
+  cursor: pointer;
+
+  text-align: left;
+
+}
+
+
+.privacy-choice:hover {
+
+  background: #eeeeee;
+
+}
+
+
+/* ==============================
+   CHOICE ICON
+============================== */
+
+.privacy-choice > span {
+
+  width: 40px;
+  height: 40px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: white;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 20px;
+}
+
+
+/* ==============================
+   CHOICE TEXT
+============================== */
+
+.privacy-choice > div {
+
+  flex: 1;
+
+}
+
+
+.privacy-choice strong {
+
+  display: block;
+
+  font-size: 14px;
+
+  margin-bottom: 3px;
+
+}
+
+
+.privacy-choice small {
+
+  display: block;
+
+  color: #777;
+
+  font-size: 11px;
+
+}
+
+
+/* ==============================
+   DARK MODE
+============================== */
+
+body.dark-mode .privacy-sub-popover {
+
+  background: #1e1e1e;
+
+  color: white;
+}
+
+
+body.dark-mode .privacy-sub-close {
+
+  background: #333;
+
+  color: white;
+
+}
+
+
+body.dark-mode .privacy-sub-icon {
+
+  background: #2a2a2a;
+
+}
+
+
+body.dark-mode .privacy-sub-popover > p {
+
+  color: #aaa;
+
+}
+
+
+body.dark-mode .privacy-choice {
+
+  background: #2a2a2a;
+
+  border-color: #3a3a3a;
+
+  color: white;
+
+}
+
+
+body.dark-mode .privacy-choice:hover {
+
+  background: #383838;
+
+}
+
+
+body.dark-mode .privacy-choice > span {
+
+  background: #333;
+
+}
+
+
+body.dark-mode .privacy-choice small {
+
+  color: #aaa;
+
+}
+
+
+/* ==============================
+   MOBILE
+============================== */
+
+@media (max-width: 480px) {
+
+  .privacy-sub-popover {
+
+    width: calc(100% - 24px);
+
+    padding: 22px 15px;
+
+    border-radius: 18px;
+
+  }
+
+}
+  /* =====================================
+   SELECTED PRIVACY OPTION
+===================================== */
+
+.privacy-choice.selected {
+
+  border: 2px solid #25D366;
+
+  background: #eafff1;
+
+}
+
+
+/* CHECK MARK */
+
+.privacy-check {
+
+  margin-left: auto;
+
+  width: 25px;
+  height: 25px;
+
+  border-radius: 50%;
+
+  background: #25D366;
+
+  color: white;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 14px;
+
+  font-weight: bold;
+
+}
+
+
+/* DARK MODE */
+
+body.dark-mode .privacy-choice.selected {
+
+  background: #173d29;
+
+  border-color: #25D366;
+
+}
+  /* =====================================
+   BLOCKED USERS POPOVER
+===================================== */
+
+.blocked-users-popover {
+
+  display: none;
+
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: 90%;
+  max-width: 380px;
+
+  max-height: 80vh;
+
+  overflow-y: auto;
+
+  padding: 24px 18px;
+
+  background: white;
+
+  color: #222;
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 15px 50px rgba(0,0,0,0.35);
+
+  z-index: 1000000 !important;
+
+  text-align: center;
+}
+
+
+/* =====================================
+   SHOW
+===================================== */
+
+.blocked-users-popover.show {
+
+  display: block;
+
+}
+
+
+/* =====================================
+   CLOSE BUTTON
+===================================== */
+
+.blocked-users-close {
+
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+
+  width: 34px;
+  height: 34px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #eeeeee;
+
+  color: #333;
+
+  font-size: 18px;
+
+  cursor: pointer;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+}
+
+
+.blocked-users-close:hover {
+
+  background: #ffdddd;
+
+  color: red;
+
+}
+
+
+/* =====================================
+   ICON
+===================================== */
+
+.blocked-users-icon {
+
+  width: 70px;
+  height: 70px;
+
+  margin: 5px auto 10px;
+
+  border-radius: 50%;
+
+  background: #f1f3f5;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 36px;
+}
+
+
+/* =====================================
+   TITLE
+===================================== */
+
+.blocked-users-popover h2 {
+
+  margin: 5px 0;
+
+  font-size: 23px;
+
+}
+
+
+/* =====================================
+   SUBTITLE
+===================================== */
+
+.blocked-users-subtitle {
+
+  margin: 5px 0 20px;
+
+  color: #777;
+
+  font-size: 13px;
+
+}
+
+
+/* =====================================
+   LIST
+===================================== */
+
+.blocked-users-list {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+
+  text-align: left;
+}
+
+
+/* =====================================
+   EMPTY STATE
+===================================== */
+
+.blocked-users-empty {
+
+  padding: 25px 15px;
+
+  text-align: center;
+
+  border-radius: 15px;
+
+  background: #f8f8f8;
+
+}
+
+
+.blocked-empty-icon {
+
+  font-size: 40px;
+
+  margin-bottom: 10px;
+}
+
+
+.blocked-users-empty strong {
+
+  display: block;
+
+  font-size: 15px;
+
+  margin-bottom: 5px;
+}
+
+
+.blocked-users-empty small {
+
+  display: block;
+
+  color: #777;
+
+  font-size: 12px;
+
+}
+
+
+/* =====================================
+   BLOCKED USER ITEM
+   We'll use this later
+===================================== */
+
+.blocked-user-item {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 12px;
+
+  background: #f8f8f8;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 13px;
+}
+
+
+.blocked-user-avatar {
+
+  width: 45px;
+  height: 45px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  flex-shrink: 0;
+}
+
+
+.blocked-user-info {
+
+  flex: 1;
+
+  min-width: 0;
+}
+
+
+.blocked-user-info strong {
+
+  display: block;
+
+  font-size: 14px;
+
+}
+
+
+.blocked-user-info small {
+
+  display: block;
+
+  margin-top: 3px;
+
+  color: #777;
+
+  font-size: 11px;
+}
+
+
+.unblock-user-btn {
+
+  border: none;
+
+  padding: 8px 10px;
+
+  border-radius: 9px;
+
+  background: #eeeeee;
+
+  color: #333;
+
+  cursor: pointer;
+
+  font-size: 11px;
+}
+
+
+.unblock-user-btn:hover {
+
+  background: #ffdddd;
+
+  color: red;
+
+}
+
+
+/* =====================================
+   DARK MODE
+===================================== */
+
+body.dark-mode .blocked-users-popover {
+
+  background: #1e1e1e;
+
+  color: white;
+
+}
+
+
+body.dark-mode .blocked-users-close {
+
+  background: #333;
+
+  color: white;
+
+}
+
+
+body.dark-mode .blocked-users-icon {
+
+  background: #2a2a2a;
+
+}
+
+
+body.dark-mode .blocked-users-subtitle {
+
+  color: #aaa;
+
+}
+
+
+body.dark-mode .blocked-users-empty {
+
+  background: #2a2a2a;
+
+}
+
+
+body.dark-mode .blocked-users-empty small {
+
+  color: #aaa;
+
+}
+
+
+body.dark-mode .blocked-user-item {
+
+  background: #2a2a2a;
+
+  border-color: #3a3a3a;
+
+}
+
+
+body.dark-mode .blocked-user-info small {
+
+  color: #aaa;
+
+}
+
+
+body.dark-mode .unblock-user-btn {
+
+  background: #3a3a3a;
+
+  color: white;
+
+  }
+  /* ==================================================
+   CLEAN COMPACT MESSAGE BUBBLES
+================================================== */
+
+.message {
+
+  width: fit-content;
+
+  max-width: min(70%, 420px);
+
+  padding: 6px 9px;
+
+  margin: 0 0 2px 0;
+
+  border-radius: 12px;
+
+  font-size: 14px;
+
+  line-height: 1.3;
+
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.12);
+
+}
+
+
+/* RECEIVED */
+
+.message.received {
+
+  border-bottom-left-radius: 3px;
+
+}
+
+
+/* SENT */
+
+.message.sent {
+
+  border-bottom-right-radius: 3px;
+
+}
+
+
+/* MESSAGE TEXT */
+
+.message > div {
+
+  font-size: 14px;
+
+  line-height: 1.3;
+
+}
+
+
+/* SENDER */
+
+.message b {
+
+  font-size: 10px;
+
+  margin-bottom: 2px;
+
+}
+
+
+/* TIME */
+
+.message small {
+
+  font-size: 9px;
+
+  margin-top: 3px;
+
+  line-height: 1;
+
+}
+
+
+/* REPLY */
+
+.message .reply-preview {
+
+  padding-left: 6px;
+
+  margin-bottom: 4px;
+
+  font-size: 10px;
+
+}
+
+
+/* IMAGE */
+
+.message img {
+
+  max-width: 160px;
+
+  max-height: 200px;
+
+  margin-top: 4px;
+
+  border-radius: 8px;
+
+}
+
+
+/* AUDIO */
+
+.message audio {
+
+  width: 180px;
+
+  margin-top: 4px;
+
+}
+
+
+/* MOBILE BUBBLES */
+
+@media (max-width: 600px) {
+
+  .message {
+
+    max-width: 76%;
+
+    padding: 6px 8px;
+
+    border-radius: 11px;
+
+    font-size: 13px;
+
+  }
+
+
+  .message > div {
+
+    font-size: 13px;
+
+    line-height: 1.3;
+
+  }
+
+
+  .message small {
+
+    font-size: 9px;
+
+  }
+
+
+  .message img {
+
+    max-width: 145px;
+
+    max-height: 180px;
+
+  }
+
+
+  .message audio {
+
+    width: 165px;
+
+  }
+
+  }
+  /* ==================================================
+   MOBILE CHROME CHAT LAYOUT FIX
+================================================== */
+
+@media (max-width: 600px) {
+
+  html,
+  body {
+    height: 100%;
+    height: 100dvh;
+
+    overflow: hidden;
+  }
+
+
+  .header {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: 55px;
+
+    z-index: 5000;
+  }
+
+
+  .container {
+    position: fixed;
+
+    top: 55px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    width: 100%;
+
+    height: auto;
+
+    overflow: hidden;
+  }
+
+
+  .chat-area {
+
+    height: 100%;
+
+    min-height: 0;
+
+    margin-right: 48px;
+
+  }
+
+
+  #messages {
+
+    flex: 1;
+
+    min-height: 0;
+
+    overflow-y: auto;
+
+    overscroll-behavior: contain;
+
+    -webkit-overflow-scrolling: touch;
+
+  }
+
+
+  .bottom {
+
+    flex-shrink: 0;
+
+    position: relative;
+
+    z-index: 100;
+
+  }
+
+}
   </style>
  </head>
 <body>
@@ -2637,25 +6693,6 @@ body.dark-mode #darkModeBtn {
     </h3>
 
 
-    <!-- DARK MODE -->
-
-    <button
-      id="darkModeBtn"
-      type="button"
-    >
-      🌙
-    </button>
-
-
-    <!-- LOGOUT -->
-
-    <button
-      id="logoutBtn"
-      type="button"
-    >
-      Logout
-    </button>
-
   </div>
 
 </div>
@@ -2673,7 +6710,43 @@ body.dark-mode #darkModeBtn {
   class="sidebar-overlay"
 ></div>
 
+<!-- =================================
+     RIGHT FEATURE SIDEBAR
+================================= -->
 
+<div class="right-feature-bar">
+
+  <button
+    class="right-feature-btn"
+    id="rightProfileBtn"
+    title="My Profile"
+  >
+    👤
+  </button>
+    <button
+      id="darkModeBtn"
+      type="button"
+    >
+      🌙
+    </button>
+  <button
+    class="right-feature-btn"
+    id="rightSettingsBtn"
+    title="Settings"
+  >
+    ⚙️
+  </button>
+  <button
+    class="right-feature-btn delete-feature-btn"
+    id="rightDeleteAccountBtn"
+    title="Delete Account"
+  >
+    🗑️
+  </button>
+<button id="logoutBtn" title="Logout">
+  &#9762;
+</button>
+</div>
 <!-- ==================================================
      MAIN CONTAINER
 ================================================== -->
@@ -3784,7 +7857,7 @@ body.dark-mode #darkModeBtn {
       id="addFriendBtn"
       type="button"
     >
-      🤝 Add Friend
+    Add Friend
     </button>
 
   </div>
@@ -3944,6 +8017,1213 @@ body.dark-mode #darkModeBtn {
   type="module"
   src="Calls.js"
 ></script>
+<!-- =================================
+     SETTINGS POPOVER
+================================= -->
 
+<div
+  id="settingsPopover"
+  class="settings-popover"
+>
+
+  <button
+    id="settingsCloseBtn"
+    class="settings-close"
+  >
+    ✕
+  </button>
+
+  <div class="settings-icon">
+    ⚙️
+  </div>
+
+  <h2>Settings</h2>
+
+  <p class="settings-subtitle">
+    Manage your FriendsZone settings
+  </p>
+
+
+  <div class="settings-options">
+
+    <button
+      class="settings-option"
+      id="settingsAppearanceBtn"
+    >
+      <span>🎨</span>
+
+      <div>
+        <strong>Appearance</strong>
+        <small>Dark mode and display</small>
+      </div>
+
+      <b>›</b>
+    </button>
+
+
+    <button
+      class="settings-option"
+      id="settingsAccountBtn"
+    >
+      <span>👤</span>
+
+      <div>
+        <strong>Account</strong>
+        <small>Manage your account</small>
+      </div>
+
+      <b>›</b>
+    </button>
+
+
+    <button
+      class="settings-option"
+      id="settingsNotificationsBtn"
+    >
+      <span>🔔</span>
+
+      <div>
+        <strong>Notifications</strong>
+        <small>Notification preferences</small>
+      </div>
+
+      <b>›</b>
+    </button>
+
+    <button
+      class="settings-option"
+      id="settingsPrivacyBtn"
+    >
+      <span>🛡️</span>
+
+      <div>
+        <strong>Privacy</strong>
+        <small>Control your privacy</small>
+      </div>
+
+      <b>›</b>
+    </button>
+
+  </div>
+
+</div>
+    <button
+    class="right-feature-btn"
+    id="rightHelpBtn"
+    title="Help"
+  >
+    ❓
+  </button>
+
+  <!-- =====================================
+     DELETE ACCOUNT POPOVER
+===================================== -->
+
+<div
+  id="deleteAccountPopover"
+  class="delete-account-popover"
+>
+
+  <button
+    id="deleteAccountCloseBtn"
+    class="delete-account-close"
+  >
+    ✕
+  </button>
+
+
+  <div class="delete-account-icon">
+    ⚠️
+  </div>
+
+
+  <h2>Delete Account</h2>
+
+
+  <p>
+    Are you sure you want to delete your
+    FriendsZone account?
+  </p>
+
+
+  <p class="delete-account-warning">
+    This action cannot be undone.
+  </p>
+
+
+  <div class="delete-account-actions">
+
+    <button
+      id="cancelDeleteAccountBtn"
+    >
+      Cancel
+    </button>
+
+
+    <button
+      id="confirmDeleteAccountBtn"
+    >
+      🗑️ Delete Account
+    </button>
+
+  </div>
+
+</div>
+      <!-- =====================================
+     NOTIFICATIONS POPOVER
+===================================== -->
+
+<div
+  id="notificationsPopover"
+  class="notifications-popover"
+>
+
+  <button
+    id="notificationsCloseBtn"
+    class="notifications-close"
+  >
+    ✕
+  </button>
+
+
+  <div class="notifications-icon">
+    🔔
+  </div>
+
+
+  <h2>Notifications</h2>
+
+  <p class="notifications-subtitle">
+    Your FriendsZone activity
+  </p>
+
+
+  <div
+    id="notificationsList"
+    class="notifications-list"
+  >
+
+    <div class="notification-empty">
+      🔔
+      <span>No new notifications</span>
+    </div>
+
+  </div>
+
+</div>
+  <!-- =====================================
+     PRIVACY POPOVER
+===================================== -->
+
+<div
+  id="privacyPopover"
+  class="privacy-popover"
+>
+
+  <button
+    id="privacyCloseBtn"
+    class="privacy-close"
+  >
+    ✕
+  </button>
+
+
+  <div class="privacy-icon">
+    🛡️
+  </div>
+
+
+  <h2>Privacy</h2>
+
+  <p class="privacy-subtitle">
+    Control your FriendsZone privacy
+  </p>
+
+
+  <div class="privacy-options">
+
+    <button
+      class="privacy-option"
+      id="onlineStatusPrivacyBtn"
+    >
+      <span>🟢</span>
+
+      <div>
+        <strong>Online Status</strong>
+        <small>Control who can see you online</small>
+      </div>
+
+      <b>›</b>
+    </button>
+
+
+    <button
+      class="privacy-option"
+      id="profilePrivacyBtn"
+    >
+      <span>👤</span>
+
+      <div>
+        <strong>Profile Privacy</strong>
+        <small>Control who can view your profile</small>
+      </div>
+
+      <b>›</b>
+    </button>
+
+
+    <button
+      class="privacy-option"
+      id="messagePrivacyBtn"
+    >
+      <span>💬</span>
+
+      <div>
+        <strong>Messages</strong>
+        <small>Control who can contact you</small>
+      </div>
+
+      <b>›</b>
+    </button>
+
+  </div>
+
+</div>
+  <!-- =====================================
+     ACCOUNT POPOVER
+===================================== -->
+
+<div
+  id="accountPopover"
+  class="account-popover"
+>
+
+  <button
+    id="accountCloseBtn"
+    class="account-close"
+  >
+    ✕
+  </button>
+
+
+  <div class="account-icon">
+    👤
+  </div>
+
+
+  <h2>Account</h2>
+
+  <p class="account-subtitle">
+    Manage your FriendsZone account
+  </p>
+
+
+  <div class="account-options">
+
+    <button
+      class="account-option"
+      id="accountInfoBtn"
+    >
+
+      <span>📋</span>
+
+      <div>
+        <strong>Account Information</strong>
+        <small>View your account details</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <button
+      class="account-option"
+      id="editAccountBtn"
+    >
+
+      <span>✏️</span>
+
+      <div>
+        <strong>Edit Account</strong>
+        <small>Update your account information</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <button
+      class="account-option"
+      id="changePasswordBtn"
+    >
+
+      <span>🔑</span>
+
+      <div>
+        <strong>Change Password</strong>
+        <small>Update your password</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+    <button
+      class="privacy-option"
+      id="profileVisibilityBtn"
+    >
+
+      <span>👤</span>
+
+      <div>
+        <strong>Profile Visibility</strong>
+
+        <small>
+          Choose who can view your profile
+        </small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+    <button
+      class="account-option"
+      id="changeEmailBtn"
+    >
+
+      <span>📧</span>
+
+      <div>
+        <strong>Change Email</strong>
+        <small>Update your email address</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+  </div>
+
+</div>
+  <!-- =====================================
+     APPEARANCE POPOVER
+===================================== -->
+
+<div
+  id="appearancePopover"
+  class="appearance-popover"
+>
+
+  <!-- CLOSE -->
+  <button
+    id="appearanceCloseBtn"
+    class="appearance-close"
+  >
+    ✕
+  </button>
+
+
+  <!-- ICON -->
+  <div class="appearance-icon">
+    🎨
+  </div>
+
+
+  <h2>Appearance</h2>
+
+  <p class="appearance-subtitle">
+    Customize how FriendsZone looks
+  </p>
+
+
+  <div class="appearance-options">
+
+
+    <!-- DARK MODE -->
+    <button
+      class="appearance-option"
+      id="appearanceDarkModeBtn"
+    >
+
+      <span>🌙</span>
+
+      <div>
+        <strong>Dark Mode</strong>
+
+        <small>
+          Use a darker appearance
+        </small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- LIGHT MODE -->
+    <button
+      class="appearance-option"
+      id="appearanceLightModeBtn"
+    >
+
+      <span>☀️</span>
+
+      <div>
+        <strong>Light Mode</strong>
+
+        <small>
+          Use a bright appearance
+        </small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- SYSTEM DEFAULT -->
+    <button
+      class="appearance-option"
+      id="appearanceSystemBtn"
+    >
+
+      <span>🌓</span>
+
+      <div>
+        <strong>System Default</strong>
+
+        <small>
+          Follow your device theme
+        </small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- TEXT SIZE -->
+    <button
+      class="appearance-option"
+      id="appearanceTextSizeBtn"
+    >
+
+      <span>🔤</span>
+
+      <div>
+        <strong>Text Size</strong>
+
+        <small>
+          Adjust message and interface text
+        </small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- ANIMATIONS -->
+    <button
+      class="appearance-option"
+      id="appearanceAnimationBtn"
+    >
+
+      <span>✨</span>
+
+      <div>
+        <strong>Animations</strong>
+
+        <small>
+          Control interface animations
+        </small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+  </div>
+
+</div>
+  <!-- =====================================
+     TEXT SIZE POPOVER
+===================================== -->
+
+<div
+  id="textSizePopover"
+  class="text-size-popover"
+>
+
+  <button
+    id="textSizeCloseBtn"
+    class="text-size-close"
+  >
+    ✕
+  </button>
+
+  <div class="text-size-icon">
+    🔤
+  </div>
+
+  <h2>Text Size</h2>
+
+  <p class="text-size-subtitle">
+    Choose how large the text should appear
+  </p>
+
+  <div class="text-size-options">
+
+    <button
+      class="text-size-option"
+      id="textSmallBtn"
+    >
+      <span>A</span>
+      <div>
+        <strong>Small</strong>
+        <small>Smaller text</small>
+      </div>
+    </button>
+
+    <button
+      class="text-size-option"
+      id="textNormalBtn"
+    >
+      <span>A</span>
+      <div>
+        <strong>Normal</strong>
+        <small>Default text size</small>
+      </div>
+    </button>
+
+    <button
+      class="text-size-option"
+      id="textLargeBtn"
+    >
+      <span>A</span>
+      <div>
+        <strong>Large</strong>
+        <small>Larger and easier to read</small>
+      </div>
+    </button>
+
+  </div>
+
+</div>
+  <!-- =====================================
+     ANIMATIONS POPOVER
+===================================== -->
+
+<div
+  id="animationPopover"
+  class="animation-popover"
+>
+
+  <button
+    id="animationCloseBtn"
+    class="animation-close"
+  >
+    ✕
+  </button>
+
+  <div class="animation-icon">
+    ✨
+  </div>
+
+  <h2>Animations</h2>
+
+  <p class="animation-subtitle">
+    Control FriendsZone animations
+  </p>
+
+  <div class="animation-options">
+
+    <button
+      class="animation-option"
+      id="animationsOnBtn"
+    >
+
+      <span>✨</span>
+
+      <div>
+        <strong>Animations On</strong>
+        <small>Use normal interface animations</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <button
+      class="animation-option"
+      id="animationsOffBtn"
+    >
+
+      <span>⏸️</span>
+
+      <div>
+        <strong>Animations Off</strong>
+        <small>Reduce interface movement</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+  </div>
+
+</div>
+  <!-- =====================================
+     PRIVACY POPOVER
+===================================== -->
+
+<div
+  id="privacyPopover"
+  class="privacy-popover"
+>
+
+  <button
+    id="privacyCloseBtn"
+    class="privacy-close"
+  >
+    ✕
+  </button>
+
+
+  <div class="privacy-icon">
+    🛡️
+  </div>
+
+
+  <h2>Privacy</h2>
+
+  <p class="privacy-subtitle">
+    Control your FriendsZone privacy
+  </p>
+
+
+  <div class="privacy-options">
+
+
+    <!-- ONLINE STATUS -->
+
+    <
+      class="privacy-option"
+      id="onlineStatusPrivacyBtn"
+    >
+
+      <span>👁️</span>
+
+      <div>
+        <strong>Online Status</strong>
+
+        <small>
+          Control who can see you online
+        </small>
+      </div>
+
+      <b>›</b>
+
+
+<!-- LAST SEEN -->
+
+<button
+  class="privacy-option"
+  id="lastSeenPrivacyBtn"
+>
+
+  <span>🕐</span>
+
+  <div>
+    <strong>Last Seen</strong>
+
+    <small>
+      Control your last activity visibility
+    </small>
+  </div>
+
+  <b>›</b>
+
+</button>
+
+    <!-- MESSAGE REQUESTS -->
+
+    <button
+      class="privacy-option"
+      id="messagePrivacyBtn"
+    >
+
+      <span>💬</span>
+
+      <div>
+        <strong>Message Requests</strong>
+
+        <small>
+          Control who can message you
+        </small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- CALL PRIVACY -->
+
+    <button
+      class="privacy-option"
+      id="callPrivacyBtn"
+    >
+
+      <span>📞</span>
+
+      <div>
+        <strong>Call Privacy</strong>
+
+        <small>
+          Control who can call you
+        </small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- BLOCKED USERS -->
+
+    <button
+      class="privacy-option"
+      id="blockedUsersBtn"
+    >
+
+      <span>🚫</span>
+
+      <div>
+        <strong>Blocked Users</strong>
+
+        <small>
+          Manage people you have blocked
+        </small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+<!-- =====================================
+     BLOCKED USERS POPOVER
+===================================== -->
+
+<div
+  id="blockedUsersPopover"
+  class="blocked-users-popover"
+>
+
+  <!-- CLOSE BUTTON -->
+
+  <button
+    id="blockedUsersCloseBtn"
+    class="blocked-users-close"
+    type="button"
+  >
+    ✕
+  </button>
+
+
+  <!-- ICON -->
+
+  <div class="blocked-users-icon">
+    🚫
+  </div>
+
+
+  <!-- TITLE -->
+
+  <h2>
+    Blocked Users
+  </h2>
+
+
+  <p class="blocked-users-subtitle">
+    Manage people you have blocked
+  </p>
+
+
+  <!-- BLOCKED USERS LIST -->
+
+  <div
+    id="blockedUsersList"
+    class="blocked-users-list"
+  >
+
+    <!-- Empty state -->
+
+    <div
+      id="blockedUsersEmpty"
+      class="blocked-users-empty"
+    >
+
+      <div class="blocked-empty-icon">
+        🛡️
+      </div>
+
+      <strong>
+        No Blocked Users
+      </strong>
+
+      <small>
+        People you block will appear here.
+      </small>
+
+    </div>
+
+  </div>
+
+</div>
+
+    <!-- REPORTED USERS -->
+
+    <button
+      class="privacy-option"
+      id="reportedUsersBtn"
+    >
+
+      <span>🚩</span>
+
+      <div>
+        <strong>Reported Users</strong>
+
+        <small>
+          View users you have reported
+        </small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+  </div>
+
+</div>
+  <!-- =====================================
+     ONLINE STATUS POPOVER
+===================================== -->
+
+<div
+  id="onlineStatusPopover"
+  class="privacy-sub-popover"
+>
+
+  <button
+    id="onlineStatusCloseBtn"
+    class="privacy-sub-close"
+  >
+    ✕
+  </button>
+
+  <div class="privacy-sub-icon">
+    👁️
+  </div>
+
+  <h2>Online Status</h2>
+
+  <p>
+    Choose who can see when you're online
+  </p>
+
+
+  <div class="privacy-choice-list">
+
+    <button
+      class="privacy-choice"
+      id="onlineEveryoneBtn"
+    >
+      <span>🟢</span>
+
+      <div>
+        <strong>Everyone</strong>
+        <small>Anyone can see you online</small>
+      </div>
+
+    </button>
+
+
+    <button
+      class="privacy-choice"
+      id="onlineFriendsBtn"
+    >
+      <span>👥</span>
+
+      <div>
+        <strong>Friends Only</strong>
+        <small>Only your friends can see you</small>
+      </div>
+
+    </button>
+
+
+    <button
+      class="privacy-choice"
+      id="onlineNobodyBtn"
+    >
+      <span>🔴</span>
+
+      <div>
+        <strong>Nobody</strong>
+        <small>No one can see your online status</small>
+      </div>
+
+    </button>
+
+  </div>
+
+</div>
+<!-- =====================================
+     PROFILE VISIBILITY POPOVER
+===================================== -->
+
+<div
+  id="profileVisibilityPopover"
+  class="privacy-sub-popover"
+>
+
+  <!-- CLOSE BUTTON -->
+
+  <button
+    id="profileVisibilityCloseBtn"
+    class="privacy-sub-close"
+  >
+    ✕
+  </button>
+
+
+  <!-- ICON -->
+
+  <div class="privacy-sub-icon">
+    👤
+  </div>
+
+
+  <!-- TITLE -->
+
+  <h2>
+    Profile Visibility
+  </h2>
+
+
+  <p>
+    Choose who can view your profile
+  </p>
+
+
+  <!-- OPTIONS -->
+
+  <div class="privacy-choice-list">
+
+
+    <!-- EVERYONE -->
+
+    <button
+      type="button"
+      class="privacy-choice"
+      id="profileEveryoneBtn"
+    >
+
+      <span>
+        🌍
+      </span>
+
+      <div>
+
+        <strong>
+          Everyone
+        </strong>
+
+        <small>
+          Anyone can view your profile
+        </small>
+
+      </div>
+
+    </button>
+
+
+    <!-- FRIENDS ONLY -->
+
+    <button
+      type="button"
+      class="privacy-choice"
+      id="profileFriendsBtn"
+    >
+
+      <span>
+        👥
+      </span>
+
+      <div>
+
+        <strong>
+          Friends Only
+        </strong>
+
+        <small>
+          Only your friends can view your profile
+        </small>
+
+      </div>
+
+    </button>
+
+
+    <!-- NOBODY -->
+
+    <button
+      type="button"
+      class="privacy-choice"
+      id="profileNobodyBtn"
+    >
+
+      <span>
+        🔒
+      </span>
+
+      <div>
+
+        <strong>
+          Nobody
+        </strong>
+
+        <small>
+          Hide your profile from other users
+        </small>
+
+      </div>
+
+    </button>
+
+
+  </div>
+
+</div>
+  <!-- =====================================
+     MESSAGE REQUESTS POPOVER
+===================================== -->
+
+<div
+  id="messagePrivacyPopover"
+  class="privacy-sub-popover"
+>
+
+  <button
+    id="messagePrivacyCloseBtn"
+    class="privacy-sub-close"
+  >
+    ✕
+  </button>
+
+
+  <div class="privacy-sub-icon">
+    💬
+  </div>
+
+
+  <h2>Message Requests</h2>
+
+  <p>
+    Choose who can send you message requests
+  </p>
+
+
+  <div class="privacy-choice-list">
+
+
+    <!-- EVERYONE -->
+
+    <button
+      type="button"
+      class="privacy-choice"
+      id="messageEveryoneBtn"
+    >
+
+      <span>
+        🌍
+      </span>
+
+      <div>
+
+        <strong>
+          Everyone
+        </strong>
+
+        <small>
+          Anyone can send you a message request
+        </small>
+
+      </div>
+
+    </button>
+
+
+    <!-- FRIENDS ONLY -->
+
+    <button
+      type="button"
+      class="privacy-choice"
+      id="messageFriendsBtn"
+    >
+
+      <span>
+        👥
+      </span>
+
+      <div>
+
+        <strong>
+          Friends Only
+        </strong>
+
+        <small>
+          Only your friends can send requests
+        </small>
+
+      </div>
+
+    </button>
+
+
+    <!-- NOBODY -->
+
+    <button
+      type="button"
+      class="privacy-choice"
+      id="messageNobodyBtn"
+    >
+
+      <span>
+        🔒
+      </span>
+
+      <div>
+
+        <strong>
+          Nobody
+        </strong>
+
+        <small>
+          Don't allow message requests
+        </small>
+
+      </div>
+
+    </button>
+
+
+  </div>
+
+</div>
 </body>
 </html>

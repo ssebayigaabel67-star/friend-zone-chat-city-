@@ -2098,15 +2098,16 @@ function loadMessages() {
           }
 
 
-          const div =
-            document.createElement(
-              "div"
-            );
+        const div =
+  document.createElement("div");
 
+const isMine =
+  data.senderId === auth.currentUser.uid;
 
-          div.className =
-            "message";
-
+div.className =
+  isMine
+    ? "message sent"
+    : "message received";
 
           let html = `
 
@@ -8989,3 +8990,2508 @@ if (sidebarOverlay) {
   );
 
 }
+// =====================================
+// RIGHT SIDEBAR FEATURES
+// =====================================
+
+const rightProfileBtn =
+  document.getElementById("rightProfileBtn");
+
+const rightSettingsBtn =
+  document.getElementById("rightSettingsBtn");
+
+const rightPrivacyBtn =
+  document.getElementById("rightPrivacyBtn");
+
+const rightNotificationsBtn =
+  document.getElementById("rightNotificationsBtn");
+
+const rightHelpBtn =
+  document.getElementById("rightHelpBtn");
+
+const rightDeleteAccountBtn =
+  document.getElementById("rightDeleteAccountBtn");
+
+
+// =====================================
+// PROFILE
+// =====================================
+
+if (rightProfileBtn) {
+
+  rightProfileBtn.addEventListener(
+    "click",
+    () => {
+
+      /*
+       * You already have your
+       * profile-popover.
+       *
+       * We will connect it here.
+       */
+
+      const profilePopover =
+        document.querySelector(
+          ".profile-popover"
+        );
+
+      if (profilePopover) {
+
+        profilePopover.classList.toggle(
+          "show"
+        );
+
+      }
+
+    }
+  );
+
+}
+// =====================================
+// SETTINGS POPOVER
+// =====================================
+
+const settingsPopover =
+  document.getElementById(
+    "settingsPopover"
+  );
+
+const settingsCloseBtn =
+  document.getElementById(
+    "settingsCloseBtn"
+  );
+
+
+if (rightSettingsBtn) {
+
+  rightSettingsBtn.addEventListener(
+    "click",
+    () => {
+
+      if (!settingsPopover) {
+        return;
+      }
+
+      settingsPopover.classList.add(
+        "show"
+      );
+
+    }
+  );
+
+}
+
+
+if (settingsCloseBtn) {
+
+  settingsCloseBtn.addEventListener(
+    "click",
+    () => {
+
+      settingsPopover.classList.remove(
+        "show"
+      );
+
+    }
+  );
+
+}
+// =====================================
+// PRIVACY
+// =====================================
+
+if (rightPrivacyBtn) {
+
+  rightPrivacyBtn.addEventListener(
+    "click",
+    () => {
+
+      alert("Privacy settings coming next.");
+
+    }
+  );
+
+}
+// =====================================
+// 
+// =====================================
+// SETTINGS → NOTIFICATIONS
+// =====================================
+
+const settingsNotificationsBtn =
+  document.getElementById(
+    "settingsNotificationsBtn"
+  );
+
+const notificationsPopover =
+  document.getElementById(
+    "notificationsPopover"
+  );
+
+
+if (
+  settingsNotificationsBtn &&
+  notificationsPopover
+) {
+
+  settingsNotificationsBtn.addEventListener(
+    "click",
+    () => {
+
+      notificationsPopover.classList.add(
+        "show"
+      );
+
+    }
+  );
+
+}
+// =====================================
+// CLOSE NOTIFICATIONS
+// =====================================
+
+const notificationsCloseBtn =
+  document.getElementById(
+    "notificationsCloseBtn"
+  );
+
+if (notificationsCloseBtn) {
+
+  notificationsCloseBtn.addEventListener(
+    "click",
+    () => {
+
+      const notificationsPopover =
+        document.getElementById(
+          "notificationsPopover"
+        );
+
+      if (notificationsPopover) {
+
+        notificationsPopover.classList.remove(
+          "show"
+        );
+
+      }
+
+    }
+  );
+
+}
+// =====================================
+// HELP
+// =====================================
+
+if (rightHelpBtn) {
+
+  rightHelpBtn.addEventListener(
+    "click",
+    () => {
+
+      alert("Help & Support coming next.");
+
+    }
+  );
+
+}
+
+
+// =====================================
+// DELETE ACCOUNT
+// =====================================
+
+if (rightDeleteAccountBtn) {
+
+  rightDeleteAccountBtn.addEventListener(
+    "click",
+    () => {
+
+      const confirmed =
+        confirm(
+          "⚠️ Are you sure you want to delete your account?"
+        );
+
+      if (!confirmed) {
+        return;
+      }
+
+      alert(
+        "Account deletion will be connected next."
+      );
+
+    }
+  );
+
+}
+// =====================================
+// DELETE ACCOUNT POPOVER
+// =====================================
+
+if (rightDeleteAccountBtn) {
+
+  rightDeleteAccountBtn.addEventListener(
+    "click",
+    () => {
+
+      const deletePopover =
+        document.getElementById(
+          "deleteAccountPopover"
+        );
+
+      if (deletePopover) {
+
+        deletePopover.classList.add(
+          "show"
+        );
+
+      }
+
+    }
+  );
+
+}
+// =====================================
+// CLOSE DELETE ACCOUNT POPOVER
+// =====================================
+
+const deleteAccountCloseBtn =
+  document.getElementById(
+    "deleteAccountCloseBtn"
+  );
+
+const cancelDeleteAccountBtn =
+  document.getElementById(
+    "cancelDeleteAccountBtn"
+  );
+
+
+function closeDeleteAccountPopover() {
+
+  const deletePopover =
+    document.getElementById(
+      "deleteAccountPopover"
+    );
+
+  if (deletePopover) {
+
+    deletePopover.classList.remove(
+      "show"
+    );
+
+  }
+
+}
+
+
+if (deleteAccountCloseBtn) {
+
+  deleteAccountCloseBtn.addEventListener(
+    "click",
+    closeDeleteAccountPopover
+  );
+
+}
+
+
+if (cancelDeleteAccountBtn) {
+
+  cancelDeleteAccountBtn.addEventListener(
+    "click",
+    closeDeleteAccountPopover
+  );
+
+}
+// =====================================
+// SETTINGS → PRIVACY
+// =====================================
+
+const settingsPrivacyBtn =
+  document.getElementById(
+    "settingsPrivacyBtn"
+  );
+
+const privacyPopover =
+  document.getElementById(
+    "privacyPopover"
+  );
+
+
+if (
+  settingsPrivacyBtn &&
+  privacyPopover
+) {
+
+  settingsPrivacyBtn.addEventListener(
+    "click",
+    () => {
+
+      privacyPopover.classList.add(
+        "show"
+      );
+
+    }
+  );
+
+}
+
+
+// =====================================
+// CLOSE PRIVACY
+// =====================================
+
+const privacyCloseBtn =
+  document.getElementById(
+    "privacyCloseBtn"
+  );
+
+
+if (privacyCloseBtn) {
+
+  privacyCloseBtn.addEventListener(
+    "click",
+    () => {
+
+      const privacyPopover =
+        document.getElementById(
+          "privacyPopover"
+        );
+
+      if (privacyPopover) {
+
+        privacyPopover.classList.remove(
+          "show"
+        );
+
+      }
+
+    }
+  );
+
+}
+// =====================================
+// SETTINGS → ACCOUNT
+// =====================================
+
+const settingsAccountBtn =
+  document.getElementById(
+    "settingsAccountBtn"
+  );
+
+const accountPopover =
+  document.getElementById(
+    "accountPopover"
+  );
+
+const accountCloseBtn =
+  document.getElementById(
+    "accountCloseBtn"
+  );
+
+
+if (
+  settingsAccountBtn &&
+  accountPopover
+) {
+
+  settingsAccountBtn.addEventListener(
+    "click",
+    () => {
+
+      // Close Settings
+      const settingsPopover =
+        document.getElementById(
+          "settingsPopover"
+        );
+
+      if (settingsPopover) {
+
+        settingsPopover.classList.remove(
+          "show"
+        );
+
+      }
+
+      // Open Account
+      accountPopover.classList.add(
+        "show"
+      );
+
+    }
+  );
+
+}
+
+
+// =====================================
+// CLOSE ACCOUNT POPOVER
+// =====================================
+
+if (
+  accountCloseBtn &&
+  accountPopover
+) {
+
+  accountCloseBtn.addEventListener(
+    "click",
+    () => {
+
+      accountPopover.classList.remove(
+        "show"
+      );
+
+    }
+  );
+
+}
+// =====================================
+// SETTINGS → APPEARANCE
+// =====================================
+
+const settingsAppearanceBtn =
+  document.getElementById(
+    "settingsAppearanceBtn"
+  );
+
+const appearancePopover =
+  document.getElementById(
+    "appearancePopover"
+  );
+
+const appearanceCloseBtn =
+  document.getElementById(
+    "appearanceCloseBtn"
+  );
+
+
+if (
+  settingsAppearanceBtn &&
+  appearancePopover
+) {
+
+  settingsAppearanceBtn.addEventListener(
+    "click",
+    () => {
+
+      // Close Settings
+      const settingsPopover =
+        document.getElementById(
+          "settingsPopover"
+        );
+
+      if (settingsPopover) {
+
+        settingsPopover.classList.remove(
+          "show"
+        );
+
+      }
+
+      // Open Appearance
+      appearancePopover.classList.add(
+        "show"
+      );
+
+    }
+  );
+
+}
+
+
+// =====================================
+// CLOSE APPEARANCE
+// =====================================
+
+if (
+  appearanceCloseBtn &&
+  appearancePopover
+) {
+
+  appearanceCloseBtn.addEventListener(
+    "click",
+    () => {
+
+      appearancePopover.classList.remove(
+        "show"
+      );
+
+    }
+  );
+
+}
+// =====================================
+// APPEARANCE → DARK MODE
+// =====================================
+
+const appearanceDarkModeBtn =
+  document.getElementById(
+    "appearanceDarkModeBtn"
+  );
+
+
+if (appearanceDarkModeBtn) {
+
+  appearanceDarkModeBtn.addEventListener(
+    "click",
+    () => {
+
+      // Use your existing dark mode button
+      const darkModeBtn =
+        document.getElementById(
+          "darkModeBtn"
+        );
+
+      if (darkModeBtn) {
+
+        darkModeBtn.click();
+
+      }
+
+      // Keep Appearance open
+      // so the user can choose another option
+
+    }
+  );
+
+}
+// =====================================
+// APPEARANCE → LIGHT MODE
+// =====================================
+
+const appearanceLightModeBtn =
+  document.getElementById(
+    "appearanceLightModeBtn"
+  );
+
+
+if (appearanceLightModeBtn) {
+
+  appearanceLightModeBtn.addEventListener(
+    "click",
+    () => {
+
+      // Check if dark mode is currently active
+      if (
+        document.body.classList.contains(
+          "dark-mode"
+        )
+      ) {
+
+        const darkModeBtn =
+          document.getElementById(
+            "darkModeBtn"
+          );
+
+        if (darkModeBtn) {
+
+          darkModeBtn.click();
+
+        }
+
+      }
+
+    }
+  );
+
+}
+// =====================================
+// APPEARANCE → SYSTEM DEFAULT
+// =====================================
+
+const appearanceSystemBtn =
+  document.getElementById(
+    "appearanceSystemBtn"
+  );
+
+
+if (appearanceSystemBtn) {
+
+  appearanceSystemBtn.addEventListener(
+    "click",
+    () => {
+
+      const prefersDark =
+        window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches;
+
+
+      if (prefersDark) {
+
+        // Turn dark mode ON
+        if (
+          !document.body.classList.contains(
+            "dark-mode"
+          )
+        ) {
+
+          const darkModeBtn =
+            document.getElementById(
+              "darkModeBtn"
+            );
+
+          if (darkModeBtn) {
+
+            darkModeBtn.click();
+
+          }
+
+        }
+
+      } else {
+
+        // Turn dark mode OFF
+        if (
+          document.body.classList.contains(
+            "dark-mode"
+          )
+        ) {
+
+          const darkModeBtn =
+            document.getElementById(
+              "darkModeBtn"
+            );
+
+          if (darkModeBtn) {
+
+            darkModeBtn.click();
+
+          }
+
+        }
+
+      }
+
+    }
+  );
+
+}
+// =====================================
+// APPEARANCE → TEXT SIZE
+// =====================================
+
+const appearanceTextSizeBtn =
+  document.getElementById(
+    "appearanceTextSizeBtn"
+  );
+
+const textSizePopover =
+  document.getElementById(
+    "textSizePopover"
+  );
+
+const textSizeCloseBtn =
+  document.getElementById(
+    "textSizeCloseBtn"
+  );
+
+
+// =====================================
+// OPEN TEXT SIZE
+// =====================================
+
+if (
+  appearanceTextSizeBtn &&
+  textSizePopover
+) {
+
+  appearanceTextSizeBtn.addEventListener(
+    "click",
+    () => {
+
+      // Close Appearance
+      if (appearancePopover) {
+
+        appearancePopover.classList.remove(
+          "show"
+        );
+
+      }
+
+      // Open Text Size
+      textSizePopover.classList.add(
+        "show"
+      );
+
+    }
+  );
+
+}
+
+
+// =====================================
+// CLOSE TEXT SIZE
+// =====================================
+
+if (
+  textSizeCloseBtn &&
+  textSizePopover
+) {
+
+  textSizeCloseBtn.addEventListener(
+    "click",
+    () => {
+
+      textSizePopover.classList.remove(
+        "show"
+      );
+
+    }
+  );
+
+}
+// =====================================
+// TEXT SIZE OPTIONS
+// =====================================
+
+const textSmallBtn =
+  document.getElementById(
+    "textSmallBtn"
+  );
+
+const textNormalBtn =
+  document.getElementById(
+    "textNormalBtn"
+  );
+
+const textLargeBtn =
+  document.getElementById(
+    "textLargeBtn"
+  );
+
+
+// =====================================
+// CHANGE TEXT SIZE
+// =====================================
+
+function setTextSize(size) {
+
+  document.body.classList.remove(
+    "text-size-small",
+    "text-size-normal",
+    "text-size-large"
+  );
+
+  document.body.classList.add(
+    "text-size-" + size
+  );
+
+}
+
+
+// =====================================
+// SMALL
+// =====================================
+
+if (textSmallBtn) {
+
+  textSmallBtn.addEventListener(
+    "click",
+    () => {
+
+      setTextSize("small");
+
+    }
+  );
+
+}
+
+
+// =====================================
+// NORMAL
+// =====================================
+
+if (textNormalBtn) {
+
+  textNormalBtn.addEventListener(
+    "click",
+    () => {
+
+      setTextSize("normal");
+
+    }
+  );
+
+}
+
+
+// =====================================
+// LARGE
+// =====================================
+
+if (textLargeBtn) {
+
+  textLargeBtn.addEventListener(
+    "click",
+    () => {
+
+      setTextSize("large");
+
+    }
+  );
+
+}
+// =====================================
+// APPEARANCE → ANIMATIONS
+// =====================================
+
+const appearanceAnimationBtn =
+  document.getElementById(
+    "appearanceAnimationBtn"
+  );
+
+const animationPopover =
+  document.getElementById(
+    "animationPopover"
+  );
+
+const animationCloseBtn =
+  document.getElementById(
+    "animationCloseBtn"
+  );
+
+
+// =====================================
+// OPEN ANIMATIONS
+// =====================================
+
+if (
+  appearanceAnimationBtn &&
+  animationPopover
+) {
+
+  appearanceAnimationBtn.addEventListener(
+    "click",
+    () => {
+
+      // Close Appearance
+      if (appearancePopover) {
+
+        appearancePopover.classList.remove(
+          "show"
+        );
+
+      }
+
+      // Open Animations
+      animationPopover.classList.add(
+        "show"
+      );
+
+    }
+  );
+
+}
+
+
+// =====================================
+// CLOSE ANIMATIONS
+// =====================================
+
+if (
+  animationCloseBtn &&
+  animationPopover
+) {
+
+  animationCloseBtn.addEventListener(
+    "click",
+    () => {
+
+      animationPopover.classList.remove(
+        "show"
+      );
+
+    }
+  );
+
+}
+// =====================================
+// ANIMATIONS ON / OFF
+// =====================================
+
+const animationsOnBtn =
+  document.getElementById(
+    "animationsOnBtn"
+  );
+
+const animationsOffBtn =
+  document.getElementById(
+    "animationsOffBtn"
+  );
+
+
+// =====================================
+// ANIMATIONS ON
+// =====================================
+
+if (animationsOnBtn) {
+
+  animationsOnBtn.addEventListener(
+    "click",
+    () => {
+
+      document.body.classList.remove(
+        "animations-off"
+      );
+
+    }
+  );
+
+}
+
+
+// =====================================
+// ANIMATIONS OFF
+// =====================================
+
+if (animationsOffBtn) {
+
+  animationsOffBtn.addEventListener(
+    "click",
+    () => {
+
+      document.body.classList.add(
+        "animations-off"
+      );
+
+    }
+  );
+
+}
+// =====================================
+// PRIVACY → ONLINE STATUS
+// SAFE VERSION
+// =====================================
+
+(function () {
+
+  const onlineBtn =
+    document.getElementById(
+      "onlineStatusPrivacyBtn"
+    );
+
+  const onlinePopover =
+    document.getElementById(
+      "onlineStatusPopover"
+    );
+
+  const closeBtn =
+    document.getElementById(
+      "onlineStatusCloseBtn"
+    );
+
+  const privacy =
+    document.getElementById(
+      "privacyPopover"
+    );
+
+
+  // OPEN ONLINE STATUS
+
+  if (
+    onlineBtn &&
+    onlinePopover
+  ) {
+
+    onlineBtn.addEventListener(
+      "click",
+      function () {
+
+        if (privacy) {
+
+          privacy.classList.remove(
+            "show"
+          );
+
+        }
+
+        onlinePopover.classList.add(
+          "show"
+        );
+
+      }
+    );
+
+  }
+
+
+  // CLOSE ONLINE STATUS
+
+  if (
+    closeBtn &&
+    onlinePopover
+  ) {
+
+    closeBtn.addEventListener(
+      "click",
+      function () {
+
+        onlinePopover.classList.remove(
+          "show"
+        );
+
+      }
+    );
+
+  }
+
+})();
+// =====================================
+// ONLINE STATUS OPTIONS
+// =====================================
+
+(function () {
+
+  const everyoneBtn =
+    document.getElementById(
+      "onlineEveryoneBtn"
+    );
+
+  const friendsBtn =
+    document.getElementById(
+      "onlineFriendsBtn"
+    );
+
+  const nobodyBtn =
+    document.getElementById(
+      "onlineNobodyBtn"
+    );
+
+
+  function selectOnlineStatus(
+    selectedBtn
+  ) {
+
+    const buttons = [
+      everyoneBtn,
+      friendsBtn,
+      nobodyBtn
+    ];
+
+
+    buttons.forEach(
+      function (button) {
+
+        if (!button) {
+          return;
+        }
+
+        button.classList.remove(
+          "selected"
+        );
+
+        const check =
+          button.querySelector(
+            ".privacy-check"
+          );
+
+        if (check) {
+          check.remove();
+        }
+
+      }
+    );
+
+
+    if (selectedBtn) {
+
+      selectedBtn.classList.add(
+        "selected"
+      );
+
+
+      const check =
+        document.createElement(
+          "span"
+        );
+
+      check.className =
+        "privacy-check";
+
+      check.textContent =
+        "✓";
+
+      selectedBtn.appendChild(
+        check
+      );
+
+    }
+
+  }
+
+
+  if (everyoneBtn) {
+
+    everyoneBtn.addEventListener(
+      "click",
+      function () {
+
+        selectOnlineStatus(
+          everyoneBtn
+        );
+
+      }
+    );
+
+  }
+
+
+  if (friendsBtn) {
+
+    friendsBtn.addEventListener(
+      "click",
+      function () {
+
+        selectOnlineStatus(
+          friendsBtn
+        );
+
+      }
+    );
+
+  }
+
+
+  if (nobodyBtn) {
+
+    nobodyBtn.addEventListener(
+      "click",
+      function () {
+
+        selectOnlineStatus(
+          nobodyBtn
+        );
+
+      }
+    );
+
+  }
+
+})();
+// =====================================
+// SAVE ONLINE STATUS PRIVACY
+// =====================================
+
+(function () {
+
+  async function saveOnlinePrivacy(
+    setting
+  ) {
+
+    if (!auth.currentUser) {
+
+      alert("Please log in first.");
+
+      return;
+
+    }
+
+
+    try {
+
+      await updateDoc(
+
+        doc(
+          db,
+          "users",
+          auth.currentUser.uid
+        ),
+
+        {
+          onlineStatusPrivacy:
+            setting
+        }
+
+      );
+
+
+      console.log(
+        "Online status privacy saved:",
+        setting
+      );
+
+    } catch (error) {
+
+      console.error(
+        "Privacy save error:",
+        error
+      );
+
+      alert(
+        "Could not save privacy setting."
+      );
+
+    }
+
+  }
+
+
+  const everyone =
+    document.getElementById(
+      "onlineEveryoneBtn"
+    );
+
+  const friends =
+    document.getElementById(
+      "onlineFriendsBtn"
+    );
+
+  const nobody =
+    document.getElementById(
+      "onlineNobodyBtn"
+    );
+
+
+  if (everyone) {
+
+    everyone.addEventListener(
+      "click",
+      function () {
+
+        saveOnlinePrivacy(
+          "everyone"
+        );
+
+      }
+    );
+
+  }
+
+
+  if (friends) {
+
+    friends.addEventListener(
+      "click",
+      function () {
+
+        saveOnlinePrivacy(
+          "friends"
+        );
+
+      }
+    );
+
+  }
+
+
+  if (nobody) {
+
+    nobody.addEventListener(
+      "click",
+      function () {
+
+        saveOnlinePrivacy(
+          "nobody"
+        );
+
+      }
+    );
+
+  }
+
+})();
+// =====================================
+// LOAD ONLINE STATUS PRIVACY
+// =====================================
+
+(function () {
+
+  async function loadOnlinePrivacy() {
+
+    if (!auth.currentUser) {
+      return;
+    }
+
+
+    try {
+
+      const userRef =
+        doc(
+          db,
+          "users",
+          auth.currentUser.uid
+        );
+
+
+      const userSnap =
+        await getDoc(userRef);
+
+
+      if (!userSnap.exists()) {
+        return;
+      }
+
+
+      const data =
+        userSnap.data();
+
+
+      const setting =
+        data.onlineStatusPrivacy ||
+        "everyone";
+
+
+      const buttons = {
+
+        everyone:
+          document.getElementById(
+            "onlineEveryoneBtn"
+          ),
+
+        friends:
+          document.getElementById(
+            "onlineFriendsBtn"
+          ),
+
+        nobody:
+          document.getElementById(
+            "onlineNobodyBtn"
+          )
+
+      };
+
+
+      Object.values(buttons).forEach(
+        function (button) {
+
+          if (!button) {
+            return;
+          }
+
+          button.classList.remove(
+            "selected"
+          );
+
+          const check =
+            button.querySelector(
+              ".privacy-check"
+            );
+
+          if (check) {
+            check.remove();
+          }
+
+        }
+      );
+
+
+      const selected =
+        buttons[setting];
+
+
+      if (selected) {
+
+        selected.classList.add(
+          "selected"
+        );
+
+
+        const check =
+          document.createElement(
+            "span"
+          );
+
+        check.className =
+          "privacy-check";
+
+        check.textContent =
+          "✓";
+
+        selected.appendChild(
+          check
+        );
+
+      }
+
+
+    } catch (error) {
+
+      console.error(
+        "Load privacy setting error:",
+        error
+      );
+
+    }
+
+  }
+
+
+  const onlineStatusPrivacyBtn =
+    document.getElementById(
+      "onlineStatusPrivacyBtn"
+    );
+
+
+  if (onlineStatusPrivacyBtn) {
+
+    onlineStatusPrivacyBtn.addEventListener(
+      "click",
+      function () {
+
+        loadOnlinePrivacy();
+
+      }
+    );
+
+  }
+
+})();
+// =====================================
+// ACCOUNT → PROFILE VISIBILITY
+// =====================================
+
+(function () {
+
+  const profileVisibilityBtn =
+    document.getElementById(
+      "profileVisibilityBtn"
+    );
+
+  const profileVisibilityPopover =
+    document.getElementById(
+      "profileVisibilityPopover"
+    );
+
+  const profileVisibilityCloseBtn =
+    document.getElementById(
+      "profileVisibilityCloseBtn"
+    );
+
+
+  // OPEN
+
+  if (
+    profileVisibilityBtn &&
+    profileVisibilityPopover
+  ) {
+
+    profileVisibilityBtn.addEventListener(
+      "click",
+      function () {
+
+        const accountPopover =
+          document.getElementById(
+            "accountPopover"
+          );
+
+        if (accountPopover) {
+
+          accountPopover.classList.remove(
+            "show"
+          );
+
+        }
+
+        profileVisibilityPopover.classList.add(
+          "show"
+        );
+
+      }
+    );
+
+  }
+
+
+  // CLOSE
+
+  if (
+    profileVisibilityCloseBtn &&
+    profileVisibilityPopover
+  ) {
+
+    profileVisibilityCloseBtn.addEventListener(
+      "click",
+      function () {
+
+        profileVisibilityPopover.classList.remove(
+          "show"
+        );
+
+      }
+    );
+
+  }
+
+})();
+// =====================================
+// PROFILE VISIBILITY OPTIONS
+// =====================================
+
+(function () {
+
+  const everyoneBtn =
+    document.getElementById(
+      "profileEveryoneBtn"
+    );
+
+  const friendsBtn =
+    document.getElementById(
+      "profileFriendsBtn"
+    );
+
+  const nobodyBtn =
+    document.getElementById(
+      "profileNobodyBtn"
+    );
+
+
+  function selectProfileVisibility(
+    selectedBtn
+  ) {
+
+    const buttons = [
+      everyoneBtn,
+      friendsBtn,
+      nobodyBtn
+    ];
+
+
+    buttons.forEach(
+      function (button) {
+
+        if (!button) {
+          return;
+        }
+
+        button.classList.remove(
+          "selected"
+        );
+
+
+        const check =
+          button.querySelector(
+            ".privacy-check"
+          );
+
+        if (check) {
+          check.remove();
+        }
+
+      }
+    );
+
+
+    if (selectedBtn) {
+
+      selectedBtn.classList.add(
+        "selected"
+      );
+
+
+      const check =
+        document.createElement(
+          "span"
+        );
+
+      check.className =
+        "privacy-check";
+
+      check.textContent =
+        "✓";
+
+      selectedBtn.appendChild(
+        check
+      );
+
+    }
+
+  }
+
+
+  if (everyoneBtn) {
+
+    everyoneBtn.addEventListener(
+      "click",
+      function () {
+
+        selectProfileVisibility(
+          everyoneBtn
+        );
+
+      }
+    );
+
+  }
+
+
+  if (friendsBtn) {
+
+    friendsBtn.addEventListener(
+      "click",
+      function () {
+
+        selectProfileVisibility(
+          friendsBtn
+        );
+
+      }
+    );
+
+  }
+
+
+  if (nobodyBtn) {
+
+    nobodyBtn.addEventListener(
+      "click",
+      function () {
+
+        selectProfileVisibility(
+          nobodyBtn
+        );
+
+      }
+    );
+
+  }
+
+})();
+// =====================================
+// SAVE PROFILE VISIBILITY
+// =====================================
+
+(function () {
+
+  async function saveProfileVisibility(
+    setting
+  ) {
+
+    if (!auth.currentUser) {
+
+      alert("Please log in first.");
+
+      return;
+
+    }
+
+
+    try {
+
+      await updateDoc(
+
+        doc(
+          db,
+          "users",
+          auth.currentUser.uid
+        ),
+
+        {
+          profileVisibility:
+            setting
+        }
+
+      );
+
+
+      console.log(
+        "Profile visibility saved:",
+        setting
+      );
+
+    } catch (error) {
+
+      console.error(
+        "Profile visibility save error:",
+        error
+      );
+
+      alert(
+        "Could not save profile visibility."
+      );
+
+    }
+
+  }
+
+
+  const everyone =
+    document.getElementById(
+      "profileEveryoneBtn"
+    );
+
+  const friends =
+    document.getElementById(
+      "profileFriendsBtn"
+    );
+
+  const nobody =
+    document.getElementById(
+      "profileNobodyBtn"
+    );
+
+
+  if (everyone) {
+
+    everyone.addEventListener(
+      "click",
+      function () {
+
+        saveProfileVisibility(
+          "everyone"
+        );
+
+      }
+    );
+
+  }
+
+
+  if (friends) {
+
+    friends.addEventListener(
+      "click",
+      function () {
+
+        saveProfileVisibility(
+          "friends"
+        );
+
+      }
+    );
+
+  }
+
+
+  if (nobody) {
+
+    nobody.addEventListener(
+      "click",
+      function () {
+
+        saveProfileVisibility(
+          "nobody"
+        );
+
+      }
+    );
+
+  }
+
+})();
+// =====================================
+// LOAD PROFILE VISIBILITY
+// =====================================
+
+(function () {
+
+  async function loadProfileVisibility() {
+
+    if (!auth.currentUser) {
+      return;
+    }
+
+
+    try {
+
+      const userRef =
+        doc(
+          db,
+          "users",
+          auth.currentUser.uid
+        );
+
+
+      const userSnap =
+        await getDoc(userRef);
+
+
+      if (!userSnap.exists()) {
+        return;
+      }
+
+
+      const data =
+        userSnap.data();
+
+
+      const setting =
+        data.profileVisibility ||
+        "everyone";
+
+
+      const buttons = {
+
+        everyone:
+          document.getElementById(
+            "profileEveryoneBtn"
+          ),
+
+        friends:
+          document.getElementById(
+            "profileFriendsBtn"
+          ),
+
+        nobody:
+          document.getElementById(
+            "profileNobodyBtn"
+          )
+
+      };
+
+
+      // Remove old selections
+
+      Object.values(buttons).forEach(
+        function (button) {
+
+          if (!button) {
+            return;
+          }
+
+
+          button.classList.remove(
+            "selected"
+          );
+
+
+          const check =
+            button.querySelector(
+              ".privacy-check"
+            );
+
+
+          if (check) {
+            check.remove();
+          }
+
+        }
+      );
+
+
+      // Select saved option
+
+      const selected =
+        buttons[setting];
+
+
+      if (selected) {
+
+        selected.classList.add(
+          "selected"
+        );
+
+
+        const check =
+          document.createElement(
+            "span"
+          );
+
+
+        check.className =
+          "privacy-check";
+
+
+        check.textContent =
+          "✓";
+
+
+        selected.appendChild(
+          check
+        );
+
+      }
+
+
+    } catch (error) {
+
+      console.error(
+        "Load profile visibility error:",
+        error
+      );
+
+    }
+
+  }
+
+
+  const profileVisibilityBtn =
+    document.getElementById(
+      "profileVisibilityBtn"
+    );
+
+
+  if (profileVisibilityBtn) {
+
+    profileVisibilityBtn.addEventListener(
+      "click",
+      function () {
+
+        loadProfileVisibility();
+
+      }
+    );
+
+  }
+
+})();
+// =====================================
+// PRIVACY → MESSAGE REQUESTS
+// SAFE VERSION
+// =====================================
+
+(function () {
+
+  const messageBtn =
+    document.getElementById(
+      "messagePrivacyBtn"
+    );
+
+  const messagePopover =
+    document.getElementById(
+      "messagePrivacyPopover"
+    );
+
+  const closeBtn =
+    document.getElementById(
+      "messagePrivacyCloseBtn"
+    );
+
+
+  // OPEN MESSAGE REQUESTS
+
+  if (
+    messageBtn &&
+    messagePopover
+  ) {
+
+    messageBtn.addEventListener(
+      "click",
+      function () {
+
+        const privacy =
+          document.getElementById(
+            "privacyPopover"
+          );
+
+        if (privacy) {
+
+          privacy.classList.remove(
+            "show"
+          );
+
+        }
+
+        messagePopover.classList.add(
+          "show"
+        );
+
+      }
+    );
+
+  }
+
+
+  // CLOSE MESSAGE REQUESTS
+
+  if (
+    closeBtn &&
+    messagePopover
+  ) {
+
+    closeBtn.addEventListener(
+      "click",
+      function () {
+
+        messagePopover.classList.remove(
+          "show"
+        );
+
+      }
+    );
+
+  }
+
+})();
+// =====================================
+// MESSAGE REQUEST PRIVACY OPTIONS
+// =====================================
+
+(function () {
+
+  const everyoneBtn =
+    document.getElementById(
+      "messageEveryoneBtn"
+    );
+
+  const friendsBtn =
+    document.getElementById(
+      "messageFriendsBtn"
+    );
+
+  const nobodyBtn =
+    document.getElementById(
+      "messageNobodyBtn"
+    );
+
+
+  function selectMessagePrivacy(
+    selectedBtn
+  ) {
+
+    const buttons = [
+      everyoneBtn,
+      friendsBtn,
+      nobodyBtn
+    ];
+
+
+    buttons.forEach(
+      function (button) {
+
+        if (!button) {
+          return;
+        }
+
+
+        button.classList.remove(
+          "selected"
+        );
+
+
+        const check =
+          button.querySelector(
+            ".privacy-check"
+          );
+
+
+        if (check) {
+          check.remove();
+        }
+
+      }
+    );
+
+
+    if (selectedBtn) {
+
+      selectedBtn.classList.add(
+        "selected"
+      );
+
+
+      const check =
+        document.createElement(
+          "span"
+        );
+
+
+      check.className =
+        "privacy-check";
+
+
+      check.textContent =
+        "✓";
+
+
+      selectedBtn.appendChild(
+        check
+      );
+
+    }
+
+  }
+
+
+  if (everyoneBtn) {
+
+    everyoneBtn.addEventListener(
+      "click",
+      function () {
+
+        selectMessagePrivacy(
+          everyoneBtn
+        );
+
+      }
+    );
+
+  }
+
+
+  if (friendsBtn) {
+
+    friendsBtn.addEventListener(
+      "click",
+      function () {
+
+        selectMessagePrivacy(
+          friendsBtn
+        );
+
+      }
+    );
+
+  }
+
+
+  if (nobodyBtn) {
+
+    nobodyBtn.addEventListener(
+      "click",
+      function () {
+
+        selectMessagePrivacy(
+          nobodyBtn
+        );
+
+      }
+    );
+
+  }
+
+})();
+// =====================================
+// SAVE MESSAGE REQUEST PRIVACY
+// =====================================
+
+(function () {
+
+  async function saveMessagePrivacy(
+    setting
+  ) {
+
+    if (!auth.currentUser) {
+
+      alert("Please log in first.");
+
+      return;
+
+    }
+
+
+    try {
+
+      await updateDoc(
+
+        doc(
+          db,
+          "users",
+          auth.currentUser.uid
+        ),
+
+        {
+          messageRequestPrivacy:
+            setting
+        }
+
+      );
+
+
+      console.log(
+        "Message request privacy saved:",
+        setting
+      );
+
+    } catch (error) {
+
+      console.error(
+        "Message request privacy error:",
+        error
+      );
+
+      alert(
+        "Could not save message request setting."
+      );
+
+    }
+
+  }
+
+
+  const everyone =
+    document.getElementById(
+      "messageEveryoneBtn"
+    );
+
+  const friends =
+    document.getElementById(
+      "messageFriendsBtn"
+    );
+
+  const nobody =
+    document.getElementById(
+      "messageNobodyBtn"
+    );
+
+
+  if (everyone) {
+
+    everyone.addEventListener(
+      "click",
+      function () {
+
+        saveMessagePrivacy(
+          "everyone"
+        );
+
+      }
+    );
+
+  }
+
+
+  if (friends) {
+
+    friends.addEventListener(
+      "click",
+      function () {
+
+        saveMessagePrivacy(
+          "friends"
+        );
+
+      }
+    );
+
+  }
+
+
+  if (nobody) {
+
+    nobody.addEventListener(
+      "click",
+      function () {
+
+        saveMessagePrivacy(
+          "nobody"
+        );
+
+      }
+    );
+
+  }
+
+})();
+// =====================================
+// LOAD MESSAGE REQUEST PRIVACY
+// =====================================
+
+(function () {
+
+  async function loadMessagePrivacy() {
+
+    if (!auth.currentUser) {
+      return;
+    }
+
+
+    try {
+
+      const userRef =
+        doc(
+          db,
+          "users",
+          auth.currentUser.uid
+        );
+
+
+      const userSnap =
+        await getDoc(userRef);
+
+
+      if (!userSnap.exists()) {
+        return;
+      }
+
+
+      const data =
+        userSnap.data();
+
+
+      const setting =
+        data.messageRequestPrivacy ||
+        "everyone";
+
+
+      const buttons = {
+
+        everyone:
+          document.getElementById(
+            "messageEveryoneBtn"
+          ),
+
+        friends:
+          document.getElementById(
+            "messageFriendsBtn"
+          ),
+
+        nobody:
+          document.getElementById(
+            "messageNobodyBtn"
+          )
+
+      };
+
+
+      // Remove existing selections
+
+      Object.values(buttons).forEach(
+        function (button) {
+
+          if (!button) {
+            return;
+          }
+
+
+          button.classList.remove(
+            "selected"
+          );
+
+
+          const check =
+            button.querySelector(
+              ".privacy-check"
+            );
+
+
+          if (check) {
+            check.remove();
+          }
+
+        }
+      );
+
+
+      // Select saved option
+
+      const selected =
+        buttons[setting];
+
+
+      if (selected) {
+
+        selected.classList.add(
+          "selected"
+        );
+
+
+        const check =
+          document.createElement(
+            "span"
+          );
+
+
+        check.className =
+          "privacy-check";
+
+
+        check.textContent =
+          "✓";
+
+
+        selected.appendChild(
+          check
+        );
+
+      }
+
+
+    } catch (error) {
+
+      console.error(
+        "Load message privacy error:",
+        error
+      );
+
+    }
+
+  }
+
+
+  const messagePrivacyBtn =
+    document.getElementById(
+      "messagePrivacyBtn"
+    );
+
+
+  if (messagePrivacyBtn) {
+
+    messagePrivacyBtn.addEventListener(
+      "click",
+      function () {
+
+        loadMessagePrivacy();
+
+      }
+    );
+
+  }
+
+})();
+// =====================================
+// PRIVACY → BLOCKED USERS
+// SAFE VERSION
+// =====================================
+
+(function () {
+
+  const blockedBtn =
+    document.getElementById(
+      "blockedUsersPrivacyBtn"
+    );
+
+  const blockedPopover =
+    document.getElementById(
+      "blockedUsersPopover"
+    );
+
+  const closeBtn =
+    document.getElementById(
+      "blockedUsersCloseBtn"
+    );
+
+
+  // OPEN BLOCKED USERS
+
+  if (
+    blockedBtn &&
+    blockedPopover
+  ) {
+
+    blockedBtn.addEventListener(
+      "click",
+      function () {
+
+        const privacy =
+          document.getElementById(
+            "privacyPopover"
+          );
+
+        if (privacy) {
+
+          privacy.classList.remove(
+            "show"
+          );
+
+        }
+
+        blockedPopover.classList.add(
+          "show"
+        );
+
+      }
+    );
+
+  }
+
+
+  // CLOSE BLOCKED USERS
+
+  if (
+    closeBtn &&
+    blockedPopover
+  ) {
+
+    closeBtn.addEventListener(
+      "click",
+      function () {
+
+        blockedPopover.classList.remove(
+          "show"
+        );
+
+      }
+    );
+
+  }
+
+})();
