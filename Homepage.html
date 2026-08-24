@@ -9013,6 +9013,1318 @@ body.dark-mode .message-font-option small {
   }
 
         }
+  /* =====================================
+   MESSAGE BUBBLE PANEL
+===================================== */
+
+.bubble-style-panel {
+
+  display: none;
+
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: 90%;
+  max-width: 380px;
+
+  max-height: 90vh;
+
+  overflow-y: auto;
+
+  padding: 25px 20px;
+
+  background: #ffffff;
+
+  color: #222222;
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 15px 50px rgba(0,0,0,0.35);
+
+  z-index: 1000004 !important;
+
+  text-align: center;
+
+  box-sizing: border-box;
+
+}
+
+
+.bubble-style-panel.show {
+
+  display: block;
+
+}
+
+
+/* CLOSE */
+
+.bubble-style-close {
+
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+
+  width: 34px;
+  height: 34px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #eeeeee;
+
+  color: #333;
+
+  font-size: 18px;
+
+  cursor: pointer;
+
+}
+
+
+/* ICON */
+
+.bubble-style-icon {
+
+  width: 70px;
+  height: 70px;
+
+  margin: 5px auto 10px;
+
+  border-radius: 50%;
+
+  background: #f1f3f5;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 38px;
+
+}
+
+
+/* TITLE */
+
+.bubble-style-panel h2 {
+
+  margin: 5px 0;
+
+  font-size: 23px;
+
+}
+
+
+.bubble-style-subtitle {
+
+  margin: 5px 0 20px;
+
+  color: #777;
+
+  font-size: 14px;
+
+}
+
+
+/* OPTIONS */
+
+.bubble-style-options {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+
+}
+
+
+/* OPTION */
+
+.bubble-style-option {
+
+  width: 100%;
+
+  min-height: 65px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 10px;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 13px;
+
+  background: #f8f8f8;
+
+  color: #222;
+
+  cursor: pointer;
+
+  text-align: left;
+
+  box-sizing: border-box;
+
+}
+
+
+/* PREVIEW */
+
+.bubble-preview {
+
+  width: 75px;
+
+  min-height: 38px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 12px;
+
+  background: #dcf8c6;
+
+  color: #222;
+
+}
+
+
+/* CLASSIC */
+
+.bubble-classic {
+
+  border-radius: 12px;
+
+}
+
+
+/* SOFT */
+
+.bubble-soft {
+
+  border-radius: 25px;
+
+}
+
+
+/* SQUARE */
+
+.bubble-square {
+
+  border-radius: 3px;
+
+}
+
+
+/* GLASS */
+
+.bubble-glass {
+
+  border-radius: 15px;
+
+  background: rgba(100,180,255,0.25);
+
+  border: 1px solid rgba(255,255,255,0.7);
+
+  backdrop-filter: blur(8px);
+
+}
+
+
+/* MODERN */
+
+.bubble-modern {
+
+  border-radius: 18px 18px 4px 18px;
+
+}
+
+
+/* TEXT */
+
+.bubble-style-option > div {
+
+  flex: 1;
+
+}
+
+
+.bubble-style-option strong {
+
+  display: block;
+
+  font-size: 14px;
+
+  margin-bottom: 3px;
+
+}
+
+
+.bubble-style-option small {
+
+  display: block;
+
+  color: #777;
+
+  font-size: 11px;
+
+}
+
+
+/* ARROW */
+
+.bubble-style-option > b {
+
+  font-size: 22px;
+
+  color: #888;
+
+}
+
+
+/* MOBILE */
+
+@media (max-width: 480px) {
+
+  .bubble-style-panel {
+
+    width: calc(100% - 20px);
+
+    padding: 22px 15px;
+
+  }
+
+}
+  /* =====================================
+   ACTIVE MESSAGE BUBBLE STYLES
+===================================== */
+
+
+/* CLASSIC */
+
+#messages .message.bubble-classic-active {
+
+  border-radius: 12px;
+
+}
+
+
+/* SOFT */
+
+#messages .message.bubble-soft-active {
+
+  border-radius: 25px;
+
+}
+
+
+/* SQUARE */
+
+#messages .message.bubble-square-active {
+
+  border-radius: 3px;
+
+}
+
+
+/* GLASS */
+
+#messages .message.bubble-glass-active {
+
+  background:
+    rgba(255,255,255,0.20) !important;
+
+  border:
+    1px solid rgba(255,255,255,0.45) !important;
+
+  backdrop-filter:
+    blur(10px);
+
+  -webkit-backdrop-filter:
+    blur(10px);
+
+  border-radius:
+    15px;
+
+}
+
+
+/* MODERN */
+
+#messages .message.bubble-modern-active {
+
+  border-radius:
+    18px 18px 4px 18px;
+
+  }
+  /* =====================================
+   MESSAGE EFFECTS PANEL
+===================================== */
+
+.message-effects-panel {
+
+  display: none;
+
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: 90%;
+  max-width: 380px;
+
+  max-height: 90vh;
+
+  overflow-y: auto;
+
+  padding: 25px 20px;
+
+  background: #ffffff;
+
+  color: #222222;
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 15px 50px rgba(0,0,0,0.35);
+
+  z-index: 1000005 !important;
+
+  text-align: center;
+
+  box-sizing: border-box;
+}
+
+
+.message-effects-panel.show {
+
+  display: block;
+}
+
+
+/* CLOSE */
+
+.message-effects-close {
+
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+
+  width: 34px;
+  height: 34px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #eeeeee;
+
+  color: #333;
+
+  font-size: 18px;
+
+  cursor: pointer;
+}
+
+
+/* ICON */
+
+.message-effects-icon {
+
+  width: 70px;
+  height: 70px;
+
+  margin: 5px auto 10px;
+
+  border-radius: 50%;
+
+  background: #f1f3f5;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 38px;
+}
+
+
+/* TITLE */
+
+.message-effects-panel h2 {
+
+  margin: 5px 0;
+
+  font-size: 23px;
+}
+
+
+.message-effects-subtitle {
+
+  margin: 5px 0 20px;
+
+  color: #777;
+
+  font-size: 14px;
+}
+
+
+/* OPTIONS */
+
+.message-effects-options {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+
+.message-effects-option {
+
+  width: 100%;
+
+  min-height: 60px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 11px;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 13px;
+
+  background: #f8f8f8;
+
+  color: #222;
+
+  cursor: pointer;
+
+  text-align: left;
+
+  box-sizing: border-box;
+}
+
+
+.message-effects-option > span {
+
+  width: 45px;
+  height: 45px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: #ffffff;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 20px;
+}
+
+
+.message-effects-option > div {
+
+  flex: 1;
+}
+
+
+.message-effects-option strong {
+
+  display: block;
+
+  font-size: 14px;
+
+  margin-bottom: 3px;
+}
+
+
+.message-effects-option small {
+
+  display: block;
+
+  color: #777;
+
+  font-size: 11px;
+}
+
+
+.message-effects-option > b {
+
+  font-size: 22px;
+
+  color: #888;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 480px) {
+
+  .message-effects-panel {
+
+    width: calc(100% - 20px);
+
+    padding: 22px 15px;
+
+  }
+
+  }
+  /* =====================================
+   MESSAGE EFFECTS
+===================================== */
+
+
+/* NONE */
+
+#messages .message-effect-none {
+
+  animation: none !important;
+
+}
+
+
+/* FADE */
+
+#messages .message-effect-fade {
+
+  animation:
+    friendszoneFadeIn
+    0.35s ease;
+
+}
+
+
+@keyframes friendszoneFadeIn {
+
+  from {
+
+    opacity: 0;
+
+  }
+
+  to {
+
+    opacity: 1;
+
+  }
+
+}
+
+
+/* SLIDE */
+
+#messages .message-effect-slide {
+
+  animation:
+    friendszoneSlideUp
+    0.35s ease;
+
+}
+
+
+@keyframes friendszoneSlideUp {
+
+  from {
+
+    opacity: 0;
+
+    transform:
+      translateY(15px);
+
+  }
+
+  to {
+
+    opacity: 1;
+
+    transform:
+      translateY(0);
+
+  }
+
+}
+
+
+/* POP */
+
+#messages .message-effect-pop {
+
+  animation:
+    friendszonePop
+    0.3s ease;
+
+}
+
+
+@keyframes friendszonePop {
+
+  0% {
+
+    opacity: 0;
+
+    transform:
+      scale(0.7);
+
+  }
+
+  70% {
+
+    transform:
+      scale(1.05);
+
+  }
+
+  100% {
+
+    opacity: 1;
+
+    transform:
+      scale(1);
+
+  }
+
+}
+
+
+/* BOUNCE */
+
+#messages .message-effect-bounce {
+
+  animation:
+    friendszoneBounce
+    0.5s ease;
+
+}
+
+
+@keyframes friendszoneBounce {
+
+  0% {
+
+    opacity: 0;
+
+    transform:
+      translateY(20px);
+
+  }
+
+  60% {
+
+    transform:
+      translateY(-6px);
+
+  }
+
+  80% {
+
+    transform:
+      translateY(3px);
+
+  }
+
+  100% {
+
+    opacity: 1;
+
+    transform:
+      translateY(0);
+
+  }
+
+}
+  /* =====================================
+   CHAT BACKGROUND PANEL
+===================================== */
+
+.chat-background-panel {
+
+  display: none;
+
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform:
+    translate(-50%, -50%);
+
+  width: 90%;
+  max-width: 380px;
+
+  max-height: 90vh;
+
+  overflow-y: auto;
+
+  padding: 25px 20px;
+
+  background: #ffffff;
+
+  color: #222222;
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 15px 50px
+    rgba(0,0,0,0.35);
+
+  z-index: 1000006 !important;
+
+  text-align: center;
+
+  box-sizing: border-box;
+}
+
+
+.chat-background-panel.show {
+
+  display: block;
+
+}
+
+
+/* CLOSE */
+
+.chat-background-close {
+
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+
+  width: 34px;
+  height: 34px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #eeeeee;
+
+  color: #333;
+
+  font-size: 18px;
+
+  cursor: pointer;
+
+}
+
+
+/* ICON */
+
+.chat-background-icon {
+
+  width: 70px;
+  height: 70px;
+
+  margin: 5px auto 10px;
+
+  border-radius: 50%;
+
+  background: #f1f3f5;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 38px;
+
+}
+
+
+/* TITLE */
+
+.chat-background-panel h2 {
+
+  margin: 5px 0;
+
+  font-size: 23px;
+
+}
+
+
+.chat-background-subtitle {
+
+  margin: 5px 0 20px;
+
+  color: #777;
+
+  font-size: 14px;
+
+}
+
+
+/* OPTIONS */
+
+.chat-background-options {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+
+}
+
+
+.chat-background-option {
+
+  width: 100%;
+
+  min-height: 65px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 10px;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 13px;
+
+  background: #f8f8f8;
+
+  color: #222;
+
+  cursor: pointer;
+
+  text-align: left;
+
+  box-sizing: border-box;
+
+}
+
+
+/* PREVIEW */
+
+.chat-background-preview {
+
+  width: 60px;
+  height: 45px;
+
+  flex-shrink: 0;
+
+  border-radius: 10px;
+
+  border: 1px solid #ddd;
+
+}
+
+
+/* BACKGROUNDS */
+
+.bg-default {
+
+  background: #f5f5f5;
+
+}
+
+
+.bg-gradient {
+
+  background:
+    linear-gradient(
+      135deg,
+      #ff00cc,
+      #333399
+    );
+
+}
+
+
+.bg-ocean {
+
+  background:
+    linear-gradient(
+      135deg,
+      #00c6ff,
+      #0072ff
+    );
+
+}
+
+
+.bg-space {
+
+  background:
+    linear-gradient(
+      135deg,
+      #0f0c29,
+      #302b63,
+      #24243e
+    );
+
+}
+
+
+.bg-nature {
+
+  background:
+    linear-gradient(
+      135deg,
+      #56ab2f,
+      #a8e063
+    );
+
+}
+
+
+.bg-pink {
+
+  background:
+    linear-gradient(
+      135deg,
+      #ff9a9e,
+      #fad0c4
+    );
+
+}
+
+
+.bg-clean {
+
+  background: #ffffff;
+
+}
+
+
+/* TEXT */
+
+.chat-background-option > div {
+
+  flex: 1;
+
+}
+
+
+.chat-background-option strong {
+
+  display: block;
+
+  font-size: 14px;
+
+  margin-bottom: 3px;
+
+}
+
+
+.chat-background-option small {
+
+  display: block;
+
+  color: #777;
+
+  font-size: 11px;
+
+}
+
+
+.chat-background-option > b {
+
+  font-size: 22px;
+
+  color: #888;
+
+}
+
+
+/* MOBILE */
+
+@media (max-width: 480px) {
+
+  .chat-background-panel {
+
+    width:
+      calc(100% - 20px);
+
+    padding:
+      22px 15px;
+
+  }
+
+}
+  /* =====================================
+   ACTIVE CHAT BACKGROUNDS
+===================================== */
+
+.chat-bg-default {
+
+  background: #f5f5f5 !important;
+
+}
+
+
+.chat-bg-gradient {
+
+  background:
+    linear-gradient(
+      135deg,
+      #ff00cc,
+      #333399
+    ) !important;
+
+}
+
+
+.chat-bg-ocean {
+
+  background:
+    linear-gradient(
+      135deg,
+      #00c6ff,
+      #0072ff
+    ) !important;
+
+}
+
+
+.chat-bg-space {
+
+  background:
+    linear-gradient(
+      135deg,
+      #0f0c29,
+      #302b63,
+      #24243e
+    ) !important;
+
+}
+
+
+.chat-bg-nature {
+
+  background:
+    linear-gradient(
+      135deg,
+      #56ab2f,
+      #a8e063
+    ) !important;
+
+}
+
+
+.chat-bg-pink {
+
+  background:
+    linear-gradient(
+      135deg,
+      #ff9a9e,
+      #fad0c4
+    ) !important;
+
+}
+
+
+.chat-bg-clean {
+
+  background: #ffffff !important;
+
+}
+  /* =====================================
+   BUBBLE COLORS PANEL
+===================================== */
+
+.bubble-colors-panel {
+
+  display: none;
+
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform:
+    translate(-50%, -50%);
+
+  width: 90%;
+  max-width: 380px;
+
+  max-height: 90vh;
+
+  overflow-y: auto;
+
+  padding: 25px 20px;
+
+  background: #ffffff;
+
+  color: #222222;
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 15px 50px
+    rgba(0,0,0,0.35);
+
+  z-index: 1000007 !important;
+
+  text-align: center;
+
+  box-sizing: border-box;
+}
+
+
+.bubble-colors-panel.show {
+
+  display: block;
+
+}
+
+
+.bubble-colors-close {
+
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+
+  width: 34px;
+  height: 34px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #eeeeee;
+
+  font-size: 18px;
+
+  cursor: pointer;
+}
+
+
+.bubble-colors-icon {
+
+  width: 70px;
+  height: 70px;
+
+  margin: 5px auto 10px;
+
+  border-radius: 50%;
+
+  background: #f1f3f5;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 38px;
+}
+
+
+.bubble-colors-panel h2 {
+
+  margin: 5px 0;
+
+  font-size: 23px;
+}
+
+
+.bubble-colors-subtitle {
+
+  margin: 5px 0 20px;
+
+  color: #777;
+
+  font-size: 14px;
+}
+
+
+.bubble-color-section {
+
+  margin-bottom: 20px;
+
+  text-align: left;
+}
+
+
+.bubble-color-section h3 {
+
+  margin-bottom: 10px;
+
+  font-size: 14px;
+}
+
+
+.bubble-color-grid,
+.received-color-grid {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, 1fr);
+
+  gap: 9px;
+}
+
+
+.bubble-color-choice,
+.received-color-choice {
+
+  min-height: 48px;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 12px;
+
+  background: #f8f8f8;
+
+  cursor: pointer;
+
+  font-size: 12px;
+
+}
+
+
+@media (max-width: 480px) {
+
+  .bubble-colors-panel {
+
+    width:
+      calc(100% - 20px);
+
+    padding:
+      22px 15px;
+
+  }
+
+  }
 </style>
  </head>
 <body>
@@ -9071,13 +10383,6 @@ body.dark-mode .message-font-option small {
 
 <div class="right-feature-bar">
 
-  <button
-    class="right-feature-btn"
-    id="rightProfileBtn"
-    title="My Profile"
-  >
-    👤
-  </button>
     <button
       id="darkModeBtn"
       type="button"
@@ -10549,23 +11854,6 @@ body.dark-mode .message-font-option small {
 
       <b>›</b>
     </button>
-
-
-    <button
-      class="privacy-option"
-      id="profilePrivacyBtn"
-    >
-      <span>👤</span>
-
-      <div>
-        <strong>Profile Privacy</strong>
-        <small>Control who can view your profile</small>
-      </div>
-
-      <b>›</b>
-    </button>
-
-
     <button
       class="privacy-option"
       id="messagePrivacyBtn"
@@ -10950,32 +12238,156 @@ body.dark-mode .message-font-option small {
 
     </button>
 
+<!-- =====================================
+     CHAT BUBBLE COLORS PANEL
+===================================== -->
+<button
+  class="appearance-option"
+  id="bubbleColorsOption"
+  type="button"
+>
 
-    <!-- MESSAGE SIZE -->
+  <span>🎭</span>
 
-    <button
-      class="chat-customization-option"
-      id="messageSizeOption"
-      type="button"
-    >
+  <div>
+    <strong>Bubble Colors</strong>
 
-      <span>🔠</span>
+    <small>
+      Customize sent and received message colors
+    </small>
+  </div>
 
-      <div>
+  <b>›</b>
 
-        <strong>Message Size</strong>
+</button>
+<div
+  id="bubbleColorsPanel"
+  class="bubble-colors-panel"
+>
 
-        <small>
-          Small, medium or large
-        </small>
-
-      </div>
-
-      <b>›</b>
-
-    </button>
+  <button
+    id="bubbleColorsCloseBtn"
+    class="bubble-colors-close"
+    type="button"
+  >
+    ✕
+  </button>
 
 
+  <div class="bubble-colors-icon">
+    🎭
+  </div>
+
+
+  <h2>Bubble Colors</h2>
+
+  <p class="bubble-colors-subtitle">
+    Customize your sent and received messages
+  </p>
+
+
+  <div class="bubble-color-section">
+
+    <h3>📤 My Messages</h3>
+
+    <div class="bubble-color-grid">
+
+      <button
+        class="bubble-color-choice"
+        data-sent-color="#25D366"
+        type="button"
+      >
+        🟢 Green
+      </button>
+
+      <button
+        class="bubble-color-choice"
+        data-sent-color="#2196F3"
+        type="button"
+      >
+        🔵 Blue
+      </button>
+
+      <button
+        class="bubble-color-choice"
+        data-sent-color="#9C27B0"
+        type="button"
+      >
+        🟣 Purple
+      </button>
+
+      <button
+        class="bubble-color-choice"
+        data-sent-color="#FF9800"
+        type="button"
+      >
+        🟠 Orange
+      </button>
+
+      <button
+        class="bubble-color-choice"
+        data-sent-color="#E91E63"
+        type="button"
+      >
+        🌸 Pink
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="bubble-color-section">
+
+    <h3>📥 Other Messages</h3>
+
+    <div class="received-color-grid">
+
+      <button
+        class="received-color-choice"
+        data-received-color="#ffffff"
+        type="button"
+      >
+        ⚪ White
+      </button>
+
+      <button
+        class="received-color-choice"
+        data-received-color="#eeeeee"
+        type="button"
+      >
+        🌫️ Gray
+      </button>
+
+      <button
+        class="received-color-choice"
+        data-received-color="#E3F2FD"
+        type="button"
+      >
+        🔵 Light Blue
+      </button>
+
+      <button
+        class="received-color-choice"
+        data-received-color="#F3E5F5"
+        type="button"
+      >
+        🟣 Light Purple
+      </button>
+
+      <button
+        class="received-color-choice"
+        data-received-color="#FFF3E0"
+        type="button"
+      >
+        🟠 Light Orange
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
     <!-- NAME COLOR -->
 
     <button
@@ -11655,6 +13067,478 @@ body.dark-mode .message-font-option small {
       <div>
         <strong>Rainbow</strong>
         <small>Color-changing name</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+  </div>
+
+</div>
+  <!-- =====================================
+     MESSAGE BUBBLE PANEL
+===================================== -->
+
+<div
+  id="bubbleStylePanel"
+  class="bubble-style-panel"
+>
+
+  <button
+    id="bubbleStyleCloseBtn"
+    class="bubble-style-close"
+    type="button"
+  >
+    ✕
+  </button>
+
+
+  <div class="bubble-style-icon">
+    💬
+  </div>
+
+
+  <h2>Message Bubble</h2>
+
+  <p class="bubble-style-subtitle">
+    Choose your message bubble style
+  </p>
+
+
+  <div class="bubble-style-options">
+
+
+    <!-- CLASSIC -->
+
+    <button
+      class="bubble-style-option"
+      data-bubble-style="classic"
+      type="button"
+    >
+
+      <span class="bubble-preview bubble-classic">
+        Hello 👋
+      </span>
+
+      <div>
+        <strong>Classic</strong>
+        <small>Simple rounded bubbles</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- SOFT -->
+
+    <button
+      class="bubble-style-option"
+      data-bubble-style="soft"
+      type="button"
+    >
+
+      <span class="bubble-preview bubble-soft">
+        Hello 👋
+      </span>
+
+      <div>
+        <strong>Soft Rounded</strong>
+        <small>Extra rounded bubbles</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- SQUARE -->
+
+    <button
+      class="bubble-style-option"
+      data-bubble-style="square"
+      type="button"
+    >
+
+      <span class="bubble-preview bubble-square">
+        Hello 👋
+      </span>
+
+      <div>
+        <strong>Square</strong>
+        <small>Clean sharp corners</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- GLASS -->
+
+    <button
+      class="bubble-style-option"
+      data-bubble-style="glass"
+      type="button"
+    >
+
+      <span class="bubble-preview bubble-glass">
+        Hello 👋
+      </span>
+
+      <div>
+        <strong>Glass</strong>
+        <small>Transparent glass effect</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- MODERN -->
+
+    <button
+      class="bubble-style-option"
+      data-bubble-style="modern"
+      type="button"
+    >
+
+      <span class="bubble-preview bubble-modern">
+        Hello 👋
+      </span>
+
+      <div>
+        <strong>Modern</strong>
+        <small>Compact modern bubbles</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+  </div>
+
+</div>
+  <!-- =====================================
+     MESSAGE EFFECTS PANEL
+===================================== -->
+
+<div
+  id="messageEffectsPanel"
+  class="message-effects-panel"
+>
+
+  <button
+    id="messageEffectsCloseBtn"
+    class="message-effects-close"
+    type="button"
+  >
+    ✕
+  </button>
+
+
+  <div class="message-effects-icon">
+    ✨
+  </div>
+
+
+  <h2>Message Effects</h2>
+
+  <p class="message-effects-subtitle">
+    Choose how messages appear
+  </p>
+
+
+  <div class="message-effects-options">
+
+
+    <!-- NONE -->
+
+    <button
+      class="message-effects-option"
+      data-message-effect="none"
+      type="button"
+    >
+
+      <span>⭕</span>
+
+      <div>
+        <strong>None</strong>
+        <small>Normal message appearance</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- FADE -->
+
+    <button
+      class="message-effects-option"
+      data-message-effect="fade"
+      type="button"
+    >
+
+      <span>💫</span>
+
+      <div>
+        <strong>Fade In</strong>
+        <small>Messages gently appear</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- SLIDE -->
+
+    <button
+      class="message-effects-option"
+      data-message-effect="slide"
+      type="button"
+    >
+
+      <span>🚀</span>
+
+      <div>
+        <strong>Slide Up</strong>
+        <small>Messages slide into view</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- POP -->
+
+    <button
+      class="message-effects-option"
+      data-message-effect="pop"
+      type="button"
+    >
+
+      <span>💥</span>
+
+      <div>
+        <strong>Pop</strong>
+        <small>Messages pop into place</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- BOUNCE -->
+
+    <button
+      class="message-effects-option"
+      data-message-effect="bounce"
+      type="button"
+    >
+
+      <span>🌊</span>
+
+      <div>
+        <strong>Bounce</strong>
+        <small>A playful bounce effect</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+  </div>
+
+</div>
+  <!-- =====================================
+     CHAT BACKGROUND PANEL
+===================================== -->
+
+<div
+  id="chatBackgroundPanel"
+  class="chat-background-panel"
+>
+
+  <button
+    id="chatBackgroundCloseBtn"
+    class="chat-background-close"
+    type="button"
+  >
+    ✕
+  </button>
+
+
+  <div class="chat-background-icon">
+    🖼️
+  </div>
+
+
+  <h2>Chat Background</h2>
+
+  <p class="chat-background-subtitle">
+    Choose a background for your conversations
+  </p>
+
+
+  <div class="chat-background-options">
+
+
+    <!-- DEFAULT -->
+
+    <button
+      class="chat-background-option"
+      data-chat-background="default"
+      type="button"
+    >
+
+      <span
+        class="chat-background-preview bg-default"
+      ></span>
+
+      <div>
+        <strong>Default</strong>
+        <small>Use the normal chat background</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- GRADIENT -->
+
+    <button
+      class="chat-background-option"
+      data-chat-background="gradient"
+      type="button"
+    >
+
+      <span
+        class="chat-background-preview bg-gradient"
+      ></span>
+
+      <div>
+        <strong>Color Gradient</strong>
+        <small>Beautiful colorful background</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- OCEAN -->
+
+    <button
+      class="chat-background-option"
+      data-chat-background="ocean"
+      type="button"
+    >
+
+      <span
+        class="chat-background-preview bg-ocean"
+      ></span>
+
+      <div>
+        <strong>Ocean</strong>
+        <small>Cool blue atmosphere</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- SPACE -->
+
+    <button
+      class="chat-background-option"
+      data-chat-background="space"
+      type="button"
+    >
+
+      <span
+        class="chat-background-preview bg-space"
+      ></span>
+
+      <div>
+        <strong>Space</strong>
+        <small>Deep night background</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- NATURE -->
+
+    <button
+      class="chat-background-option"
+      data-chat-background="nature"
+      type="button"
+    >
+
+      <span
+        class="chat-background-preview bg-nature"
+      ></span>
+
+      <div>
+        <strong>Nature</strong>
+        <small>Fresh green atmosphere</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- PINK -->
+
+    <button
+      class="chat-background-option"
+      data-chat-background="pink"
+      type="button"
+    >
+
+      <span
+        class="chat-background-preview bg-pink"
+      ></span>
+
+      <div>
+        <strong>Soft Pink</strong>
+        <small>Warm and friendly</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- CLEAN -->
+
+    <button
+      class="chat-background-option"
+      data-chat-background="clean"
+      type="button"
+    >
+
+      <span
+        class="chat-background-preview bg-clean"
+      ></span>
+
+      <div>
+        <strong>Clean</strong>
+        <small>Simple white background</small>
       </div>
 
       <b>›</b>

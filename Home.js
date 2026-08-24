@@ -2096,9 +2096,7 @@ function loadMessages() {
             }
 
           }
-
-
-        const div =
+const div =
   document.createElement("div");
 
 const isMine =
@@ -2108,7 +2106,84 @@ div.className =
   isMine
     ? "message sent"
     : "message received";
+          // =====================================
+// APPLY SAVED BUBBLE COLORS
+// =====================================
 
+const savedSentColor =
+  localStorage.getItem(
+    "friendszoneSentBubbleColor"
+  ) || "#25D366";
+
+
+const savedReceivedColor =
+  localStorage.getItem(
+    "friendszoneReceivedBubbleColor"
+  ) || "#ffffff";
+
+
+if (isMine) {
+
+  div.style.setProperty(
+    "background",
+    savedSentColor,
+    "important"
+  );
+
+} else {
+
+  div.style.setProperty(
+    "background",
+    savedReceivedColor,
+    "important"
+  );
+
+}
+          // =====================================
+// APPLY SAVED MESSAGE EFFECT
+// =====================================
+
+const savedEffect =
+  localStorage.getItem(
+    "friendszoneMessageEffect"
+  ) || "none";
+
+
+div.classList.add(
+  "message-effect-" +
+  savedEffect
+);
+
+// =====================================
+// APPLY SAVED BUBBLE STYLE
+// =====================================
+
+const savedBubbleStyle =
+  localStorage.getItem(
+    "friendszoneBubbleStyle"
+  ) || "classic";
+
+
+div.classList.add(
+  "bubble-" +
+  savedBubbleStyle +
+  "-active"
+);
+// =====================================
+// APPLY SAVED MESSAGE FONT
+// =====================================
+
+const savedFont =
+  localStorage.getItem(
+    "friendszoneMessageFont"
+  ) || "Arial";
+
+
+div.style.setProperty(
+  "font-family",
+  savedFont,
+  "important"
+);
   // ======================
 // SENDER NAME COLOR
 // ======================
@@ -2355,6 +2430,36 @@ let html = `
 
           div.innerHTML =
             html;
+          // =====================================
+// APPLY FONT TO MESSAGE CONTENT
+// =====================================
+
+const messageFont =
+  localStorage.getItem(
+    "friendszoneMessageFont"
+  ) || "Arial";
+
+
+div.style.setProperty(
+  "font-family",
+  messageFont,
+  "important"
+);
+
+
+div.querySelectorAll(
+  "*"
+).forEach(
+  function (element) {
+
+    element.style.setProperty(
+      "font-family",
+      messageFont,
+      "important"
+    );
+
+  }
+);
 // Apply saved name color to this message
 
 const senderName =
@@ -11870,6 +11975,158 @@ const messageFontButtons =
 
 
 // =====================================
+// APPLY FONT TO ALL CHAT MESSAGES
+// =====================================
+
+function applyFriendsZoneMessageFont(font) {
+
+  if (!font) {
+    return;
+  }
+
+
+  // Save the choice
+
+  localStorage.setItem(
+    "friendszoneMessageFont",
+    font
+  );
+
+
+  // Change existing messages
+
+  const messages =
+    document.querySelectorAll(
+      "#messages .message"
+    );
+
+
+  messages.forEach(
+    function (message) {
+
+      message.style.setProperty(
+        "font-family",
+        font,
+        "important"
+      );
+
+
+      // Also change everything
+      // inside the message
+
+      const children =
+        message.querySelectorAll(
+          "*"
+        );
+
+
+      children.forEach(
+        function (child) {
+
+          child.style.setProperty(
+            "font-family",
+            font,
+            "important"
+          );
+
+        }
+      );
+
+    }
+  );
+
+}
+
+
+// =====================================
+// FONT BUTTONS
+// =====================================
+
+messageFontButtons.forEach(
+  function (button) {
+
+    button.addEventListener(
+      "click",
+      function () {
+
+        const font =
+          button.dataset.font;
+
+        applyFriendsZoneMessageFont(
+          font
+        );
+
+      }
+    );
+
+  }
+);
+
+
+// =====================================
+// LOAD SAVED FONT
+// =====================================
+
+const savedFriendsZoneFont =
+  localStorage.getItem(
+    "friendszoneMessageFont"
+  ) || "Arial";
+
+
+applyFriendsZoneMessageFont(
+  savedFriendsZoneFont
+);
+
+// =====================================
+// SAVE SELECTED FONT
+// =====================================
+
+messageFontButtons.forEach(
+  function (button) {
+
+    button.addEventListener(
+      "click",
+      function () {
+
+        const font =
+          button.dataset.font;
+
+        if (!font) {
+          return;
+        }
+
+
+        localStorage.setItem(
+          "friendszoneMessageFont",
+          font
+        );
+
+
+        // Apply immediately to
+        // messages already displayed
+
+        const messages =
+          document.querySelectorAll(
+            "#messages .message"
+          );
+
+
+        messages.forEach(
+          function (message) {
+
+            message.style.fontFamily =
+              font;
+
+          }
+        );
+
+      }
+    );
+
+  }
+);
+
+// =====================================
 // APPLY MESSAGE FONT
 // =====================================
 
@@ -12146,6 +12403,707 @@ if (savedNameColor) {
 
   applyNameColor(
     "#2196F3"
+  );
+
+}
+// =====================================
+// MESSAGE BUBBLE PANEL
+// =====================================
+
+const bubbleStyleOption =
+  document.getElementById(
+    "bubbleStyleOption"
+  );
+
+const bubbleStylePanel =
+  document.getElementById(
+    "bubbleStylePanel"
+  );
+
+const bubbleStyleCloseBtn =
+  document.getElementById(
+    "bubbleStyleCloseBtn"
+  );
+
+
+// OPEN
+
+if (
+  bubbleStyleOption &&
+  bubbleStylePanel
+) {
+
+  bubbleStyleOption.addEventListener(
+    "click",
+    function () {
+
+      bubbleStylePanel.classList.add(
+        "show"
+      );
+
+    }
+  );
+
+}
+
+
+// CLOSE
+
+if (
+  bubbleStyleCloseBtn &&
+  bubbleStylePanel
+) {
+
+  bubbleStyleCloseBtn.addEventListener(
+    "click",
+    function () {
+
+      bubbleStylePanel.classList.remove(
+        "show"
+      );
+
+    }
+  );
+
+}
+// =====================================
+// MESSAGE BUBBLE STYLE SYSTEM
+// =====================================
+
+const bubbleStyleButtons =
+  document.querySelectorAll(
+    ".bubble-style-option"
+  );
+
+
+// =====================================
+// APPLY BUBBLE STYLE
+// =====================================
+
+function applyBubbleStyle(style) {
+
+  if (!style) {
+    return;
+  }
+
+
+  // Save choice
+
+  localStorage.setItem(
+    "friendszoneBubbleStyle",
+    style
+  );
+
+
+  // Existing messages
+
+  const messages =
+    document.querySelectorAll(
+      "#messages .message"
+    );
+
+
+  messages.forEach(
+    function (message) {
+
+      message.classList.remove(
+        "bubble-classic-active",
+        "bubble-soft-active",
+        "bubble-square-active",
+        "bubble-glass-active",
+        "bubble-modern-active"
+      );
+
+
+      message.classList.add(
+        "bubble-" +
+        style +
+        "-active"
+      );
+
+    }
+  );
+
+}
+
+
+// =====================================
+// BUTTONS
+// =====================================
+
+bubbleStyleButtons.forEach(
+  function (button) {
+
+    button.addEventListener(
+      "click",
+      function () {
+
+        const style =
+          button.dataset.bubbleStyle;
+
+        applyBubbleStyle(style);
+
+      }
+    );
+
+  }
+);
+
+
+// =====================================
+// LOAD SAVED STYLE
+// =====================================
+
+const savedBubbleStyle =
+  localStorage.getItem(
+    "friendszoneBubbleStyle"
+  ) || "classic";
+
+
+applyBubbleStyle(
+  savedBubbleStyle
+);
+// =====================================
+// MESSAGE EFFECTS PANEL
+// =====================================
+
+const messageEffectsOption =
+  document.getElementById(
+    "messageEffectsOption"
+  );
+
+const messageEffectsPanel =
+  document.getElementById(
+    "messageEffectsPanel"
+  );
+
+const messageEffectsCloseBtn =
+  document.getElementById(
+    "messageEffectsCloseBtn"
+  );
+
+
+// OPEN
+
+if (
+  messageEffectsOption &&
+  messageEffectsPanel
+) {
+
+  messageEffectsOption.addEventListener(
+    "click",
+    function () {
+
+      messageEffectsPanel.classList.add(
+        "show"
+      );
+
+    }
+  );
+
+}
+
+
+// CLOSE
+
+if (
+  messageEffectsCloseBtn &&
+  messageEffectsPanel
+) {
+
+  messageEffectsCloseBtn.addEventListener(
+    "click",
+    function () {
+
+      messageEffectsPanel.classList.remove(
+        "show"
+      );
+
+    }
+  );
+}
+// =====================================
+// MESSAGE EFFECT SYSTEM
+// =====================================
+
+const messageEffectButtons =
+  document.querySelectorAll(
+    ".message-effects-option"
+  );
+
+
+// =====================================
+// APPLY EFFECT TO EXISTING MESSAGES
+// =====================================
+
+function applyMessageEffect(effect) {
+
+  if (!effect) {
+    return;
+  }
+
+
+  // Save selection
+
+  localStorage.setItem(
+    "friendszoneMessageEffect",
+    effect
+  );
+
+
+  // Existing messages
+
+  const messages =
+    document.querySelectorAll(
+      "#messages .message"
+    );
+
+
+  messages.forEach(
+    function (message) {
+
+      message.classList.remove(
+        "message-effect-none",
+        "message-effect-fade",
+        "message-effect-slide",
+        "message-effect-pop",
+        "message-effect-bounce"
+      );
+
+
+      message.classList.add(
+        "message-effect-" +
+        effect
+      );
+
+    }
+  );
+
+}
+
+
+// =====================================
+// EFFECT BUTTONS
+// =====================================
+
+messageEffectButtons.forEach(
+  function (button) {
+
+    button.addEventListener(
+      "click",
+      function () {
+
+        const effect =
+          button.dataset.messageEffect;
+
+        applyMessageEffect(
+          effect
+        );
+
+      }
+    );
+
+  }
+);
+
+
+// =====================================
+// LOAD SAVED EFFECT
+// =====================================
+
+const savedMessageEffect =
+  localStorage.getItem(
+    "friendszoneMessageEffect"
+  ) || "none";
+
+
+applyMessageEffect(
+  savedMessageEffect
+);
+// =====================================
+// CHAT BACKGROUND PANEL
+// =====================================
+
+const chatBackgroundOption =
+  document.getElementById(
+    "chatBackgroundOption"
+  );
+
+const chatBackgroundPanel =
+  document.getElementById(
+    "chatBackgroundPanel"
+  );
+
+const chatBackgroundCloseBtn =
+  document.getElementById(
+    "chatBackgroundCloseBtn"
+  );
+
+
+// OPEN
+
+if (
+  chatBackgroundOption &&
+  chatBackgroundPanel
+) {
+
+  chatBackgroundOption.addEventListener(
+    "click",
+    function () {
+
+      chatBackgroundPanel.classList.add(
+        "show"
+      );
+
+    }
+  );
+
+}
+
+
+// CLOSE
+
+if (
+  chatBackgroundCloseBtn &&
+  chatBackgroundPanel
+) {
+
+  chatBackgroundCloseBtn.addEventListener(
+    "click",
+    function () {
+
+      chatBackgroundPanel.classList.remove(
+        "show"
+      );
+
+    }
+  );
+
+}
+// =====================================
+// CHAT BACKGROUND SYSTEM
+// =====================================
+
+const chatBackgroundButtons =
+  document.querySelectorAll(
+    ".chat-background-option"
+  );
+
+
+// =====================================
+// APPLY CHAT BACKGROUND
+// =====================================
+
+function applyChatBackground(background) {
+
+  if (!background) {
+    return;
+  }
+
+
+  // Save choice
+
+  localStorage.setItem(
+    "friendszoneChatBackground",
+    background
+  );
+
+
+  // Find chat area
+
+  const chatArea =
+    document.querySelector(
+      ".chat-area"
+    ) ||
+    document.querySelector(
+      "#chatArea"
+    ) ||
+    document.querySelector(
+      ".chat-container"
+    );
+
+
+  if (!chatArea) {
+
+    console.warn(
+      "Chat area not found."
+    );
+
+    return;
+
+  }
+
+
+  // Remove previous classes
+
+  chatArea.classList.remove(
+    "chat-bg-default",
+    "chat-bg-gradient",
+    "chat-bg-ocean",
+    "chat-bg-space",
+    "chat-bg-nature",
+    "chat-bg-pink",
+    "chat-bg-clean"
+  );
+
+
+  // Add selected class
+
+  chatArea.classList.add(
+    "chat-bg-" +
+    background
+  );
+
+}
+
+
+// =====================================
+// BACKGROUND BUTTONS
+// =====================================
+
+chatBackgroundButtons.forEach(
+  function (button) {
+
+    button.addEventListener(
+      "click",
+      function () {
+
+        const background =
+          button.dataset.chatBackground;
+
+        applyChatBackground(
+          background
+        );
+
+      }
+    );
+
+  }
+);
+
+
+// =====================================
+// LOAD SAVED BACKGROUND
+// =====================================
+
+const savedChatBackground =
+  localStorage.getItem(
+    "friendszoneChatBackground"
+  ) || "default";
+
+
+applyChatBackground(
+  savedChatBackground
+);
+// =====================================
+// BUBBLE COLORS PANEL
+// =====================================
+
+const bubbleColorsOption =
+  document.getElementById(
+    "bubbleColorsOption"
+  );
+
+const bubbleColorsPanel =
+  document.getElementById(
+    "bubbleColorsPanel"
+  );
+
+const bubbleColorsCloseBtn =
+  document.getElementById(
+    "bubbleColorsCloseBtn"
+  );
+
+
+if (
+  bubbleColorsOption &&
+  bubbleColorsPanel
+) {
+
+  bubbleColorsOption.addEventListener(
+    "click",
+    function () {
+
+      bubbleColorsPanel.classList.add(
+        "show"
+      );
+
+    }
+  );
+
+}
+
+
+if (
+  bubbleColorsCloseBtn &&
+  bubbleColorsPanel
+) {
+
+  bubbleColorsCloseBtn.addEventListener(
+    "click",
+    function () {
+
+      bubbleColorsPanel.classList.remove(
+        "show"
+      );
+
+    }
+  );
+
+}
+// =====================================
+// RESET CHAT CUSTOMIZATION
+// =====================================
+
+const resetChatCustomization =
+  document.getElementById(
+    "resetChatCustomization"
+  );
+
+
+if (resetChatCustomization) {
+
+  resetChatCustomization.addEventListener(
+    "click",
+    function () {
+
+      const confirmReset =
+        confirm(
+          "Reset all chat customization settings?"
+        );
+
+
+      if (!confirmReset) {
+        return;
+      }
+
+
+      // =================================
+      // REMOVE SAVED SETTINGS
+      // =================================
+
+      localStorage.removeItem(
+        "friendszoneMessageFont"
+      );
+
+      localStorage.removeItem(
+        "friendszoneBubbleStyle"
+      );
+
+      localStorage.removeItem(
+        "friendszoneMessageEffect"
+      );
+
+      localStorage.removeItem(
+        "friendszoneChatBackground"
+      );
+
+      localStorage.removeItem(
+        "friendszoneSentBubbleColor"
+      );
+
+      localStorage.removeItem(
+        "friendszoneReceivedBubbleColor"
+      );
+
+
+      // =================================
+      // DEFAULT VALUES
+      // =================================
+
+      const defaultFont =
+        "Arial";
+
+      const defaultBubble =
+        "classic";
+
+      const defaultEffect =
+        "none";
+
+      const defaultBackground =
+        "default";
+
+      const defaultSentColor =
+        "#25D366";
+
+      const defaultReceivedColor =
+        "#ffffff";
+
+
+      // =================================
+      // APPLY DEFAULT FONT
+      // =================================
+
+      applyFriendsZoneMessageFont(
+        defaultFont
+      );
+
+
+      // =================================
+      // APPLY DEFAULT BUBBLE
+      // =================================
+
+      applyBubbleStyle(
+        defaultBubble
+      );
+
+
+      // =================================
+      // APPLY DEFAULT EFFECT
+      // =================================
+
+      applyMessageEffect(
+        defaultEffect
+      );
+
+
+      // =================================
+      // APPLY DEFAULT BACKGROUND
+      // =================================
+
+      applyChatBackground(
+        defaultBackground
+      );
+
+
+      // =================================
+      // APPLY DEFAULT COLORS
+      // =================================
+
+      applySentBubbleColor(
+        defaultSentColor
+      );
+
+
+      applyReceivedBubbleColor(
+        defaultReceivedColor
+      );
+
+
+      // =================================
+      // CLOSE CUSTOMIZATION PANEL
+      // =================================
+
+      const panel =
+        document.getElementById(
+          "chatCustomizationPanel"
+        );
+
+
+      if (panel) {
+
+        panel.classList.remove(
+          "show"
+        );
+
+      }
+
+
+      alert(
+        "Chat customization has been reset."
+      );
+
+    }
   );
 
 }
