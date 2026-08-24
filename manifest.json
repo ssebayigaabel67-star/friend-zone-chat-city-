@@ -1,7 +1,7 @@
 {
   "name": "FriendsZone Chat City",
   "short_name": "FriendsZone",
-  "start_url": "/",
+  "start_url": "/Homepage.html",
   "display": "standalone",
   "background_color": "#111827",
   "theme_color": "#2563eb",
