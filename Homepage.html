@@ -10330,6 +10330,649 @@ body.dark-mode .message-font-option small {
   }
 
   }
+  /* ==================================================
+   GROUP POPOVERS — MAIN LAYOUT
+================================================== */
+
+.group-admin-popover,
+.rename-group-popover,
+.change-group-photo-popover,
+.group-info-popover,
+.group-members-popover {
+
+  display: none;
+
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: calc(100% - 30px);
+
+  max-width: 380px;
+
+  max-height: 85vh;
+
+  overflow-y: auto;
+
+  padding: 20px;
+
+  background: white;
+
+  color: #222;
+
+  border-radius: 16px;
+
+  box-shadow:
+    0 12px 40px rgba(0,0,0,0.35);
+
+  z-index: 50000;
+
+  pointer-events: auto;
+}
+
+
+/* ==================================================
+   SHOW POPover
+================================================== */
+
+.group-admin-popover.show,
+.rename-group-popover.show,
+.change-group-photo-popover.show,
+.group-info-popover.show,
+.group-members-popover.show {
+
+  display: block;
+
+}
+
+
+/* ==================================================
+   MOBILE
+================================================== */
+
+@media (max-width: 600px) {
+
+  .group-admin-popover,
+  .rename-group-popover,
+  .change-group-photo-popover,
+  .group-info-popover,
+  .group-members-popover {
+
+    width: calc(100% - 24px);
+
+    max-width: 360px;
+
+    max-height: 82vh;
+
+    padding: 17px;
+
+    border-radius: 14px;
+
+  }
+
+}
+
+
+/* ==================================================
+   VERY SMALL PHONES
+================================================== */
+
+@media (max-width: 400px) {
+
+  .group-admin-popover,
+  .rename-group-popover,
+  .change-group-photo-popover,
+  .group-info-popover,
+  .group-members-popover {
+
+    width: calc(100% - 18px);
+
+    padding: 14px;
+
+  }
+
+  }
+   /* ==================================================
+    GROUP ADMIN — MAIN DESIGN
+ ================================================== */
+
+.group-admin-popover {
+  padding: 22px 18px 18px;
+  text-align: center;
+}
+
+.group-admin-icon {
+  width: 58px;
+  height: 58px;
+
+  margin: 4px auto 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #e3f2fd;
+
+  border-radius: 50%;
+
+  font-size: 28px;
+}
+
+.group-admin-popover h2 {
+  margin: 5px 0 8px;
+
+  font-size: 21px;
+
+  color: #222;
+}
+
+#adminGroupAdmin,
+#adminGroupMembers {
+  margin: 5px 0;
+
+  font-size: 13px;
+
+  color: #666;
+}
+
+
+/* ==================================================
+   CLOSE BUTTON
+ ================================================== */
+
+.group-admin-close,
+.rename-group-close,
+.change-group-photo-close,
+.group-info-close,
+.group-members-close {
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+
+  width: 34px;
+  height: 34px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #eeeeee;
+
+  color: #333;
+
+  font-size: 17px;
+
+  cursor: pointer;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+}
+
+.group-admin-close:hover,
+.rename-group-close:hover,
+.change-group-photo-close:hover,
+.group-info-close:hover,
+.group-members-close:hover {
+  background: #dddddd;
+}
+
+
+/* ==================================================
+   GROUP ADMIN OPTIONS
+ ================================================== */
+
+.group-admin-actions {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+
+  margin-top: 18px;
+
+  text-align: left;
+}
+
+.group-admin-actions button {
+  width: 100%;
+
+  min-height: 48px;
+
+  padding: 10px 12px;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 10px;
+
+  background: #f8f9fa;
+
+  color: #222;
+
+  font-size: 14px;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease;
+}
+
+.group-admin-actions button:hover {
+  background: #eeeeee;
+}
+
+.group-admin-actions button:active {
+  transform: scale(0.98);
+}
+
+
+/* REMOVE GROUP */
+
+.group-admin-actions button.danger {
+  background: #fff0f0;
+
+  color: #d32f2f;
+
+  border-color: #ffd5d5;
+}
+
+.group-admin-actions button.danger:hover {
+  background: #ffe0e0;
+}
+
+
+/* ==================================================
+   SUB-POPOVER HEADERS
+ ================================================== */
+
+.rename-group-popover,
+.change-group-photo-popover,
+.group-info-popover,
+.group-members-popover {
+  text-align: center;
+}
+
+.rename-group-icon,
+.change-group-photo-icon,
+.group-info-icon,
+.group-members-icon {
+  width: 55px;
+  height: 55px;
+
+  margin: 3px auto 10px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #e3f2fd;
+
+  font-size: 27px;
+}
+
+.rename-group-popover h2,
+.change-group-photo-popover h2,
+.group-info-popover h2,
+.group-members-popover h2 {
+  margin: 5px 0 8px;
+
+  font-size: 20px;
+
+  color: #222;
+}
+
+.rename-group-popover p,
+.change-group-photo-popover p {
+  margin-bottom: 15px;
+
+  color: #666;
+
+  font-size: 13px;
+}
+
+
+/* ==================================================
+   RENAME GROUP
+ ================================================== */
+
+#renameGroupInput {
+  width: 100%;
+
+  height: 44px;
+
+  padding: 0 12px;
+
+  border: 1px solid #ccc;
+
+  border-radius: 9px;
+
+  outline: none;
+
+  font-size: 14px;
+
+  background: white;
+
+  color: #222;
+}
+
+#renameGroupInput:focus {
+  border-color: #2196F3;
+}
+
+.rename-group-actions,
+.change-group-photo-actions {
+  display: flex;
+
+  gap: 8px;
+
+  margin-top: 15px;
+}
+
+.rename-group-actions button,
+.change-group-photo-actions button {
+  flex: 1;
+
+  min-height: 40px;
+
+  border: none;
+
+  border-radius: 8px;
+
+  cursor: pointer;
+
+  font-weight: bold;
+}
+
+#cancelRenameGroupBtn,
+#cancelChangeGroupPhotoBtn {
+  background: #eeeeee;
+
+  color: #333;
+}
+
+#saveRenameGroupBtn,
+#saveGroupPhotoBtn {
+  background: #2196F3;
+
+  color: white;
+}
+
+
+/* ==================================================
+   CHANGE GROUP PHOTO
+ ================================================== */
+
+#groupPhotoPreview {
+  display: block;
+
+  width: 100px;
+  height: 100px;
+
+  margin: 12px auto;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  border: 3px solid #2196F3;
+}
+
+#chooseGroupPhotoBtn {
+  width: 100%;
+
+  min-height: 42px;
+
+  border: none;
+
+  border-radius: 9px;
+
+  background: #eeeeee;
+
+  color: #333;
+
+  font-size: 14px;
+
+  cursor: pointer;
+}
+
+
+/* ==================================================
+   GROUP INFO
+ ================================================== */
+
+.group-info-details {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+
+  margin-top: 15px;
+
+  text-align: left;
+}
+
+.group-info-row {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 12px;
+
+  padding: 11px 12px;
+
+  background: #f7f7f7;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 9px;
+
+  font-size: 13px;
+}
+
+.group-info-row span {
+  color: #666;
+}
+
+.group-info-row strong {
+  color: #222;
+
+  text-align: right;
+
+  max-width: 55%;
+
+  overflow-wrap: anywhere;
+}
+
+.group-info-id {
+  font-size: 10px;
+}
+
+
+/* ==================================================
+   GROUP MEMBERS
+ ================================================== */
+
+#membersPopoverCount {
+  margin: 5px 0 15px;
+
+  color: #666;
+
+  font-size: 13px;
+}
+
+#groupMembersList {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 7px;
+
+  max-height: 50vh;
+
+  overflow-y: auto;
+
+  text-align: left;
+}
+
+.group-member-item {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 9px;
+
+  background: #f7f7f7;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 9px;
+}
+
+.group-member-item img {
+  width: 38px;
+  height: 38px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+}
+
+.group-member-name {
+  font-size: 13px;
+
+  font-weight: bold;
+
+  color: #222;
+}
+
+.group-member-status {
+  font-size: 11px;
+
+  color: #777;
+}
+
+
+/* ==================================================
+   MOBILE
+ ================================================== */
+
+@media (max-width: 600px) {
+
+  .group-admin-popover,
+  .rename-group-popover,
+  .change-group-photo-popover,
+  .group-info-popover,
+  .group-members-popover {
+    width: calc(100% - 24px);
+
+    padding: 20px 15px 15px;
+  }
+
+  .group-admin-actions {
+    gap: 7px;
+  }
+
+  .group-admin-actions button {
+    min-height: 46px;
+
+    font-size: 13px;
+  }
+
+  .group-info-row {
+    padding: 10px;
+
+    font-size: 12px;
+  }
+
+}
+  /* ==================================================
+   GROUP PROFILE PHOTOS
+================================================== */
+
+.group-photo-wrapper {
+  overflow: hidden;
+
+  background: #e3f2fd;
+
+  padding: 0;
+}
+
+
+/* GROUP ADMIN PHOTO */
+
+#adminGroupPhoto {
+
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+}
+
+
+/* GROUP INFO PHOTO */
+
+#groupInfoPhoto {
+
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+}
+
+
+/* Keep them round */
+
+.group-admin-icon.group-photo-wrapper,
+.group-info-icon.group-photo-wrapper {
+
+  width: 65px;
+  height: 65px;
+
+  border-radius: 50%;
+
+  margin: 4px auto 10px;
+
+  padding: 0;
+
+  overflow: hidden;
+
+  border: 2px solid #2196F3;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+  .group-admin-icon.group-photo-wrapper,
+  .group-info-icon.group-photo-wrapper {
+
+    width: 60px;
+    height: 60px;
+
+  }
+
+  }
 </style>
  </head>
 <body>
@@ -11076,11 +11719,15 @@ body.dark-mode .message-font-option small {
   >
     ✕
   </button>
+<div class="group-admin-icon group-photo-wrapper">
 
+  <img
+    id="adminGroupPhoto"
+    src="images/default-profile.png"
+    alt="Group Photo"
+  >
 
-  <div class="group-admin-icon">
-    👥
-  </div>
+</div>
 
 
   <h2 id="adminGroupName">
@@ -11320,10 +11967,15 @@ body.dark-mode .message-font-option small {
     ✕
   </button>
 
+<div class="group-info-icon group-photo-wrapper">
 
-  <div class="group-info-icon">
-    🔗
-  </div>
+  <img
+    id="groupInfoPhoto"
+    src="images/default-profile.png"
+    alt="Group Photo"
+  >
+
+</div>
 
 
   <h2 id="groupInfoName">
