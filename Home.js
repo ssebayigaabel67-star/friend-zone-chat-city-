@@ -2867,7 +2867,6 @@ if (createGroupBtn) {
   );
 
 }
-
 // ======================
 // LOAD GROUPS
 // ======================
@@ -2912,6 +2911,7 @@ async function loadGroups() {
           return;
         }
 
+
         // ======================
         // GROUP ITEM
         // ======================
@@ -2922,14 +2922,27 @@ async function loadGroups() {
         div.className =
           "friend";
 
+
+        // ======================
+        // GROUP PHOTO
+        // ======================
+
+        const photo =
+          group.photoURL ||
+          group.photo ||
+          "images/default-profile.png";
+
+
         div.innerHTML = `
 
-          <span style="
-            font-size:20px;
-            margin-right:8px;
-          ">
-            👥
-          </span>
+          <img
+            src="${photo}"
+            alt="Group Photo"
+            class="group-list-photo"
+            onerror="
+              this.src='images/default-profile.png';
+            "
+          >
 
           <span style="
             flex:1;
@@ -2942,6 +2955,7 @@ async function loadGroups() {
           </span>
 
         `;
+
 
         // ======================
         // OPEN GROUP
@@ -2966,6 +2980,7 @@ async function loadGroups() {
             currentGroupAdmin =
               group.admin || "";
 
+
             // ======================
             // HEADER
             // ======================
@@ -2974,30 +2989,35 @@ async function loadGroups() {
               document.querySelector(
                 ".header h3"
               );
-if (title) {
 
-  title.textContent =
-    group.name ||
-    "Group";
 
-  // Make group title clickable
-  title.style.cursor = "pointer";
+            if (title) {
 
-  title.onclick = () => {
+              title.textContent =
+                group.name ||
+                "Group";
 
-    openGroupAdminPopover(
-      groupDoc.id
-    );
+              title.style.cursor =
+                "pointer";
 
-  };
 
-}
+              title.onclick = () => {
+
+                openGroupAdminPopover(
+                  groupDoc.id
+                );
+
+              };
+
+            }
+
 
             // ======================
             // SHOW ADD MEMBER BUTTON
             // ======================
 
             showGroupMemberButton();
+
 
             // ======================
             // LOAD GROUP MESSAGES
@@ -3007,6 +3027,7 @@ if (title) {
 
           }
         );
+
 
         list.appendChild(div);
 
@@ -6261,7 +6282,6 @@ function openGroupAdminPopover(groupId) {
       const group =
         groupSnap.data();
 
-
       // ======================
       // GROUP NAME
       // ======================
@@ -6535,6 +6555,19 @@ async function loadGroupMembers() {
     const group =
       groupSnap.data();
 
+const adminGroupPhoto =
+  document.getElementById(
+    "adminGroupPhoto"
+  );
+
+if (adminGroupPhoto) {
+
+  adminGroupPhoto.src =
+    group.photoURL ||
+    group.photo ||
+    "images/default-profile.png";
+
+}
     const members =
       group.members || {};
 
@@ -7424,6 +7457,10 @@ if (
 
       selectedGroupPhotoFile = null;
 
+      if (groupPhotoInput) {
+        groupPhotoInput.value = "";
+      }
+
       try {
 
         const groupSnap =
@@ -7440,17 +7477,15 @@ if (
           const group =
             groupSnap.data();
 
-          if (group.photoURL) {
+          groupPhotoPreview.src =
+            group.photoURL ||
+            group.photo ||
+            "images/default-profile.png";
 
-            groupPhotoPreview.src =
-              group.photoURL;
+        } else {
 
-          } else {
-
-            groupPhotoPreview.src =
-              "images/default-profile.png";
-
-          }
+          groupPhotoPreview.src =
+            "images/default-profile.png";
 
         }
 
@@ -7460,6 +7495,9 @@ if (
           "Load group photo error:",
           error
         );
+
+        groupPhotoPreview.src =
+          "images/default-profile.png";
 
       }
 
@@ -7512,6 +7550,9 @@ if (groupPhotoInput) {
         return;
       }
 
+
+      // CHECK IMAGE
+
       if (
         !file.type.startsWith(
           "image/"
@@ -7522,22 +7563,32 @@ if (groupPhotoInput) {
           "Please choose an image."
         );
 
+        groupPhotoInput.value = "";
+
         return;
       }
+
 
       selectedGroupPhotoFile =
         file;
 
+
       const reader =
         new FileReader();
+
 
       reader.onload =
         (event) => {
 
-          groupPhotoPreview.src =
-            event.target.result;
+          if (groupPhotoPreview) {
+
+            groupPhotoPreview.src =
+              event.target.result;
+
+          }
 
         };
+
 
       reader.readAsDataURL(file);
 
@@ -7581,7 +7632,15 @@ if (
 
   closeChangeGroupPhotoPopover.addEventListener(
     "click",
-    closeChangeGroupPhoto
+    (event) => {
+
+      event.preventDefault();
+
+      event.stopPropagation();
+
+      closeChangeGroupPhoto();
+
+    }
   );
 
 }
@@ -7593,7 +7652,15 @@ if (
 
   cancelChangeGroupPhotoBtn.addEventListener(
     "click",
-    closeChangeGroupPhoto
+    (event) => {
+
+      event.preventDefault();
+
+      event.stopPropagation();
+
+      closeChangeGroupPhoto();
+
+    }
   );
 
 }
@@ -7618,6 +7685,7 @@ if (saveGroupPhotoBtn) {
         return;
       }
 
+
       if (!auth.currentUser) {
 
         alert(
@@ -7626,6 +7694,7 @@ if (saveGroupPhotoBtn) {
 
         return;
       }
+
 
       if (
         currentGroupAdmin !==
@@ -7639,6 +7708,7 @@ if (saveGroupPhotoBtn) {
         return;
       }
 
+
       if (!selectedGroupPhotoFile) {
 
         alert(
@@ -7648,64 +7718,278 @@ if (saveGroupPhotoBtn) {
         return;
       }
 
+
       try {
 
         saveGroupPhotoBtn.disabled =
           true;
 
         saveGroupPhotoBtn.textContent =
-          "Uploading...";
+          "Saving...";
 
-        const photoRef =
-          ref(
-            storage,
-            "groupPhotos/" +
-            selectedGroupId +
-            "/" +
-            Date.now() +
-            "_" +
-            selectedGroupPhotoFile.name
-          );
 
-        await uploadBytes(
-          photoRef,
+        // =================================
+        // READ IMAGE
+        // =================================
+
+        const reader =
+          new FileReader();
+
+
+        reader.onload =
+          async (event) => {
+
+            try {
+
+              const image =
+                new Image();
+
+
+              image.onload =
+                async () => {
+
+                  // =================================
+                  // COMPRESS IMAGE
+                  // =================================
+
+                  const canvas =
+                    document.createElement(
+                      "canvas"
+                    );
+
+
+                  const maxSize =
+                    500;
+
+
+                  let width =
+                    image.width;
+
+                  let height =
+                    image.height;
+
+
+                  if (
+                    width > maxSize ||
+                    height > maxSize
+                  ) {
+
+                    if (
+                      width > height
+                    ) {
+
+                      height =
+                        Math.round(
+                          height *
+                          maxSize /
+                          width
+                        );
+
+                      width =
+                        maxSize;
+
+                    } else {
+
+                      width =
+                        Math.round(
+                          width *
+                          maxSize /
+                          height
+                        );
+
+                      height =
+                        maxSize;
+
+                    }
+
+                  }
+
+
+                  canvas.width =
+                    width;
+
+                  canvas.height =
+                    height;
+
+
+                  const context =
+                    canvas.getContext(
+                      "2d"
+                    );
+
+
+                  context.drawImage(
+                    image,
+                    0,
+                    0,
+                    width,
+                    height
+                  );
+
+
+                  // =================================
+                  // CREATE SMALL DATA URL
+                  // =================================
+
+                  const photoURL =
+                    canvas.toDataURL(
+                      "image/jpeg",
+                      0.70
+                    );
+
+
+                  // =================================
+                  // SAVE TO FIRESTORE
+                  // =================================
+
+                  await updateDoc(
+                    doc(
+                      db,
+                      "groups",
+                      selectedGroupId
+                    ),
+                    {
+                      photoURL:
+                        photoURL
+                    }
+                  );
+
+
+                  // =================================
+                  // UPDATE CURRENT ADMIN PHOTO
+                  // =================================
+
+                  const adminGroupPhoto =
+                    document.getElementById(
+                      "adminGroupPhoto"
+                    );
+
+
+                  if (
+                    adminGroupPhoto
+                  ) {
+
+                    adminGroupPhoto.src =
+                      photoURL;
+
+                  }
+
+
+                  // =================================
+                  // UPDATE GROUP INFO PHOTO
+                  // =================================
+
+                  const groupInfoPhoto =
+                    document.getElementById(
+                      "groupInfoPhoto"
+                    );
+
+
+                  if (
+                    groupInfoPhoto
+                  ) {
+
+                    groupInfoPhoto.src =
+                      photoURL;
+
+                  }
+
+
+                  // =================================
+                  // CLOSE PHOTO POPOVER
+                  // =================================
+
+                  closeChangeGroupPhoto();
+
+
+                  // =================================
+                  // CLOSE ADMIN POPOVER
+                  // =================================
+
+                  if (
+                    groupAdminPopover
+                  ) {
+
+                    groupAdminPopover.classList.remove(
+                      "show"
+                    );
+
+                  }
+
+
+                  // =================================
+                  // RELOAD GROUPS
+                  // =================================
+
+                  if (
+                    typeof loadGroups ===
+                    "function"
+                  ) {
+
+                    await loadGroups();
+
+                  }
+
+
+                  alert(
+                    "Group photo updated successfully."
+                  );
+
+                };
+
+
+              image.onerror =
+                () => {
+
+                  throw new Error(
+                    "Could not read the selected image."
+                  );
+
+                };
+
+
+              image.src =
+                event.target.result;
+
+            } catch (error) {
+
+              console.error(
+                "Image processing error:",
+                error
+              );
+
+              alert(
+                "Failed to process group photo: " +
+                error.message
+              );
+
+            } finally {
+
+              saveGroupPhotoBtn.disabled =
+                false;
+
+              saveGroupPhotoBtn.textContent =
+                "Save";
+
+            }
+
+          };
+
+
+        reader.onerror =
+          () => {
+
+            throw new Error(
+              "Could not read the selected file."
+            );
+
+          };
+
+
+        reader.readAsDataURL(
           selectedGroupPhotoFile
         );
 
-        const photoURL =
-          await getDownloadURL(
-            photoRef
-          );
-
-        await updateDoc(
-          doc(
-            db,
-            "groups",
-            selectedGroupId
-          ),
-          {
-            photoURL:
-              photoURL
-          }
-        );
-
-        alert(
-          "Group photo updated successfully."
-        );
-
-        closeChangeGroupPhoto();
-
-        if (
-          groupAdminPopover
-        ) {
-
-          groupAdminPopover.classList.remove(
-            "show"
-          );
-
-        }
-
-        await loadGroups();
 
       } catch (error) {
 
@@ -7719,7 +8003,6 @@ if (saveGroupPhotoBtn) {
           error.message
         );
 
-      } finally {
 
         saveGroupPhotoBtn.disabled =
           false;
