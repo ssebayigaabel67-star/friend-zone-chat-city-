@@ -1899,8 +1899,6 @@ console.log("SEND BUTTON CLICKED");
   );
 
 }
-
-
 // ======================
 // LOAD PRIVATE MESSAGES
 // ======================
@@ -1915,12 +1913,15 @@ function loadMessages() {
   }
 
 
+  // ======================
+  // STOP OLD LISTENERS
+  // ======================
+
   if (unsubscribeMessages) {
 
     unsubscribeMessages();
 
-    unsubscribeMessages =
-      null;
+    unsubscribeMessages = null;
 
   }
 
@@ -1929,8 +1930,7 @@ function loadMessages() {
 
     unsubscribeTyping();
 
-    unsubscribeTyping =
-      null;
+    unsubscribeTyping = null;
 
   }
 
@@ -2016,7 +2016,7 @@ function loadMessages() {
 
 
   // ======================
-  // MESSAGES LISTENER
+  // MESSAGES REFERENCE
   // ======================
 
   const messagesRef =
@@ -2038,10 +2038,14 @@ function loadMessages() {
     );
 
 
+  // ======================
+  // MESSAGES LISTENER
+  // ======================
+
   unsubscribeMessages =
     onSnapshot(
       q,
-      async (snapshot) => {
+      (snapshot) => {
 
         const box =
           document.getElementById(
@@ -2054,518 +2058,600 @@ function loadMessages() {
         }
 
 
+        // ======================
+        // CLEAR OLD DISPLAY
+        // ======================
+
         box.innerHTML = "";
 
 
-        for (
-          const docSnap of
-          snapshot.docs
-        ) {
+        // ======================
+        // COLLECT UNREAD MESSAGES
+        // ======================
 
-          const data =
-            docSnap.data();
+        const unreadMessages = [];
 
 
-          // ======================
-          // MARK READ
-          // ======================
+        snapshot.docs.forEach(
+          (docSnap) => {
 
-          if (
-            data.senderId !==
-              auth.currentUser.uid &&
-            !data.read
-          ) {
+            const data =
+              docSnap.data();
 
-            try {
 
-              await updateDoc(
-                docSnap.ref,
-                {
-                  read:
-                    true
-                }
-              );
+            if (
+              data.senderId !==
+                auth.currentUser.uid &&
+              !data.read
+            ) {
 
-            } catch (error) {
-
-              console.error(
-                "Read receipt error:",
-                error
+              unreadMessages.push(
+                docSnap.ref
               );
 
             }
 
           }
-const div =
-  document.createElement("div");
-
-const isMine =
-  data.senderId === auth.currentUser.uid;
-
-div.className =
-  isMine
-    ? "message sent"
-    : "message received";
-          // =====================================
-// APPLY SAVED BUBBLE COLORS
-// =====================================
-
-const savedSentColor =
-  localStorage.getItem(
-    "friendszoneSentBubbleColor"
-  ) || "#25D366";
+        );
 
 
-const savedReceivedColor =
-  localStorage.getItem(
-    "friendszoneReceivedBubbleColor"
-  ) || "#ffffff";
+        // ======================
+        // DISPLAY MESSAGES
+        // ======================
+
+        snapshot.docs.forEach(
+          (docSnap) => {
+
+            const data =
+              docSnap.data();
 
 
-if (isMine) {
-
-  div.style.setProperty(
-    "background",
-    savedSentColor,
-    "important"
-  );
-
-} else {
-
-  div.style.setProperty(
-    "background",
-    savedReceivedColor,
-    "important"
-  );
-
-}
-          // =====================================
-// APPLY SAVED MESSAGE EFFECT
-// =====================================
-
-const savedEffect =
-  localStorage.getItem(
-    "friendszoneMessageEffect"
-  ) || "none";
+            const div =
+              document.createElement(
+                "div"
+              );
 
 
-div.classList.add(
-  "message-effect-" +
-  savedEffect
-);
-
-// =====================================
-// APPLY SAVED BUBBLE STYLE
-// =====================================
-
-const savedBubbleStyle =
-  localStorage.getItem(
-    "friendszoneBubbleStyle"
-  ) || "classic";
+            const isMine =
+              data.senderId ===
+              auth.currentUser.uid;
 
 
-div.classList.add(
-  "bubble-" +
-  savedBubbleStyle +
-  "-active"
-);
-// =====================================
-// APPLY SAVED MESSAGE FONT
-// =====================================
-
-const savedFont =
-  localStorage.getItem(
-    "friendszoneMessageFont"
-  ) || "Arial";
+            div.className =
+              isMine
+                ? "message sent"
+                : "message received";
 
 
-div.style.setProperty(
-  "font-family",
-  savedFont,
-  "important"
-);
-  // ======================
-// SENDER NAME COLOR
-// ======================
+            // =====================================
+            // APPLY SAVED BUBBLE COLORS
+            // =====================================
 
-const savedNameColor =
-  localStorage.getItem(
-    "friendszoneNameColor"
-  ) || "#2196F3";
+            const savedSentColor =
+              localStorage.getItem(
+                "friendszoneSentBubbleColor"
+              ) || "#25D366";
 
 
-let nameStyle = "";
+            const savedReceivedColor =
+              localStorage.getItem(
+                "friendszoneReceivedBubbleColor"
+              ) || "#ffffff";
 
 
-if (
-  savedNameColor ===
-  "rainbow"
-) {
+            if (isMine) {
 
-  nameStyle = `
-    color: transparent;
-    background: linear-gradient(
-      90deg,
-      red,
-      orange,
-      green,
-      blue,
-      purple
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-  `;
+              div.style.setProperty(
+                "background",
+                savedSentColor,
+                "important"
+              );
 
-} else {
+            } else {
 
-  nameStyle = `
-    color: ${savedNameColor};
-  `;
+              div.style.setProperty(
+                "background",
+                savedReceivedColor,
+                "important"
+              );
 
-}
+            }
 
 
-let html = `
+            // =====================================
+            // APPLY SAVED MESSAGE EFFECT
+            // =====================================
 
-  <b
-    class="message-sender-name"
-    style="${nameStyle}"
-  >
-    ${escapeHTML(
-      data.senderName ||
-      "Unknown User"
-    )}
-  </b>
+            const savedEffect =
+              localStorage.getItem(
+                "friendszoneMessageEffect"
+              ) || "none";
 
-  <br>
 
-`;
+            div.classList.add(
+              "message-effect-" +
+              savedEffect
+            );
 
-          // ======================
-          // REPLY PREVIEW
-          // ======================
 
-          if (data.replyTo) {
+            // =====================================
+            // APPLY SAVED BUBBLE STYLE
+            // =====================================
+
+            const savedBubbleStyle =
+              localStorage.getItem(
+                "friendszoneBubbleStyle"
+              ) || "classic";
+
+
+            div.classList.add(
+              "bubble-" +
+              savedBubbleStyle +
+              "-active"
+            );
+
+
+            // =====================================
+            // APPLY SAVED MESSAGE FONT
+            // =====================================
+
+            const savedFont =
+              localStorage.getItem(
+                "friendszoneMessageFont"
+              ) || "Arial";
+
+
+            div.style.setProperty(
+              "font-family",
+              savedFont,
+              "important"
+            );
+
+
+            // ======================
+            // SENDER NAME COLOR
+            // ======================
+
+            const savedNameColor =
+              localStorage.getItem(
+                "friendszoneNameColor"
+              ) || "#2196F3";
+
+
+            let nameStyle = "";
+
+
+            if (
+              savedNameColor ===
+              "rainbow"
+            ) {
+
+              nameStyle = `
+                color: transparent;
+                background: linear-gradient(
+                  90deg,
+                  red,
+                  orange,
+                  green,
+                  blue,
+                  purple
+                );
+                -webkit-background-clip: text;
+                background-clip: text;
+              `;
+
+            } else {
+
+              nameStyle = `
+                color: ${savedNameColor};
+              `;
+
+            }
+
+
+            let html = `
+
+              <b
+                class="message-sender-name"
+                style="${nameStyle}"
+              >
+                ${escapeHTML(
+                  data.senderName ||
+                  "Unknown User"
+                )}
+              </b>
+
+              <br>
+
+            `;
+
+
+            // ======================
+            // REPLY PREVIEW
+            // ======================
+
+            if (data.replyTo) {
+
+              html += `
+
+                <div style="
+                  border-left:3px solid #25D366;
+                  padding-left:8px;
+                  margin-bottom:5px;
+                  font-size:12px;
+                  color:#666;
+                ">
+
+                  ↩️
+                  ${escapeHTML(
+                    data.replyTo
+                  )}
+
+                </div>
+
+              `;
+
+            }
+
+
+            // ======================
+            // TEXT
+            // ======================
+
+            if (data.text) {
+
+              html += `
+
+                <div>
+                  ${escapeHTML(
+                    data.text
+                  )}
+                </div>
+
+              `;
+
+            }
+
+
+            // ======================
+            // IMAGE
+            // ======================
+
+            if (data.imageURL) {
+
+              html += `
+
+                <img
+                  src="${escapeHTML(
+                    data.imageURL
+                  )}"
+                  style="
+                    max-width:220px;
+                    border-radius:10px;
+                    margin-top:8px;
+                  "
+                >
+
+              `;
+
+            }
+
+
+            // ======================
+            // AUDIO
+            // ======================
+
+            if (data.audioURL) {
+
+              html += `
+
+                <audio
+                  controls
+                  style="
+                    margin-top:8px;
+                    width:220px;
+                  "
+                >
+
+                  <source
+                    src="${escapeHTML(
+                      data.audioURL
+                    )}"
+                    type="audio/webm"
+                  >
+
+                  Your browser does not
+                  support audio.
+
+                </audio>
+
+              `;
+
+            }
+
+
+            // ======================
+            // TIME + READ RECEIPT
+            // ======================
+
+            html += `
+
+              <small>
+
+                ${
+                  data.timestamp
+                    ? data.timestamp
+                        .toDate()
+                        .toLocaleTimeString(
+                          [],
+                          {
+                            hour:
+                              "2-digit",
+
+                            minute:
+                              "2-digit"
+                          }
+                        )
+                    : ""
+                }
+
+                ${
+                  isMine
+                    ? (
+                        data.read
+                          ? " ✓✓"
+                          : " ✓"
+                      )
+                    : ""
+                }
+
+              </small>
+
+            `;
+
+
+            // ======================
+            // BUTTONS
+            // ======================
 
             html += `
 
               <div style="
-                border-left:3px solid #25D366;
-                padding-left:8px;
-                margin-bottom:5px;
-                font-size:12px;
-                color:#666;
+                margin-top:6px;
               ">
 
-                ↩️
-                ${escapeHTML(
-                  data.replyTo
-                )}
-
-              </div>
-
-            `;
-
-          }
-
-
-          // ======================
-          // TEXT
-          // ======================
-
-          if (data.text) {
-
-            html += `
-
-              <div>
-                ${escapeHTML(
-                  data.text
-                )}
-              </div>
-
-            `;
-
-          }
-
-
-          // ======================
-          // IMAGE
-          // ======================
-
-          if (data.imageURL) {
-
-            html += `
-
-              <img
-                src="${escapeHTML(
-                  data.imageURL
-                )}"
-                style="
-                  max-width:220px;
-                  border-radius:10px;
-                  margin-top:8px;
-                "
-              >
-
-            `;
-
-          }
-
-
-          // ======================
-          // AUDIO
-          // ======================
-
-          if (data.audioURL) {
-
-            html += `
-
-              <audio
-                controls
-                style="
-                  margin-top:8px;
-                  width:220px;
-                "
-              >
-
-                <source
-                  src="${escapeHTML(
-                    data.audioURL
+                <button
+                  class="reply-message-btn"
+                  data-id="${docSnap.id}"
+                  data-text="${escapeHTML(
+                    data.text || ""
                   )}"
-                  type="audio/webm"
                 >
+                  ↩️ Reply
+                </button>
 
-                Your browser does not
-                support audio.
+                ${
+                  isMine
+                    ? `
 
-              </audio>
+                      <button
+                        class="delete-message-btn"
+                        data-chat="${chatId}"
+                        data-id="${docSnap.id}"
+                      >
+                        🗑 Delete
+                      </button>
+
+                    `
+                    : ""
+                }
+
+              </div>
 
             `;
 
-          }
+
+            div.innerHTML =
+              html;
 
 
-          // ======================
-          // TIME + READ
-          // ======================
+            // =====================================
+            // APPLY FONT TO MESSAGE CONTENT
+            // =====================================
 
-          html += `
-
-            <small>
-
-              ${
-                data.timestamp
-                  ? data.timestamp
-                      .toDate()
-                      .toLocaleTimeString(
-                        [],
-                        {
-                          hour:
-                            "2-digit",
-
-                          minute:
-                            "2-digit"
-                        }
-                      )
-                  : ""
-              }
-
-              ${
-                data.senderId ===
-                auth.currentUser.uid
-                  ? (
-                      data.read
-                        ? " ✓✓"
-                        : " ✓"
-                    )
-                  : ""
-              }
-
-            </small>
-
-          `;
+            const messageFont =
+              localStorage.getItem(
+                "friendszoneMessageFont"
+              ) || "Arial";
 
 
-          // ======================
-          // BUTTONS
-          // ======================
-
-          html += `
-
-            <div style="
-              margin-top:6px;
-            ">
-
-              <button
-                class="reply-message-btn"
-                data-id="${docSnap.id}"
-                data-text="${escapeHTML(
-                  data.text || ""
-                )}"
-              >
-                ↩️ Reply
-              </button>
-
-              ${
-                data.senderId ===
-                auth.currentUser.uid
-                  ? `
-
-                    <button
-                      class="delete-message-btn"
-                      data-chat="${chatId}"
-                      data-id="${docSnap.id}"
-                    >
-                      🗑 Delete
-                    </button>
-
-                  `
-                  : ""
-              }
-
-            </div>
-
-          `;
-
-
-          div.innerHTML =
-            html;
-          // =====================================
-// APPLY FONT TO MESSAGE CONTENT
-// =====================================
-
-const messageFont =
-  localStorage.getItem(
-    "friendszoneMessageFont"
-  ) || "Arial";
-
-
-div.style.setProperty(
-  "font-family",
-  messageFont,
-  "important"
-);
-
-
-div.querySelectorAll(
-  "*"
-).forEach(
-  function (element) {
-
-    element.style.setProperty(
-      "font-family",
-      messageFont,
-      "important"
-    );
-
-  }
-);
-// Apply saved name color to this message
-
-const senderName =
-  div.querySelector(
-    ".message-sender-name"
-  );
-
-const currentNameColor =
-  localStorage.getItem(
-    "friendszoneNameColor"
-  ) || "#2196F3";
-
-
-if (senderName) {
-
-  if (
-    currentNameColor ===
-    "rainbow"
-  ) {
-
-    senderName.style.color =
-      "transparent";
-
-    senderName.style.background =
-      "linear-gradient(90deg, red, orange, green, blue, purple)";
-
-    senderName.style.webkitBackgroundClip =
-      "text";
-
-    senderName.style.backgroundClip =
-      "text";
-
-    senderName.classList.add(
-      "friendszone-rainbow-name"
-    );
-
-  } else {
-
-    senderName.style.color =
-      currentNameColor;
-
-  }
-
-}
-
-          // ======================
-          // REPLY BUTTON
-          // ======================
-
-          const replyButton =
-            div.querySelector(
-              ".reply-message-btn"
+            div.style.setProperty(
+              "font-family",
+              messageFont,
+              "important"
             );
 
 
-          if (replyButton) {
+            div.querySelectorAll(
+              "*"
+            ).forEach(
+              function (element) {
 
-            replyButton.addEventListener(
-              "click",
-              () => {
-
-                replyToMessage(
-                  replyButton.dataset.id,
-                  replyButton.dataset.text
+                element.style.setProperty(
+                  "font-family",
+                  messageFont,
+                  "important"
                 );
 
               }
             );
 
-          }
+
+            // ======================
+            // APPLY NAME COLOR
+            // ======================
+
+            const senderName =
+              div.querySelector(
+                ".message-sender-name"
+              );
 
 
-          // ======================
-          // DELETE BUTTON
-          // ======================
-
-          const deleteButton =
-            div.querySelector(
-              ".delete-message-btn"
-            );
+            const currentNameColor =
+              localStorage.getItem(
+                "friendszoneNameColor"
+              ) || "#2196F3";
 
 
-          if (deleteButton) {
+            if (senderName) {
 
-            deleteButton.addEventListener(
-              "click",
-              () => {
+              if (
+                currentNameColor ===
+                "rainbow"
+              ) {
 
-                deleteMessage(
-                  deleteButton.dataset.chat,
-                  deleteButton.dataset.id
+                senderName.style.color =
+                  "transparent";
+
+
+                senderName.style.background =
+                  "linear-gradient(90deg, red, orange, green, blue, purple)";
+
+
+                senderName.style.webkitBackgroundClip =
+                  "text";
+
+
+                senderName.style.backgroundClip =
+                  "text";
+
+
+                senderName.classList.add(
+                  "friendszone-rainbow-name"
                 );
 
+              } else {
+
+                senderName.style.color =
+                  currentNameColor;
+
               }
+
+            }
+
+
+            // ======================
+            // REPLY BUTTON
+            // ======================
+
+            const replyButton =
+              div.querySelector(
+                ".reply-message-btn"
+              );
+
+
+            if (replyButton) {
+
+              replyButton.addEventListener(
+                "click",
+                () => {
+
+                  replyToMessage(
+                    replyButton.dataset.id,
+                    replyButton.dataset.text
+                  );
+
+                }
+              );
+
+            }
+
+
+            // ======================
+            // DELETE BUTTON
+            // ======================
+
+            const deleteButton =
+              div.querySelector(
+                ".delete-message-btn"
+              );
+
+
+            if (deleteButton) {
+
+              deleteButton.addEventListener(
+                "click",
+                () => {
+
+                  deleteMessage(
+                    deleteButton.dataset.chat,
+                    deleteButton.dataset.id
+                  );
+
+                }
+              );
+
+            }
+
+
+            // ======================
+            // ADD MESSAGE TO SCREEN
+            // ======================
+
+            box.appendChild(
+              div
             );
 
           }
+        );
 
 
-          box.appendChild(div);
-
-        }
-
+        // ======================
+        // SCROLL TO BOTTOM
+        // ======================
 
         box.scrollTop =
           box.scrollHeight;
+
+
+        // ======================
+        // MARK UNREAD AS READ
+        // ======================
+        //
+        // IMPORTANT:
+        // This happens AFTER rendering,
+        // not inside the rendering loop.
+        //
+
+        if (
+          unreadMessages.length > 0
+        ) {
+
+          unreadMessages.forEach(
+            async (messageRef) => {
+
+              try {
+
+                await updateDoc(
+                  messageRef,
+                  {
+                    read: true
+                  }
+                );
+
+              } catch (error) {
+
+                console.error(
+                  "Read receipt error:",
+                  error
+                );
+
+              }
+
+            }
+          );
+
+        }
 
       },
       (error) => {
@@ -2574,11 +2660,11 @@ if (senderName) {
           "Load messages error:",
           error
         );
-    }
+
+      }
     );
 
 }
-
 
 // ======================
 // LOAD FRIEND SELECTOR
