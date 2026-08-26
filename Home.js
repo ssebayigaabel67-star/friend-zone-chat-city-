@@ -377,8 +377,13 @@ function startUnreadMessageListeners() {
   ).forEach(
     unsubscribe => {
 
-      if (typeof unsubscribe === "function") {
+      if (
+        typeof unsubscribe ===
+        "function"
+      ) {
+
         unsubscribe();
+
       }
 
     }
@@ -409,12 +414,16 @@ function startUnreadMessageListeners() {
             userDoc.id;
 
 
-          // Don't watch yourself
+          // ======================
+          // DON'T WATCH YOURSELF
+          // ======================
 
           if (
             friendId === myUid
           ) {
+
             return;
+
           }
 
 
@@ -437,11 +446,13 @@ function startUnreadMessageListeners() {
           const unreadQuery =
             query(
               messagesRef,
+
               where(
                 "senderId",
                 "==",
                 friendId
               ),
+
               where(
                 "read",
                 "==",
@@ -458,12 +469,6 @@ function startUnreadMessageListeners() {
             onSnapshot(
               unreadQuery,
               (messagesSnapshot) => {
-
-                /*
-                 * If this friend is currently
-                 * open, don't show an unread
-                 * badge.
-                 */
 
                 if (
                   selectedFriendId ===
@@ -484,11 +489,90 @@ function startUnreadMessageListeners() {
                 }
 
 
-                // Refresh friend list
+                // ======================
+                // UPDATE BADGE ONLY
+                // ======================
+                //
+                // IMPORTANT:
+                // Do NOT call loadFriends()
+                // here. That was causing
+                // the friend list to rebuild.
+                //
 
-                loadFriends();
+                const friendRow =
+                  document.querySelector(
+                    `.friend[data-friend-id="${friendId}"]`
+                  );
+
+
+                if (!friendRow) {
+
+                  return;
+
+                }
+
+
+                let unreadBadge =
+                  friendRow.querySelector(
+                    ".unread-message-badge"
+                  );
+
+
+                const count =
+                  unreadCounts[
+                    friendId
+                  ] || 0;
+
+
+                if (count > 0) {
+
+                  if (!unreadBadge) {
+
+                    unreadBadge =
+                      document.createElement(
+                        "span"
+                      );
+
+                    unreadBadge.className =
+                      "unread-message-badge";
+
+                    unreadBadge.style.cssText = `
+                      background:red;
+                      color:white;
+                      border-radius:50%;
+                      min-width:22px;
+                      height:22px;
+                      display:flex;
+                      align-items:center;
+                      justify-content:center;
+                      font-size:12px;
+                      font-weight:bold;
+                      margin-left:8px;
+                    `;
+
+                    friendRow.appendChild(
+                      unreadBadge
+                    );
+
+                  }
+
+
+                  unreadBadge.textContent =
+                    count;
+
+
+                } else {
+
+                  if (unreadBadge) {
+
+                    unreadBadge.remove();
+
+                  }
+
+                }
 
               },
+
               (error) => {
 
                 console.error(
@@ -502,13 +586,15 @@ function startUnreadMessageListeners() {
 
           unreadMessageListeners[
             friendId
-          ] = unsubscribe;
+          ] =
+            unsubscribe;
 
         }
 
       );
 
     }
+
   ).catch(
     error => {
 
@@ -2235,36 +2321,6 @@ function loadMessages() {
 
 
         // ======================
-        // COLLECT UNREAD MESSAGES
-        // ======================
-
-        const unreadMessages = [];
-
-
-        snapshot.docs.forEach(
-          (docSnap) => {
-
-            const data =
-              docSnap.data();
-
-
-            if (
-              data.senderId !==
-                auth.currentUser.uid &&
-              !data.read
-            ) {
-
-              unreadMessages.push(
-                docSnap.ref
-              );
-
-            }
-
-          }
-        );
-
-
-        // ======================
         // DISPLAY MESSAGES
         // ======================
 
@@ -2773,54 +2829,12 @@ function loadMessages() {
 
           }
         );
-
-
-        // ======================
+// ======================
         // SCROLL TO BOTTOM
         // ======================
 
         box.scrollTop =
           box.scrollHeight;
-
-
-        // ======================
-        // MARK UNREAD AS READ
-        // ======================
-        //
-        // IMPORTANT:
-        // This happens AFTER rendering,
-        // not inside the rendering loop.
-        //
-
-        if (
-          unreadMessages.length > 0
-        ) {
-
-          unreadMessages.forEach(
-            async (messageRef) => {
-
-              try {
-
-                await updateDoc(
-                  messageRef,
-                  {
-                    read: true
-                  }
-                );
-
-              } catch (error) {
-
-                console.error(
-                  "Read receipt error:",
-                  error
-                );
-
-              }
-
-            }
-          );
-
-        }
 
       },
       (error) => {
@@ -2834,7 +2848,6 @@ function loadMessages() {
     );
 
 }
-
 // ======================
 // LOAD FRIEND SELECTOR
 // ======================
