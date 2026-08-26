@@ -352,6 +352,175 @@ async function loadFriends() {
   }
 
 }
+// ==================================================
+// UNREAD PRIVATE MESSAGE LISTENER
+// ==================================================
+
+let unreadMessageListeners = {};
+
+function startUnreadMessageListeners() {
+
+  if (!auth.currentUser) {
+    return;
+  }
+
+  const myUid =
+    auth.currentUser.uid;
+
+
+  // ======================
+  // STOP OLD LISTENERS
+  // ======================
+
+  Object.values(
+    unreadMessageListeners
+  ).forEach(
+    unsubscribe => {
+
+      if (typeof unsubscribe === "function") {
+        unsubscribe();
+      }
+
+    }
+  );
+
+
+  unreadMessageListeners = {};
+
+  unreadCounts = {};
+
+
+  // ======================
+  // GET ALL USERS
+  // ======================
+
+  getDocs(
+    collection(
+      db,
+      "users"
+    )
+  ).then(
+    snapshot => {
+
+      snapshot.forEach(
+        userDoc => {
+
+          const friendId =
+            userDoc.id;
+
+
+          // Don't watch yourself
+
+          if (
+            friendId === myUid
+          ) {
+            return;
+          }
+
+
+          const chatId =
+            getChatId(
+              myUid,
+              friendId
+            );
+
+
+          const messagesRef =
+            collection(
+              db,
+              "chats",
+              chatId,
+              "messages"
+            );
+
+
+          const unreadQuery =
+            query(
+              messagesRef,
+              where(
+                "senderId",
+                "==",
+                friendId
+              ),
+              where(
+                "read",
+                "==",
+                false
+              )
+            );
+
+
+          // ======================
+          // LISTEN FOR UNREAD
+          // ======================
+
+          const unsubscribe =
+            onSnapshot(
+              unreadQuery,
+              (messagesSnapshot) => {
+
+                /*
+                 * If this friend is currently
+                 * open, don't show an unread
+                 * badge.
+                 */
+
+                if (
+                  selectedFriendId ===
+                  friendId
+                ) {
+
+                  unreadCounts[
+                    friendId
+                  ] = 0;
+
+                } else {
+
+                  unreadCounts[
+                    friendId
+                  ] =
+                    messagesSnapshot.size;
+
+                }
+
+
+                // Refresh friend list
+
+                loadFriends();
+
+              },
+              (error) => {
+
+                console.error(
+                  "Unread listener error:",
+                  error
+                );
+
+              }
+            );
+
+
+          unreadMessageListeners[
+            friendId
+          ] = unsubscribe;
+
+        }
+
+      );
+
+    }
+  ).catch(
+    error => {
+
+      console.error(
+        "Unread users error:",
+        error
+      );
+
+    }
+  );
+
+}
 // ======================
 // OPEN USER PROFILE POPOVER
 // ======================
@@ -1551,7 +1720,7 @@ onAuthStateChanged(
 
       await loadFriends();
 
-
+startUnreadMessageListeners();
       // ======================
       // LOAD FRIEND REQUESTS
       // ======================
