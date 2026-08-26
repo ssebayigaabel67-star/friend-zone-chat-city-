@@ -163,6 +163,12 @@ async function loadFriends() {
           "friend";
 
 
+        // IMPORTANT:
+        // Used by unread listener
+        div.dataset.friendId =
+          userDoc.id;
+
+
         if (
           selectedFriendId ===
           userDoc.id
@@ -190,7 +196,9 @@ async function loadFriends() {
             alt="Profile"
           >
 
-          <span style="flex:1;">
+          <span style="
+            flex:1;
+          ">
 
             ${escapeHTML(
               friend.name ||
@@ -211,18 +219,22 @@ async function loadFriends() {
             unreadCounts[userDoc.id] > 0
               ? `
 
-                <span style="
-                  background:red;
-                  color:white;
-                  border-radius:50%;
-                  min-width:22px;
-                  height:22px;
-                  display:flex;
-                  align-items:center;
-                  justify-content:center;
-                  font-size:12px;
-                  font-weight:bold;
-                ">
+                <span
+                  class="unread-message-badge"
+                  style="
+                    background:red;
+                    color:white;
+                    border-radius:50%;
+                    min-width:22px;
+                    height:22px;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    font-size:12px;
+                    font-weight:bold;
+                    margin-left:8px;
+                  "
+                >
 
                   ${unreadCounts[userDoc.id]}
 
@@ -251,9 +263,7 @@ async function loadFriends() {
             "click",
             (event) => {
 
-              // Don't open the chat
               event.stopPropagation();
-
 
               openUserProfilePopover(
                 userDoc.id,
@@ -287,9 +297,23 @@ async function loadFriends() {
               false;
 
 
+            // Clear local unread count
             unreadCounts[
               userDoc.id
             ] = 0;
+
+
+            // Remove badge immediately
+            const badge =
+              div.querySelector(
+                ".unread-message-badge"
+              );
+
+            if (badge) {
+
+              badge.remove();
+
+            }
 
 
             document
@@ -1233,7 +1257,11 @@ if (addFriendBtn) {
           return;
 
         }
+// ======================
+// LOAD NEWS ROOM
+// ======================
 
+loadNewsRoom();
 
         // ======================
         // SAVE REQUEST
@@ -13652,6 +13680,937 @@ if (resetChatCustomization) {
 
       alert(
         "Chat customization has been reset."
+      );
+
+    }
+  );
+
+}
+// ==================================================
+// NEWS ROOM
+// ==================================================
+
+const rightNewsBtn =
+  document.getElementById("rightNewsBtn");
+
+const newsRoomPopover =
+  document.getElementById("newsRoomPopover");
+
+const closeNewsRoomPopover =
+  document.getElementById("closeNewsRoomPopover");
+
+
+if (
+  rightNewsBtn &&
+  newsRoomPopover
+) {
+
+  rightNewsBtn.addEventListener(
+    "click",
+    () => {
+
+      newsRoomPopover.classList.add(
+        "show"
+      );
+
+    }
+  );
+
+}
+
+
+if (
+  closeNewsRoomPopover &&
+  newsRoomPopover
+) {
+
+  closeNewsRoomPopover.addEventListener(
+    "click",
+    () => {
+
+      newsRoomPopover.classList.remove(
+        "show"
+      );
+
+    }
+  );
+
+}
+
+
+// ==================================================
+// ANNOUNCEMENT ROOM
+// ==================================================
+
+const rightAnnouncementBtn =
+  document.getElementById(
+    "rightAnnouncementBtn"
+  );
+
+const announcementRoomPopover =
+  document.getElementById(
+    "announcementRoomPopover"
+  );
+
+const closeAnnouncementRoomPopover =
+  document.getElementById(
+    "closeAnnouncementRoomPopover"
+  );
+
+
+if (
+  rightAnnouncementBtn &&
+  announcementRoomPopover
+) {
+
+  rightAnnouncementBtn.addEventListener(
+    "click",
+    () => {
+
+      announcementRoomPopover.classList.add(
+        "show"
+      );
+
+    }
+  );
+
+}
+
+
+if (
+  closeAnnouncementRoomPopover &&
+  announcementRoomPopover
+) {
+
+  closeAnnouncementRoomPopover.addEventListener(
+    "click",
+    () => {
+
+      announcementRoomPopover.classList.remove(
+        "show"
+      );
+
+    }
+  );
+
+}
+// ==================================================
+// SHARE BREAKING NEWS POPOVER
+// ==================================================
+
+const createBreakingNewsBtn =
+  document.getElementById(
+    "createBreakingNewsBtn"
+  );
+
+const breakingNewsPopover =
+  document.getElementById(
+    "breakingNewsPopover"
+  );
+
+const closeBreakingNewsPopover =
+  document.getElementById(
+    "closeBreakingNewsPopover"
+  );
+
+const cancelBreakingNewsBtn =
+  document.getElementById(
+    "cancelBreakingNewsBtn"
+  );
+
+
+// ======================
+// OPEN
+// ======================
+
+if (
+  createBreakingNewsBtn &&
+  breakingNewsPopover
+) {
+
+  createBreakingNewsBtn.addEventListener(
+    "click",
+    () => {
+
+      breakingNewsPopover.classList.add(
+        "show"
+      );
+
+    }
+  );
+
+}
+
+
+// ======================
+// CLOSE
+// ======================
+
+function closeBreakingNews() {
+
+  if (breakingNewsPopover) {
+
+    breakingNewsPopover.classList.remove(
+      "show"
+    );
+
+  }
+
+}
+
+
+// ======================
+// CLOSE BUTTON
+// ======================
+
+if (
+  closeBreakingNewsPopover
+) {
+
+  closeBreakingNewsPopover.addEventListener(
+    "click",
+    closeBreakingNews
+  );
+
+}
+
+
+// ======================
+// CANCEL BUTTON
+// ======================
+
+if (
+  cancelBreakingNewsBtn
+) {
+
+  cancelBreakingNewsBtn.addEventListener(
+    "click",
+    closeBreakingNews
+  );
+
+}
+// ==================================================
+// PUBLISH BREAKING NEWS
+// ==================================================
+
+const publishBreakingNewsBtn =
+  document.getElementById(
+    "publishBreakingNewsBtn"
+  );
+
+const breakingNewsTitle =
+  document.getElementById(
+    "breakingNewsTitle"
+  );
+
+const breakingNewsText =
+  document.getElementById(
+    "breakingNewsText"
+  );
+
+const breakingNewsLocation =
+  document.getElementById(
+    "breakingNewsLocation"
+  );
+
+
+if (publishBreakingNewsBtn) {
+
+  publishBreakingNewsBtn.addEventListener(
+    "click",
+    async () => {
+
+      // ======================
+      // LOGIN CHECK
+      // ======================
+
+      if (!auth.currentUser) {
+
+        alert(
+          "Please log in first."
+        );
+
+        return;
+
+      }
+
+
+      // ======================
+      // GET VALUES
+      // ======================
+
+      const title =
+        breakingNewsTitle
+          ? breakingNewsTitle.value.trim()
+          : "";
+
+      const text =
+        breakingNewsText
+          ? breakingNewsText.value.trim()
+          : "";
+
+      const location =
+        breakingNewsLocation
+          ? breakingNewsLocation.value.trim()
+          : "";
+
+
+      // ======================
+      // VALIDATION
+      // ======================
+
+      if (!title) {
+
+        alert(
+          "Please enter a news headline."
+        );
+
+        return;
+
+      }
+
+
+      if (!text) {
+
+        alert(
+          "Please write the news."
+        );
+
+        return;
+
+      }
+
+
+      try {
+
+        publishBreakingNewsBtn.disabled =
+          true;
+
+        publishBreakingNewsBtn.textContent =
+          "Publishing...";
+
+
+        // ======================
+        // SAVE NEWS
+        // ======================
+
+        await addDoc(
+          collection(
+            db,
+            "news"
+          ),
+          {
+
+            title:
+              title,
+
+            text:
+              text,
+
+            location:
+              location || "",
+
+            senderId:
+              auth.currentUser.uid,
+
+            senderName:
+              currentUserName,
+
+            timestamp:
+              serverTimestamp(),
+
+            type:
+              "breaking",
+
+            approved:
+              true
+
+          }
+        );
+
+        // ======================
+        // CLEAR FORM
+        // ======================
+
+        if (breakingNewsTitle) {
+
+          breakingNewsTitle.value =
+            "";
+
+        }
+
+
+        if (breakingNewsText) {
+
+          breakingNewsText.value =
+            "";
+
+        }
+
+
+        if (breakingNewsLocation) {
+
+          breakingNewsLocation.value =
+            "";
+
+        }
+
+
+        // ======================
+        // CLOSE FORM
+        // ======================
+
+        closeBreakingNews();
+
+
+        alert(
+          "🚨 Breaking news published!"
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "Publish news error:",
+          error
+        );
+
+        alert(
+          "Failed to publish news: " +
+          error.message
+        );
+
+      } finally {
+
+        publishBreakingNewsBtn.disabled =
+          false;
+
+        publishBreakingNewsBtn.textContent =
+          "🚨 Publish News";
+
+      }
+
+    }
+  );
+
+}
+// ==================================================
+// LOAD NEWS ROOM
+// ==================================================
+
+let unsubscribeNewsRoom = null;
+
+
+function loadNewsRoom() {
+
+  const newsList =
+    document.getElementById(
+      "newsList"
+    );
+
+  if (!newsList) {
+
+    console.error(
+      "❌ newsList was not found."
+    );
+
+    return;
+
+  }
+
+
+  // ======================
+  // STOP OLD LISTENER
+  // ======================
+
+  if (unsubscribeNewsRoom) {
+
+    unsubscribeNewsRoom();
+
+    unsubscribeNewsRoom = null;
+
+  }
+
+
+  console.log(
+    "📰 Starting News Room listener..."
+  );
+
+
+  // ======================
+  // NEWS COLLECTION
+  // ======================
+
+  const newsRef =
+    collection(
+      db,
+      "news"
+    );
+
+
+  // ======================
+  // LISTEN FOR NEWS
+  // ======================
+
+  unsubscribeNewsRoom =
+    onSnapshot(
+      newsRef,
+
+      (snapshot) => {
+
+        console.log(
+          "📰 News documents:",
+          snapshot.size
+        );
+
+
+        newsList.innerHTML = "";
+
+
+        // ======================
+        // NO NEWS
+        // ======================
+
+        if (snapshot.empty) {
+
+          newsList.innerHTML = `
+
+            <div class="news-empty">
+
+              📰 No news yet.
+
+            </div>
+
+          `;
+
+          return;
+
+        }
+
+
+        // ======================
+        // CONVERT DOCUMENTS
+        // ======================
+
+        const newsItems =
+          [];
+
+
+        snapshot.forEach(
+          (newsDoc) => {
+
+            const news =
+              newsDoc.data();
+
+
+            newsItems.push({
+
+              id:
+                newsDoc.id,
+
+              ...news
+
+            });
+
+          }
+        );
+
+
+        // ======================
+        // SORT NEWEST FIRST
+        // ======================
+
+        newsItems.sort(
+          (a, b) => {
+
+            const timeA =
+              a.timestamp &&
+              a.timestamp.toMillis
+                ? a.timestamp.toMillis()
+                : 0;
+
+
+            const timeB =
+              b.timestamp &&
+              b.timestamp.toMillis
+                ? b.timestamp.toMillis()
+                : 0;
+
+
+            return timeB - timeA;
+
+          }
+        );
+
+
+        // ======================
+        // DISPLAY
+        // ======================
+
+        newsItems.forEach(
+          (news) => {
+
+            const article =
+              document.createElement(
+                "div"
+              );
+
+
+            article.className =
+              "news-item";
+
+
+            let newsTime =
+              "Just now";
+
+
+            if (
+              news.timestamp &&
+              news.timestamp.toDate
+            ) {
+
+              newsTime =
+                news.timestamp
+                  .toDate()
+                  .toLocaleString(
+                    [],
+                    {
+                      dateStyle:
+                        "medium",
+
+                      timeStyle:
+                        "short"
+                    }
+                  );
+
+            }
+
+
+            article.innerHTML = `
+
+              <div class="news-item-breaking">
+                🚨 BREAKING NEWS
+              </div>
+
+
+              <h3 class="news-item-title">
+
+                ${escapeHTML(
+                  news.title ||
+                  "Untitled News"
+                )}
+
+              </h3>
+
+
+              <p class="news-item-text">
+
+                ${escapeHTML(
+                  news.text ||
+                  ""
+                )}
+
+              </p>
+
+
+              ${
+                news.location
+                  ? `
+
+                    <div class="news-item-location">
+
+                      📍
+                      ${escapeHTML(
+                        news.location
+                      )}
+
+                    </div>
+
+                  `
+                  : ""
+              }
+
+
+              <div class="news-item-meta">
+
+                👤
+                ${escapeHTML(
+                  news.senderName ||
+                  "Unknown"
+                )}
+
+                <span>
+
+                  ${escapeHTML(
+                    newsTime
+                  )}
+
+                </span>
+
+              </div>
+
+            `;
+
+
+            newsList.appendChild(
+              article
+            );
+
+          }
+        );
+
+      },
+
+      (error) => {
+
+        console.error(
+          "❌ News Room listener error:",
+          error
+        );
+
+
+        newsList.innerHTML = `
+
+          <div class="news-empty">
+
+            ❌ Unable to load news.
+
+            <br><br>
+
+            ${escapeHTML(
+              error.message ||
+              "Unknown error"
+            )}
+
+          </div>
+
+        `;
+
+      }
+
+    );
+
+}
+
+// ==================================================
+// START NEWS LISTENER AFTER LOGIN
+// ==================================================
+
+if (auth.currentUser) {
+
+  loadNewsRoom();
+
+}
+console.log("📰 NEWS ROOM CODE LOADED");
+
+setTimeout(() => {
+
+  console.log(
+    "📰 Checking News Room..."
+  );
+
+  loadNewsRoom();
+
+}, 1000);
+// ==================================================
+// BREAKING NEWS IMAGE
+// ==================================================
+
+const breakingNewsImageInput =
+  document.getElementById(
+    "breakingNewsImageInput"
+  );
+
+const breakingNewsImagePreview =
+  document.getElementById(
+    "breakingNewsImagePreview"
+  );
+
+let breakingNewsImageData = "";
+
+
+// ======================
+// SELECT IMAGE
+// ======================
+
+if (breakingNewsImageInput) {
+
+  breakingNewsImageInput.addEventListener(
+    "change",
+    () => {
+
+      const file =
+        breakingNewsImageInput.files[0];
+
+      if (!file) {
+        return;
+      }
+
+
+      // ======================
+      // CHECK IMAGE
+      // ======================
+
+      if (
+        !file.type.startsWith(
+          "image/"
+        )
+      ) {
+
+        alert(
+          "Please choose an image."
+        );
+
+        breakingNewsImageInput.value =
+          "";
+
+        return;
+
+      }
+
+
+      // ======================
+      // SIZE CHECK
+      // ======================
+
+      if (
+        file.size >
+        3 * 1024 * 1024
+      ) {
+
+        alert(
+          "Please choose an image smaller than 3 MB."
+        );
+
+        breakingNewsImageInput.value =
+          "";
+
+        return;
+
+      }
+
+
+      // ======================
+      // READ IMAGE
+      // ======================
+
+      const reader =
+        new FileReader();
+
+
+      reader.onload =
+        (event) => {
+
+          const image =
+            new Image();
+
+
+          image.onload =
+            () => {
+
+              // ======================
+              // CREATE CANVAS
+              // ======================
+
+              const canvas =
+                document.createElement(
+                  "canvas"
+                );
+
+
+              const maxWidth =
+                900;
+
+
+              let width =
+                image.width;
+
+              let height =
+                image.height;
+
+
+              // ======================
+              // RESIZE
+              // ======================
+
+              if (
+                width >
+                maxWidth
+              ) {
+
+                height =
+                  height *
+                  (
+                    maxWidth /
+                    width
+                  );
+
+                width =
+                  maxWidth;
+
+              }
+
+
+              canvas.width =
+                width;
+
+              canvas.height =
+                height;
+
+
+              const context =
+                canvas.getContext(
+                  "2d"
+                );
+
+
+              context.drawImage(
+                image,
+                0,
+                0,
+                width,
+                height
+              );
+
+
+              // ======================
+              // COMPRESS
+              // ======================
+
+              breakingNewsImageData =
+                canvas.toDataURL(
+                  "image/jpeg",
+                  0.75
+                );
+
+
+              // ======================
+              // PREVIEW
+              // ======================
+
+              if (
+                breakingNewsImagePreview
+              ) {
+
+                breakingNewsImagePreview.src =
+                  breakingNewsImageData;
+
+                breakingNewsImagePreview.style.display =
+                  "block";
+
+              }
+
+            };
+
+
+          image.src =
+            event.target.result;
+
+        };
+
+
+      reader.readAsDataURL(
+        file
       );
 
     }

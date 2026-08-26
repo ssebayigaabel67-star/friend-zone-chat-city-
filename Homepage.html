@@ -10996,6 +10996,761 @@ body.dark-mode .message-font-option small {
 
   display: block;
 }
+  /* ==================================================
+   NEWS ROOM POPOVER
+================================================== */
+
+.news-room-popover {
+
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(
+    -50%,
+    -50%
+  );
+
+  width: min(
+    92vw,
+    500px
+  );
+
+  max-height: 85vh;
+
+  overflow-y: auto;
+
+  background: white;
+
+  color: #222;
+
+  border-radius: 20px;
+
+  padding: 25px;
+
+  box-shadow:
+    0 15px 50px
+    rgba(0, 0, 0, 0.35);
+
+  z-index: 99999;
+
+  display: none;
+}
+
+
+/* SHOW */
+
+.news-room-popover.show {
+
+  display: block;
+
+}
+
+
+/* ==================================================
+   CLOSE BUTTON
+================================================== */
+
+.news-room-close {
+
+  position: absolute;
+
+  top: 12px;
+  right: 12px;
+
+  width: 40px;
+  height: 40px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #eeeeee;
+
+  color: #222;
+
+  font-size: 24px;
+
+  cursor: pointer;
+
+}
+
+
+/* ==================================================
+   HEADER
+================================================== */
+
+.news-room-header {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 15px;
+
+  margin-bottom: 20px;
+
+  padding-right: 40px;
+
+}
+
+
+.news-room-icon {
+
+  width: 60px;
+  height: 60px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #eeeeee;
+
+  font-size: 32px;
+
+}
+
+
+.news-room-header h2 {
+
+  margin: 0;
+
+  font-size: 25px;
+
+}
+
+
+.news-room-header p {
+
+  margin: 5px 0 0;
+
+  font-size: 14px;
+
+  color: #777;
+
+}
+
+
+/* ==================================================
+   BREAKING NEWS BUTTON
+================================================== */
+
+.news-create-btn {
+
+  width: 100%;
+
+  border: none;
+
+  border-radius: 12px;
+
+  padding: 14px;
+
+  font-size: 16px;
+
+  font-weight: bold;
+
+  cursor: pointer;
+
+  margin-bottom: 20px;
+
+}
+
+
+.news-create-btn.breaking {
+
+  background: #e53935;
+
+  color: white;
+
+}
+
+
+.news-create-btn:hover {
+
+  opacity: 0.9;
+
+}
+
+
+/* ==================================================
+   NEWS ROOM LIST
+================================================== */
+
+.news-list {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 14px;
+
+  margin-top: 18px;
+
+}
+
+
+/* ==================================================
+   NEWS CARD
+================================================== */
+
+.news-item {
+
+  background: #ffffff;
+
+  border-radius: 16px;
+
+  padding: 16px;
+
+  border: 1px solid #e5e5e5;
+
+  box-shadow:
+    0 4px 14px
+    rgba(0, 0, 0, 0.08);
+
+}
+
+
+/* ==================================================
+   BREAKING LABEL
+================================================== */
+
+.news-item-breaking {
+
+  display: inline-block;
+
+  background: #e53935;
+
+  color: #ffffff;
+
+  padding: 5px 9px;
+
+  border-radius: 7px;
+
+  font-size: 11px;
+
+  font-weight: bold;
+
+  letter-spacing: 0.5px;
+
+  margin-bottom: 10px;
+
+}
+
+
+/* ==================================================
+   HEADLINE
+================================================== */
+
+.news-item-title {
+
+  margin: 0 0 8px;
+
+  font-size: 19px;
+
+  line-height: 1.3;
+
+  font-weight: 700;
+
+  color: #222;
+
+}
+
+
+/* ==================================================
+   NEWS CONTENT
+================================================== */
+
+.news-item-text {
+
+  margin: 0;
+
+  font-size: 14px;
+
+  line-height: 1.6;
+
+  color: #555;
+
+  white-space: pre-wrap;
+
+  word-break: break-word;
+
+}
+
+
+/* ==================================================
+   LOCATION
+================================================== */
+
+.news-item-location {
+
+  margin-top: 12px;
+
+  padding: 8px 10px;
+
+  background: #f5f5f5;
+
+  border-radius: 9px;
+
+  font-size: 12px;
+
+  color: #555;
+
+}
+
+
+/* ==================================================
+   NEWS META
+================================================== */
+
+.news-item-meta {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  gap: 10px;
+
+  margin-top: 14px;
+
+  padding-top: 11px;
+
+  border-top: 1px solid #eeeeee;
+
+  font-size: 11px;
+
+  color: #777;
+
+}
+
+
+.news-item-meta span {
+
+  white-space: nowrap;
+
+}
+
+
+/* ==================================================
+   EMPTY NEWS
+================================================== */
+
+.news-empty {
+
+  text-align: center;
+
+  padding: 35px 15px;
+
+  color: #777;
+
+  font-size: 14px;
+
+}
+
+
+/* ==================================================
+   DARK MODE
+================================================== */
+
+body.dark-mode .news-item {
+
+  background: #1e1e1e;
+
+  border-color: #333;
+
+  box-shadow:
+    0 4px 14px
+    rgba(0, 0, 0, 0.3);
+
+}
+
+
+body.dark-mode .news-item-title {
+
+  color: #ffffff;
+
+}
+
+
+body.dark-mode .news-item-text {
+
+  color: #bbbbbb;
+
+}
+
+
+body.dark-mode .news-item-location {
+
+  background: #2a2a2a;
+
+  color: #bbbbbb;
+
+}
+
+
+body.dark-mode .news-item-meta {
+
+  border-color: #333;
+
+  color: #999;
+
+}
+
+
+body.dark-mode .news-empty {
+
+  color: #999;
+
+}
+
+/* ==================================================
+   DARK MODE
+================================================== */
+
+body.dark-mode .news-room-popover {
+
+  background: #1e1e1e;
+
+  color: white;
+
+}
+
+
+body.dark-mode .news-room-close {
+
+  background: #333;
+
+  color: white;
+
+}
+
+
+body.dark-mode .news-room-header p {
+
+  color: #aaa;
+
+}
+
+
+body.dark-mode .news-room-icon {
+
+  background: #2a2a2a;
+
+}
+
+
+body.dark-mode .news-empty {
+
+  background: #2a2a2a;
+
+  color: #aaa;
+
+}
+  /* ==================================================
+   SHARE BREAKING NEWS POPOVER
+================================================== */
+
+.breaking-news-popover {
+
+  position: fixed;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(
+    -50%,
+    -50%
+  );
+
+  width: min(
+    92vw,
+    500px
+  );
+
+  max-height: 85vh;
+
+  overflow-y: auto;
+
+  background: #ffffff;
+
+  color: #222;
+
+  border-radius: 20px;
+
+  padding: 25px;
+
+  box-shadow:
+    0 15px 50px
+    rgba(0, 0, 0, 0.35);
+
+  z-index: 100000;
+
+  display: none;
+}
+
+
+/* SHOW */
+
+.breaking-news-popover.show {
+
+  display: block;
+
+}
+
+
+/* ==================================================
+   ICON
+================================================== */
+
+.breaking-news-icon {
+
+  width: 65px;
+  height: 65px;
+
+  margin: 0 auto 12px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #ffe5e5;
+
+  font-size: 34px;
+
+}
+
+
+/* ==================================================
+   TITLE
+================================================== */
+
+.breaking-news-popover h2 {
+
+  text-align: center;
+
+  margin: 0 0 8px;
+
+  font-size: 24px;
+
+}
+
+
+.breaking-news-description {
+
+  text-align: center;
+
+  color: #777;
+
+  font-size: 14px;
+
+  margin-bottom: 20px;
+
+}
+
+
+/* ==================================================
+   CLOSE
+================================================== */
+
+.breaking-news-close {
+
+  position: absolute;
+
+  top: 12px;
+  right: 12px;
+
+  width: 40px;
+  height: 40px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #eeeeee;
+
+  color: #222;
+
+  font-size: 22px;
+
+  cursor: pointer;
+
+}
+
+
+/* ==================================================
+   INPUTS
+================================================== */
+
+.breaking-news-popover input,
+.breaking-news-popover textarea {
+
+  width: 100%;
+
+  border: 1px solid #dddddd;
+
+  border-radius: 12px;
+
+  padding: 13px;
+
+  margin-bottom: 12px;
+
+  font-size: 14px;
+
+  outline: none;
+
+  background: #fafafa;
+
+  box-sizing: border-box;
+
+}
+
+
+.breaking-news-popover textarea {
+
+  min-height: 140px;
+
+  resize: vertical;
+
+  font-family: Arial, sans-serif;
+
+}
+
+
+.breaking-news-popover input:focus,
+.breaking-news-popover textarea:focus {
+
+  border-color: #e53935;
+
+  background: #ffffff;
+
+}
+
+
+/* ==================================================
+   ACTIONS
+================================================== */
+
+.breaking-news-actions {
+
+  display: flex;
+
+  gap: 10px;
+
+  margin-top: 5px;
+
+}
+
+
+.breaking-news-actions button {
+
+  flex: 1;
+
+  border: none;
+
+  border-radius: 12px;
+
+  padding: 13px;
+
+  font-size: 14px;
+
+  font-weight: bold;
+
+  cursor: pointer;
+
+}
+
+
+#cancelBreakingNewsBtn {
+
+  background: #eeeeee;
+
+  color: #222;
+
+}
+
+
+#publishBreakingNewsBtn {
+
+  background: #e53935;
+
+  color: white;
+
+}
+
+
+/* ==================================================
+   DARK MODE
+================================================== */
+
+body.dark-mode
+.breaking-news-popover {
+
+  background: #1e1e1e;
+
+  color: white;
+
+}
+
+
+body.dark-mode
+.breaking-news-popover
+.breaking-news-description {
+
+  color: #aaa;
+
+}
+
+
+body.dark-mode
+.breaking-news-close {
+
+  background: #333;
+
+  color: white;
+
+}
+
+
+body.dark-mode
+.breaking-news-popover input,
+body.dark-mode
+.breaking-news-popover textarea {
+
+  background: #242424;
+
+  color: white;
+
+  border-color: #444;
+
+}
+
+
+body.dark-mode
+.breaking-news-popover input:focus,
+body.dark-mode
+.breaking-news-popover textarea:focus {
+
+  background: #2a2a2a;
+
+}
+
+
+body.dark-mode
+#cancelBreakingNewsBtn {
+
+  background: #333;
+
+  color: white;
+
+  }
 </style>
  </head>
 <body>
@@ -11047,36 +11802,250 @@ body.dark-mode .message-font-option small {
   id="sidebarOverlay"
   class="sidebar-overlay"
 ></div>
-
 <!-- =================================
      RIGHT FEATURE SIDEBAR
 ================================= -->
 
 <div class="right-feature-bar">
 
-    <button
-      id="darkModeBtn"
-      type="button"
-    >
-      🌙
-    </button>
+  <!-- DARK MODE -->
+
+  <button
+    id="darkModeBtn"
+    type="button"
+  >
+    🌙
+  </button>
+
+
+  <!-- NEWS ROOM -->
+
+  <button
+    class="right-feature-btn"
+    id="rightNewsBtn"
+    title="News Room"
+    type="button"
+  >
+    📰
+  </button>
+
+
+  <!-- ANNOUNCEMENT ROOM -->
+
+  <button
+    class="right-feature-btn"
+    id="rightAnnouncementBtn"
+    title="Announcement Room"
+    type="button"
+  >
+    📢
+  </button>
+
+
+  <!-- SETTINGS -->
+
   <button
     class="right-feature-btn"
     id="rightSettingsBtn"
     title="Settings"
+    type="button"
   >
     ⚙️
   </button>
+
+
+  <!-- DELETE ACCOUNT -->
+
   <button
     class="right-feature-btn delete-feature-btn"
     id="rightDeleteAccountBtn"
     title="Delete Account"
+    type="button"
   >
     🗑️
   </button>
-<button id="logoutBtn" title="Logout">
-  &#9762;
-</button>
+
+
+  <!-- LOGOUT -->
+
+  <button
+    id="logoutBtn"
+    title="Logout"
+    type="button"
+  >
+    &#9762;
+  </button>
+
+</div>
+
+
+<!-- ==================================================
+     NEWS ROOM POPOVER
+================================================== -->
+
+<div
+  id="newsRoomPopover"
+  class="news-room-popover"
+>
+
+  <button
+    id="closeNewsRoomPopover"
+    class="news-room-close"
+    type="button"
+  >
+    ✕
+  </button>
+
+
+  <div class="news-room-header">
+
+    <div class="news-room-icon">
+      📰
+    </div>
+
+
+    <div>
+
+      <h2>
+        News Room
+      </h2>
+
+      <p>
+        Community news and breaking reports
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <button
+    id="createBreakingNewsBtn"
+    class="news-create-btn breaking"
+    type="button"
+  >
+    🚨 Share Breaking News
+  </button>
+
+
+  <div
+    id="newsList"
+    class="news-list"
+  >
+
+    <div class="news-empty">
+      📰 No news yet.
+    </div>
+
+  </div>
+
+</div>
+  <!-- ==================================================
+     SHARE BREAKING NEWS POPOVER
+================================================== -->
+
+<div
+  id="breakingNewsPopover"
+  class="breaking-news-popover"
+>
+
+  <button
+    id="closeBreakingNewsPopover"
+    class="breaking-news-close"
+    type="button"
+  >
+    ✕
+  </button>
+
+
+  <div class="breaking-news-icon">
+    🚨
+  </div>
+
+
+  <h2>
+    Share Breaking News
+  </h2>
+
+
+  <p class="breaking-news-description">
+    Share important news with the FriendsZone community.
+  </p>
+
+
+  <!-- NEWS HEADLINE -->
+
+  <input
+    id="breakingNewsTitle"
+    type="text"
+    placeholder="News headline..."
+    maxlength="100"
+    autocomplete="off"
+  >
+
+
+  <!-- NEWS CONTENT -->
+
+  <textarea
+    id="breakingNewsText"
+    placeholder="Write the news here..."
+    maxlength="1000"
+  ></textarea>
+
+
+  <!-- LOCATION -->
+
+  <input
+    id="breakingNewsLocation"
+    type="text"
+    placeholder="Location (optional)..."
+    maxlength="100"
+    autocomplete="off"
+  >
+<!-- ======================
+     NEWS IMAGE
+====================== -->
+
+<div class="breaking-news-image-section">
+
+  <label for="breakingNewsImageInput">
+    📷 Add News Photo
+  </label>
+
+  <input
+    id="breakingNewsImageInput"
+    type="file"
+    accept="image/*"
+  >
+
+  <img
+    id="breakingNewsImagePreview"
+    class="breaking-news-image-preview"
+    alt="News photo preview"
+    style="display:none;"
+  >
+
+</div>
+
+  <div class="breaking-news-actions">
+
+    <button
+      id="cancelBreakingNewsBtn"
+      type="button"
+    >
+      Cancel
+    </button>
+
+
+    <button
+      id="publishBreakingNewsBtn"
+      type="button"
+    >
+      🚨 Publish News
+    </button>
+
+  </div>
+
 </div>
 <!-- ==================================================
      MAIN CONTAINER
@@ -12352,7 +13321,10 @@ body.dark-mode .message-font-option small {
   type="module"
   src="Home.js"
 ></script>
-
+<script
+  type="module"
+  src="App.js"
+></script>
 <script
   type="module"
   src="Calls.js"

@@ -1495,57 +1495,80 @@ if (muteBtn) {
 
 }
 
-
 // ==============================
-// VOICE CALL BUTTON
+// CALL BUTTONS
 // ==============================
 
-const voiceCallBtn =
-  document.getElementById(
-    "voiceCallBtn"
-  );
+document.addEventListener("click", (event) => {
 
+  // ============================
+  // VOICE CALL
+  // ============================
 
-if (voiceCallBtn) {
+  const voiceButton =
+    event.target.closest("#voiceCallBtn");
 
-  voiceCallBtn.addEventListener(
-    "click",
-    () => {
+  if (voiceButton) {
 
-      startCall(
-        "voice"
-      );
+    console.log("📞 Voice call button clicked");
+
+    const friendId =
+      getSelectedFriendId();
+
+    console.log(
+      "Selected friend ID:",
+      friendId
+    );
+
+    if (!friendId) {
+
+      alert("Please select a friend first.");
+
+      return;
 
     }
-  );
 
-}
+    startCall("voice");
 
+    return;
 
-// ==============================
-// VIDEO CALL BUTTON
-// ==============================
-
-const videoCallBtn =
-  document.getElementById(
-    "videoCallBtn"
-  );
+  }
 
 
-if (videoCallBtn) {
+  // ============================
+  // VIDEO CALL
+  // ============================
 
-  videoCallBtn.addEventListener(
-    "click",
-    () => {
+  const videoButton =
+    event.target.closest("#videoCallBtn");
 
-      startCall(
-        "video"
-      );
+  if (videoButton) {
+
+    console.log("📹 Video call button clicked");
+
+    const friendId =
+      getSelectedFriendId();
+
+    console.log(
+      "Selected friend ID:",
+      friendId
+    );
+
+    if (!friendId) {
+
+      alert("Please select a friend first.");
+
+      return;
 
     }
-  );
 
-}
+    startCall("video");
+
+    return;
+
+  }
+
+});
 
 
 // ==============================
