@@ -13993,41 +13993,42 @@ if (publishBreakingNewsBtn) {
         // ======================
         // SAVE NEWS
         // ======================
-
         await addDoc(
-          collection(
-            db,
-            "news"
-          ),
-          {
+  collection(
+    db,
+    "news"
+  ),
+  {
 
-            title:
-              title,
+    title:
+      title,
 
-            text:
-              text,
+    text:
+      text,
 
-            location:
-              location || "",
+    location:
+      location || "",
 
-            senderId:
-              auth.currentUser.uid,
+    senderId:
+      auth.currentUser.uid,
 
-            senderName:
-              currentUserName,
+    senderName:
+      currentUserName,
 
-            timestamp:
-              serverTimestamp(),
+    timestamp:
+      serverTimestamp(),
 
-            type:
-              "breaking",
+    type:
+      "breaking",
 
-            approved:
-              true
+    approved:
+      true,
 
-          }
-        );
+    imageData:
+      breakingNewsImageData || ""
 
+  }
+);
         // ======================
         // CLEAR FORM
         // ======================
@@ -14055,7 +14056,20 @@ if (publishBreakingNewsBtn) {
 
         }
 
+// ======================
+// CLEAR IMAGE
+// ======================
 
+breakingNewsImageData = "";
+
+if (breakingNewsImageInput) {
+  breakingNewsImageInput.value = "";
+}
+
+if (breakingNewsImagePreview) {
+  breakingNewsImagePreview.src = "";
+  breakingNewsImagePreview.style.display = "none";
+}
         // ======================
         // CLOSE FORM
         // ======================
@@ -14302,7 +14316,17 @@ function loadNewsRoom() {
 
               </h3>
 
-
+${
+  news.imageData
+    ? `
+      <img
+        class="news-item-image"
+        src="${news.imageData}"
+        alt="News photo"
+      >
+    `
+    : ""
+}
               <p class="news-item-text">
 
                 ${escapeHTML(
