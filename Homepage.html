@@ -12370,6 +12370,70 @@ body.dark-mode
   border-color: #555;
 
   }
+  /* ==============================
+   PHOTO VIEWER
+============================== */
+
+.photo-viewer {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+
+  display: none;
+
+  align-items: center;
+  justify-content: center;
+
+  z-index: 99999;
+
+  padding: 20px;
+
+  box-sizing: border-box;
+}
+
+.photo-viewer.show {
+  display: flex;
+}
+
+.photo-viewer img {
+  max-width: 95%;
+  max-height: 90vh;
+
+  width: auto;
+  height: auto;
+
+  object-fit: contain;
+
+  border-radius: 10px;
+
+  cursor: zoom-out;
+}
+
+.close-photo-viewer {
+  position: absolute;
+
+  top: 15px;
+  right: 15px;
+
+  width: 42px;
+  height: 42px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+
+  font-size: 24px;
+
+  cursor: pointer;
+
+  z-index: 2;
+}
+
+.close-photo-viewer:active {
+  transform: scale(0.9);
+}
 </style>
  </head>
 <body>
@@ -16679,6 +16743,16 @@ body.dark-mode
 
 
   </div>
+
+</div>
+<!-- PHOTO VIEWER -->
+<div id="photoViewer" class="photo-viewer">
+
+  <button id="closePhotoViewer" class="close-photo-viewer">
+    ✕
+  </button>
+
+  <img id="photoViewerImage" src="" alt="Photo">
 
 </div>
 </body>

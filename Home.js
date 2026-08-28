@@ -99,9 +99,124 @@ document.createElement("div");
   div.textContent =
     String(text);
   return div.innerHTML;}
-// ======================
+// ==================================================
+// MARK PRIVATE MESSAGES AS READ
+// ==================================================
+
+async function markPrivateMessagesAsRead(friendId) {
+
+  if (
+    !auth.currentUser ||
+    !friendId
+  ) {
+    return;
+  }
+
+
+  const myUid =
+    auth.currentUser.uid;
+
+
+  const chatId =
+    getChatId(
+      myUid,
+      friendId
+    );
+
+
+  try {
+
+    // ======================
+    // MESSAGES REFERENCE
+    // ======================
+
+    const messagesRef =
+      collection(
+        db,
+        "chats",
+        chatId,
+        "messages"
+      );
+
+
+    // ======================
+    // FIND UNREAD MESSAGES
+    // ======================
+
+    const unreadQuery =
+      query(
+        messagesRef,
+
+        where(
+          "senderId",
+          "==",
+          friendId
+        ),
+
+        where(
+          "read",
+          "==",
+          false
+        )
+      );
+
+
+    const snapshot =
+      await getDocs(
+        unreadQuery
+      );
+
+
+    // ======================
+    // MARK EACH MESSAGE READ
+    // ======================
+
+    for (
+      const messageDoc
+      of snapshot.docs
+    ) {
+
+      await updateDoc(
+        messageDoc.ref,
+        {
+          read: true
+        }
+      );
+
+    }
+
+
+    // ======================
+    // CLEAR LOCAL COUNT
+    // ======================
+
+    unreadCounts[
+      friendId
+    ] = 0;
+
+
+    console.log(
+      "Messages marked as read:",
+      friendId
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Mark messages as read error:",
+      error
+    );
+
+  }
+
+}
+
+
+
+// ==================================================
 // LOAD FRIENDS
-// ======================
+// ==================================================
 
 async function loadFriends() {
 
@@ -110,12 +225,18 @@ async function loadFriends() {
       "friendsList"
     );
 
+
   if (
     !list ||
     !auth.currentUser
   ) {
     return;
   }
+
+
+  // ======================
+  // CLEAR FRIEND LIST
+  // ======================
 
   list.innerHTML = "";
 
@@ -142,7 +263,9 @@ async function loadFriends() {
           userDoc.id ===
           auth.currentUser.uid
         ) {
+
           return;
+
         }
 
 
@@ -159,15 +282,22 @@ async function loadFriends() {
             "div"
           );
 
+
         div.className =
           "friend";
 
 
-        // IMPORTANT:
-        // Used by unread listener
+        // ======================
+        // FRIEND ID
+        // ======================
+
         div.dataset.friendId =
           userDoc.id;
 
+
+        // ======================
+        // ACTIVE FRIEND
+        // ======================
 
         if (
           selectedFriendId ===
@@ -213,7 +343,6 @@ async function loadFriends() {
             }
 
           </span>
-
 
           ${
             unreadCounts[userDoc.id] > 0
@@ -265,6 +394,7 @@ async function loadFriends() {
 
               event.stopPropagation();
 
+
               openUserProfilePopover(
                 userDoc.id,
                 friend
@@ -282,32 +412,46 @@ async function loadFriends() {
 
         div.addEventListener(
           "click",
-          () => {
+          async () => {
+
+            // ======================
+            // SET SELECTED FRIEND
+            // ======================
 
             selectedFriendId =
               userDoc.id;
 
+
             window.selectedFriendId =
               selectedFriendId;
 
+
             selectedGroupId =
               "";
+
 
             isGroupChat =
               false;
 
 
-            // Clear local unread count
-            unreadCounts[
+            // ======================
+            // MARK MESSAGES AS READ
+            // ======================
+
+            await markPrivateMessagesAsRead(
               userDoc.id
-            ] = 0;
+            );
 
 
-            // Remove badge immediately
+            // ======================
+            // REMOVE BADGE
+            // ======================
+
             const badge =
               div.querySelector(
                 ".unread-message-badge"
               );
+
 
             if (badge) {
 
@@ -315,6 +459,10 @@ async function loadFriends() {
 
             }
 
+
+            // ======================
+            // REMOVE OLD ACTIVE
+            // ======================
 
             document
               .querySelectorAll(
@@ -331,10 +479,18 @@ async function loadFriends() {
               );
 
 
+            // ======================
+            // MAKE THIS FRIEND ACTIVE
+            // ======================
+
             div.classList.add(
               "active"
             );
 
+
+            // ======================
+            // UPDATE CHAT TITLE
+            // ======================
 
             const title =
               document.querySelector(
@@ -352,11 +508,19 @@ async function loadFriends() {
             }
 
 
+            // ======================
+            // LOAD MESSAGES
+            // ======================
+
             loadMessages();
 
           }
         );
 
+
+        // ======================
+        // ADD FRIEND TO LIST
+        // ======================
 
         list.appendChild(
           div
@@ -376,17 +540,28 @@ async function loadFriends() {
   }
 
 }
+
+
+
 // ==================================================
 // UNREAD PRIVATE MESSAGE LISTENER
 // ==================================================
 
-let unreadMessageListeners = {};
+let unreadMessageListeners =
+  {};
+
+
 
 function startUnreadMessageListeners() {
 
-  if (!auth.currentUser) {
+  if (
+    !auth.currentUser
+  ) {
+
     return;
+
   }
+
 
   const myUid =
     auth.currentUser.uid;
@@ -414,9 +589,12 @@ function startUnreadMessageListeners() {
   );
 
 
-  unreadMessageListeners = {};
+  unreadMessageListeners =
+    {};
 
-  unreadCounts = {};
+
+  unreadCounts =
+    {};
 
 
   // ======================
@@ -428,7 +606,8 @@ function startUnreadMessageListeners() {
       db,
       "users"
     )
-  ).then(
+  )
+  .then(
     snapshot => {
 
       snapshot.forEach(
@@ -443,7 +622,8 @@ function startUnreadMessageListeners() {
           // ======================
 
           if (
-            friendId === myUid
+            friendId ===
+            myUid
           ) {
 
             return;
@@ -451,12 +631,20 @@ function startUnreadMessageListeners() {
           }
 
 
+          // ======================
+          // CHAT ID
+          // ======================
+
           const chatId =
             getChatId(
               myUid,
               friendId
             );
 
+
+          // ======================
+          // MESSAGES REFERENCE
+          // ======================
 
           const messagesRef =
             collection(
@@ -467,8 +655,13 @@ function startUnreadMessageListeners() {
             );
 
 
+          // ======================
+          // UNREAD QUERY
+          // ======================
+
           const unreadQuery =
             query(
+
               messagesRef,
 
               where(
@@ -482,6 +675,7 @@ function startUnreadMessageListeners() {
                 "==",
                 false
               )
+
             );
 
 
@@ -492,7 +686,14 @@ function startUnreadMessageListeners() {
           const unsubscribe =
             onSnapshot(
               unreadQuery,
-              (messagesSnapshot) => {
+
+              (
+                messagesSnapshot
+              ) => {
+
+                // ======================
+                // CURRENT CHAT
+                // ======================
 
                 if (
                   selectedFriendId ===
@@ -514,14 +715,8 @@ function startUnreadMessageListeners() {
 
 
                 // ======================
-                // UPDATE BADGE ONLY
+                // FIND FRIEND ROW
                 // ======================
-                //
-                // IMPORTANT:
-                // Do NOT call loadFriends()
-                // here. That was causing
-                // the friend list to rebuild.
-                //
 
                 const friendRow =
                   document.querySelector(
@@ -536,6 +731,10 @@ function startUnreadMessageListeners() {
                 }
 
 
+                // ======================
+                // FIND BADGE
+                // ======================
+
                 let unreadBadge =
                   friendRow.querySelector(
                     ".unread-message-badge"
@@ -548,17 +747,27 @@ function startUnreadMessageListeners() {
                   ] || 0;
 
 
-                if (count > 0) {
+                // ======================
+                // SHOW BADGE
+                // ======================
 
-                  if (!unreadBadge) {
+                if (
+                  count > 0
+                ) {
+
+                  if (
+                    !unreadBadge
+                  ) {
 
                     unreadBadge =
                       document.createElement(
                         "span"
                       );
 
+
                     unreadBadge.className =
                       "unread-message-badge";
+
 
                     unreadBadge.style.cssText = `
                       background:red;
@@ -574,6 +783,7 @@ function startUnreadMessageListeners() {
                       margin-left:8px;
                     `;
 
+
                     friendRow.appendChild(
                       unreadBadge
                     );
@@ -587,7 +797,13 @@ function startUnreadMessageListeners() {
 
                 } else {
 
-                  if (unreadBadge) {
+                  // ======================
+                  // REMOVE BADGE
+                  // ======================
+
+                  if (
+                    unreadBadge
+                  ) {
 
                     unreadBadge.remove();
 
@@ -597,6 +813,11 @@ function startUnreadMessageListeners() {
 
               },
 
+
+              // ======================
+              // LISTENER ERROR
+              // ======================
+
               (error) => {
 
                 console.error(
@@ -605,8 +826,13 @@ function startUnreadMessageListeners() {
                 );
 
               }
+
             );
 
+
+          // ======================
+          // SAVE LISTENER
+          // ======================
 
           unreadMessageListeners[
             friendId
@@ -619,7 +845,8 @@ function startUnreadMessageListeners() {
 
     }
 
-  ).catch(
+  )
+  .catch(
     error => {
 
       console.error(
@@ -2564,8 +2791,6 @@ function loadMessages() {
               `;
 
             }
-
-
             // ======================
             // IMAGE
             // ======================
@@ -2578,18 +2803,20 @@ function loadMessages() {
                   src="${escapeHTML(
                     data.imageURL
                   )}"
+                  class="chat-message-image"
+                  alt="Photo"
                   style="
                     max-width:220px;
                     border-radius:10px;
                     margin-top:8px;
+                    cursor:zoom-in;
+                    display:block;
                   "
                 >
 
               `;
 
             }
-
-
             // ======================
             // AUDIO
             // ======================
@@ -2707,7 +2934,29 @@ function loadMessages() {
             div.innerHTML =
               html;
 
+            // ==============================
+            // CHAT IMAGE CLICK
+            // ==============================
 
+            const chatImage =
+              div.querySelector(
+                ".chat-message-image"
+              );
+
+            if (chatImage) {
+
+              chatImage.addEventListener(
+                "click",
+                function () {
+
+                  openPhotoViewer(
+                    data.imageURL
+                  );
+
+                }
+              );
+
+            }
             // =====================================
             // APPLY FONT TO MESSAGE CONTENT
             // =====================================
@@ -15269,6 +15518,104 @@ if (breakingNewsImageInput) {
       );
 
     }
+  );
+
+}
+// ==============================
+// PHOTO VIEWER
+// ==============================
+
+const photoViewer =
+  document.getElementById("photoViewer");
+
+const photoViewerImage =
+  document.getElementById("photoViewerImage");
+
+const closePhotoViewer =
+  document.getElementById("closePhotoViewer");
+
+
+// ==============================
+// OPEN PHOTO
+// ==============================
+
+function openPhotoViewer(imageURL) {
+
+  if (!photoViewer || !photoViewerImage) {
+    return;
+  }
+
+  photoViewerImage.src = imageURL;
+
+  photoViewer.classList.add("show");
+
+}
+
+
+// ==============================
+// CLOSE PHOTO
+// ==============================
+
+function closePhoto() {
+
+  if (!photoViewer || !photoViewerImage) {
+    return;
+  }
+
+  photoViewer.classList.remove("show");
+
+  photoViewerImage.src = "";
+
+}
+
+
+// ==============================
+// CLOSE BUTTON
+// ==============================
+
+if (closePhotoViewer) {
+
+  closePhotoViewer.addEventListener(
+    "click",
+    closePhoto
+  );
+
+}
+
+
+// ==============================
+// CLICK OUTSIDE PHOTO
+// ==============================
+
+if (photoViewer) {
+
+  photoViewer.addEventListener(
+    "click",
+    function (event) {
+
+      if (
+        event.target === photoViewer
+      ) {
+
+        closePhoto();
+
+      }
+
+    }
+  );
+
+}
+
+
+// ==============================
+// CLICK PHOTO
+// ==============================
+
+if (photoViewerImage) {
+
+  photoViewerImage.addEventListener(
+    "click",
+    closePhoto
   );
 
 }
