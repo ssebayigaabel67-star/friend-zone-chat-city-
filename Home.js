@@ -1848,7 +1848,7 @@ startUnreadMessageListeners();
 
       await loadGroups();
 
-
+loadAnnouncements();
       // ======================
       // LOAD FRIEND SELECTOR
       // ======================
@@ -13736,8 +13736,6 @@ if (
   );
 
 }
-
-
 // ==================================================
 // ANNOUNCEMENT ROOM
 // ==================================================
@@ -13747,9 +13745,9 @@ const rightAnnouncementBtn =
     "rightAnnouncementBtn"
   );
 
-const announcementRoomPopover =
+const announcementModal =
   document.getElementById(
-    "announcementRoomPopover"
+    "announcementModal"
   );
 
 const closeAnnouncementRoomPopover =
@@ -13758,16 +13756,24 @@ const closeAnnouncementRoomPopover =
   );
 
 
+// ==================================================
+// OPEN ANNOUNCEMENT ROOM
+// ==================================================
+
 if (
   rightAnnouncementBtn &&
-  announcementRoomPopover
+  announcementModal
 ) {
 
   rightAnnouncementBtn.addEventListener(
     "click",
-    () => {
+    (event) => {
 
-      announcementRoomPopover.classList.add(
+      event.preventDefault();
+
+      event.stopPropagation();
+
+      announcementModal.classList.add(
         "show"
       );
 
@@ -13777,21 +13783,903 @@ if (
 }
 
 
+// ==================================================
+// CLOSE WITH X
+// ==================================================
+
 if (
   closeAnnouncementRoomPopover &&
-  announcementRoomPopover
+  announcementModal
 ) {
 
   closeAnnouncementRoomPopover.addEventListener(
     "click",
-    () => {
+    (event) => {
 
-      announcementRoomPopover.classList.remove(
+      event.preventDefault();
+
+      event.stopPropagation();
+
+      announcementModal.classList.remove(
         "show"
       );
 
     }
   );
+
+}
+
+
+// ==================================================
+// CLOSE BY CLICKING DARK BACKGROUND
+// ==================================================
+
+if (announcementModal) {
+
+  announcementModal.addEventListener(
+    "click",
+    (event) => {
+
+      if (
+        event.target ===
+        announcementModal
+      ) {
+
+        announcementModal.classList.remove(
+          "show"
+        );
+
+      }
+
+    }
+  );
+
+}
+// ==================================================
+// CREATE ANNOUNCEMENT MODAL
+// ==================================================
+
+const createAnnouncementBtn =
+  document.getElementById(
+    "createAnnouncementBtn"
+  );
+
+const createAnnouncementModal =
+  document.getElementById(
+    "createAnnouncementModal"
+  );
+
+const closeCreateAnnouncementModal =
+  document.getElementById(
+    "closeCreateAnnouncementModal"
+  );
+
+
+// ==================================================
+// OPEN CREATE ANNOUNCEMENT
+// ==================================================
+
+if (
+  createAnnouncementBtn &&
+  createAnnouncementModal
+) {
+
+  createAnnouncementBtn.addEventListener(
+    "click",
+    (event) => {
+
+      event.preventDefault();
+
+      event.stopPropagation();
+
+      createAnnouncementModal.classList.add(
+        "show"
+      );
+
+    }
+  );
+
+}
+
+
+// ==================================================
+// CLOSE CREATE ANNOUNCEMENT
+// ==================================================
+
+if (
+  closeCreateAnnouncementModal &&
+  createAnnouncementModal
+) {
+
+  closeCreateAnnouncementModal.addEventListener(
+    "click",
+    (event) => {
+
+      event.preventDefault();
+
+      event.stopPropagation();
+
+      createAnnouncementModal.classList.remove(
+        "show"
+      );
+
+    }
+  );
+
+}
+
+
+// ==================================================
+// CLOSE BY CLICKING OUTSIDE
+// ==================================================
+
+if (createAnnouncementModal) {
+
+  createAnnouncementModal.addEventListener(
+    "click",
+    (event) => {
+
+      if (
+        event.target ===
+        createAnnouncementModal
+      ) {
+
+        createAnnouncementModal.classList.remove(
+          "show"
+        );
+
+      }
+
+    }
+  );
+
+}
+// ==================================================
+// ANNOUNCEMENT IMAGE PREVIEW
+// ==================================================
+
+const announcementImageInput =
+  document.getElementById(
+    "announcementImageInput"
+  );
+
+const announcementImagePreview =
+  document.getElementById(
+    "announcementImagePreview"
+  );
+
+
+if (announcementImageInput) {
+
+  announcementImageInput.addEventListener(
+    "change",
+    () => {
+
+      const file =
+        announcementImageInput.files[0];
+
+
+      if (!file) {
+
+        announcementImagePreview.src = "";
+
+        announcementImagePreview.style.display =
+          "none";
+
+        return;
+
+      }
+
+
+      // Only allow images
+
+      if (
+        !file.type.startsWith(
+          "image/"
+        )
+      ) {
+
+        alert(
+          "Please select an image."
+        );
+
+        announcementImageInput.value = "";
+
+        return;
+
+      }
+
+
+      const reader =
+        new FileReader();
+
+
+      reader.onload = (event) => {
+
+        announcementImagePreview.src =
+          event.target.result;
+
+        announcementImagePreview.style.display =
+          "block";
+
+      };
+
+
+      reader.readAsDataURL(
+        file
+      );
+
+    }
+  );
+
+}
+// ==================================================
+// PUBLISH ANNOUNCEMENT
+// ==================================================
+
+const publishAnnouncementBtn =
+  document.getElementById(
+    "publishAnnouncementBtn"
+  );
+
+const announcementTitleInput =
+  document.getElementById(
+    "announcementTitleInput"
+  );
+
+const announcementMessageInput =
+  document.getElementById(
+    "announcementMessageInput"
+  );
+
+const announcementPriorityInput =
+  document.getElementById(
+    "announcementPriorityInput"
+  );
+
+const announcementImageInput =
+  document.getElementById(
+    "announcementImageInput"
+  );
+
+
+if (publishAnnouncementBtn) {
+
+  publishAnnouncementBtn.addEventListener(
+    "click",
+    async () => {
+
+      if (!auth.currentUser) {
+
+        alert(
+          "Please log in first."
+        );
+
+        return;
+
+      }
+
+
+      const title =
+        announcementTitleInput
+          ? announcementTitleInput.value.trim()
+          : "";
+
+      const message =
+        announcementMessageInput
+          ? announcementMessageInput.value.trim()
+          : "";
+
+      const priority =
+        announcementPriorityInput
+          ? announcementPriorityInput.value
+          : "normal";
+
+
+      if (!title) {
+
+        alert(
+          "Please enter an announcement title."
+        );
+
+        return;
+
+      }
+
+
+      if (!message) {
+
+        alert(
+          "Please write your announcement."
+        );
+
+        return;
+
+      }
+
+
+      // ======================
+      // GET IMAGE
+      // ======================
+
+      let imageData = "";
+
+
+      if (
+        announcementImageInput &&
+        announcementImageInput.files.length > 0
+      ) {
+
+        const file =
+          announcementImageInput.files[0];
+
+
+        if (
+          !file.type.startsWith(
+            "image/"
+          )
+        ) {
+
+          alert(
+            "Please select an image file."
+          );
+
+          return;
+
+        }
+
+
+        // Keep image reasonably small
+
+        if (
+          file.size > 800 * 1024
+        ) {
+
+          alert(
+            "Please choose an image smaller than 800KB."
+          );
+
+          return;
+
+        }
+
+
+        imageData =
+          await new Promise(
+            (resolve, reject) => {
+
+              const reader =
+                new FileReader();
+
+
+              reader.onload = () => {
+
+                resolve(
+                  reader.result
+                );
+
+              };
+
+
+              reader.onerror = () => {
+
+                reject(
+                  new Error(
+                    "Could not read image."
+                  )
+                );
+
+              };
+
+
+              reader.readAsDataURL(
+                file
+              );
+
+            }
+          );
+
+      }
+
+
+      try {
+
+        publishAnnouncementBtn.disabled =
+          true;
+
+        publishAnnouncementBtn.textContent =
+          "Publishing...";
+
+
+        // ======================
+        // SAVE
+        // ======================
+
+        await addDoc(
+          collection(
+            db,
+            "announcements"
+          ),
+          {
+
+            title:
+              title,
+
+            message:
+              message,
+
+            priority:
+              priority,
+
+            imageURL:
+              imageData,
+
+            senderId:
+              auth.currentUser.uid,
+
+            senderName:
+              currentUserName,
+
+            timestamp:
+              serverTimestamp()
+
+          }
+        );
+
+
+        // ======================
+        // CLEAR FORM
+        // ======================
+
+        announcementTitleInput.value =
+          "";
+
+        announcementMessageInput.value =
+          "";
+
+        announcementPriorityInput.value =
+          "normal";
+
+
+        if (announcementImageInput) {
+
+          announcementImageInput.value =
+            "";
+
+        }
+
+
+        if (announcementImagePreview) {
+
+          announcementImagePreview.src =
+            "";
+
+          announcementImagePreview.style.display =
+            "none";
+
+        }
+
+
+        if (createAnnouncementModal) {
+
+          createAnnouncementModal.classList.remove(
+            "show"
+          );
+
+        }
+
+
+        alert(
+          "Announcement published successfully!"
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "Publish announcement error:",
+          error
+        );
+
+        alert(
+          "Failed to publish announcement: " +
+          error.message
+        );
+
+      } finally {
+
+        publishAnnouncementBtn.disabled =
+          false;
+
+        publishAnnouncementBtn.textContent =
+          "📢 Publish Announcement";
+
+      }
+
+    }
+  );
+
+}
+// =============================================
+      // ======================
+      // LOGIN CHECK
+      // ======================
+
+      if (!auth.currentUser) {
+
+        alert(
+          "Please log in first."
+        );
+
+        return;
+
+      }
+
+
+      // ======================
+      // GET VALUES
+      // ======================
+
+      const title =
+        announcementTitleInput
+          ? announcementTitleInput.value.trim()
+          : "";
+
+      const message =
+        announcementMessageInput
+          ? announcementMessageInput.value.trim()
+          : "";
+
+      const priority =
+        announcementPriorityInput
+          ? announcementPriorityInput.value
+          : "normal";
+
+
+      // ======================
+      // VALIDATION
+      // ======================
+
+      if (!title) {
+
+        alert(
+          "Please enter an announcement title."
+        );
+
+        return;
+
+      }
+
+
+      if (!message) {
+
+        alert(
+          "Please write your announcement."
+        );
+
+        return;
+
+      }
+
+
+      try {
+
+        publishAnnouncementBtn.disabled =
+          true;
+
+        publishAnnouncementBtn.textContent =
+          "Publishing...";
+
+
+        // ======================
+        // SAVE TO FIRESTORE
+        // ======================
+
+        await addDoc(
+          collection(
+            db,
+            "announcements"
+          ),
+          {
+
+            title:
+              title,
+
+            message:
+              message,
+
+            priority:
+              priority,
+
+            senderId:
+              auth.currentUser.uid,
+
+            senderName:
+              currentUserName,
+
+            timestamp:
+              serverTimestamp()
+
+          }
+        );
+
+
+        // ======================
+        // CLEAR FORM
+        // ======================
+
+        announcementTitleInput.value =
+          "";
+
+        announcementMessageInput.value =
+          "";
+
+        announcementPriorityInput.value =
+          "normal";
+
+
+        // ======================
+        // CLOSE FORM
+        // ======================
+
+        if (createAnnouncementModal) {
+
+          createAnnouncementModal.classList.remove(
+            "show"
+          );
+
+        }
+
+
+        alert(
+          "Announcement published successfully!"
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "Publish announcement error:",
+          error
+        );
+
+        alert(
+          "Failed to publish announcement: " +
+          error.message
+        );
+
+      } finally {
+
+        publishAnnouncementBtn.disabled =
+          false;
+
+        publishAnnouncementBtn.textContent =
+          "📢 Publish Announcement";
+
+      }
+
+    }
+  );
+
+}
+// ==================================================
+// LOAD ANNOUNCEMENTS
+// ==================================================
+
+let unsubscribeAnnouncements = null;
+
+
+function loadAnnouncements() {
+
+  const announcementList =
+    document.getElementById(
+      "announcementList"
+    );
+
+
+  if (!announcementList) {
+    return;
+  }
+
+
+  // ======================
+  // STOP OLD LISTENER
+  // ======================
+
+  if (unsubscribeAnnouncements) {
+
+    unsubscribeAnnouncements();
+
+    unsubscribeAnnouncements = null;
+
+  }
+
+
+  // ======================
+  // ANNOUNCEMENTS QUERY
+  // ======================
+
+  const announcementsRef =
+    collection(
+      db,
+      "announcements"
+    );
+
+
+  const announcementsQuery =
+    query(
+      announcementsRef,
+      orderBy(
+        "timestamp",
+        "desc"
+      )
+    );
+
+
+  // ======================
+  // LISTEN FOR CHANGES
+  // ======================
+
+  unsubscribeAnnouncements =
+    onSnapshot(
+      announcementsQuery,
+      (snapshot) => {
+
+        announcementList.innerHTML =
+          "";
+
+
+        // ======================
+        // EMPTY
+        // ======================
+
+        if (
+          snapshot.empty
+        ) {
+
+          announcementList.innerHTML = `
+            <div class="announcement-empty">
+              📢 No announcements yet.
+            </div>
+          `;
+
+          return;
+
+        }
+
+
+        // ======================
+        // DISPLAY
+        // ======================
+
+        snapshot.forEach(
+          (docSnap) => {
+
+            const data =
+              docSnap.data();
+
+
+            const item =
+              document.createElement(
+                "div"
+              );
+
+
+            item.className =
+              "announcement-item";
+
+
+            // ======================
+            // PRIORITY
+            // ======================
+
+            let priorityIcon =
+              "🟢";
+
+            if (
+              data.priority ===
+              "important"
+            ) {
+
+              priorityIcon =
+                "🟡";
+
+            }
+
+            if (
+              data.priority ===
+              "urgent"
+            ) {
+
+              priorityIcon =
+                "🚨";
+
+            }
+
+
+            // ======================
+            // TIME
+            // ======================
+
+            let time =
+              "";
+
+            if (
+              data.timestamp
+            ) {
+
+              time =
+                data.timestamp
+                  .toDate()
+                  .toLocaleString();
+
+            }
+
+
+            // ======================
+            // HTML
+            // ======================
+
+            item.innerHTML = `
+
+              <div class="announcement-item-header">
+
+                <strong>
+                  ${priorityIcon}
+                  ${escapeHTML(
+                    data.title ||
+                    "Announcement"
+                  )}
+                </strong>
+
+              </div>
+
+
+              <div class="announcement-item-message">
+
+                ${escapeHTML(
+                  data.message ||
+                  ""
+                )}
+
+              </div>
+
+
+              <div class="announcement-item-footer">
+
+                📢
+                ${escapeHTML(
+                  data.senderName ||
+                  "User"
+                )}
+
+                •
+                ${escapeHTML(
+                  time
+                )}
+
+              </div>
+
+            `;
+
+
+            announcementList.appendChild(
+              item
+            );
+
+          }
+        );
+
+      },
+      (error) => {
+
+        console.error(
+          "Load announcements error:",
+          error
+        );
+
+      }
+    );
 
 }
 // ==================================================
