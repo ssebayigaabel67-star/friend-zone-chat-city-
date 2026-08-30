@@ -1382,14 +1382,15 @@ if (userProfilePopover) {
   );
 
 }
-// ======================
+// ==================================================
 // SEND FRIEND REQUEST
-// ======================
+// ==================================================
 
 const addFriendBtn =
   document.getElementById(
     "addFriendBtn"
   );
+
 
 if (addFriendBtn) {
 
@@ -1421,7 +1422,13 @@ if (addFriendBtn) {
 
 
       if (!targetUserId) {
+
+        alert(
+          "User not found."
+        );
+
         return;
+
       }
 
 
@@ -1484,14 +1491,10 @@ if (addFriendBtn) {
           return;
 
         }
-// ======================
-// LOAD NEWS ROOM
-// ======================
 
-loadNewsRoom();
 
         // ======================
-        // SAVE REQUEST
+        // SAVE FRIEND REQUEST
         // ======================
 
         await setDoc(
@@ -1538,7 +1541,8 @@ loadNewsRoom();
         );
 
         alert(
-          "Could not send friend request."
+          "Could not send friend request: " +
+          error.message
         );
 
       }
@@ -3326,30 +3330,97 @@ if (createGroupBtn) {
   );
 
 }
-// ======================
+// =========================================================
 // LOAD GROUPS
-// ======================
+// =========================================================
 
 async function loadGroups() {
 
   const list =
     document.getElementById("groupsList");
 
+
+  // ======================
+  // LOGIN CHECK
+  // ======================
+
   if (
     !list ||
     !auth.currentUser
   ) {
+
     return;
+
   }
+
+
+  // ======================
+  // CURRENT USER
+  // ======================
+
+  const uid =
+    auth.currentUser.uid;
+
 
   list.innerHTML = "";
 
+
   try {
+
+    // ======================
+    // QUERY ONLY MY GROUPS
+    // ======================
+
+    const groupsQuery =
+      query(
+        collection(
+          db,
+          "groups"
+        ),
+        where(
+          `members.${uid}`,
+          "==",
+          true
+        )
+      );
+
 
     const snapshot =
       await getDocs(
-        collection(db, "groups")
+        groupsQuery
       );
+
+
+    // ======================
+    // NO GROUPS
+    // ======================
+
+    if (
+      snapshot.empty
+    ) {
+
+      list.innerHTML = `
+
+        <div
+          style="
+            padding:20px;
+            text-align:center;
+            color:#777;
+          "
+        >
+          👥 No groups yet.
+        </div>
+
+      `;
+
+      return;
+
+    }
+
+
+    // ======================
+    // DISPLAY GROUPS
+    // ======================
 
     snapshot.forEach(
       (groupDoc) => {
@@ -3357,26 +3428,16 @@ async function loadGroups() {
         const group =
           groupDoc.data();
 
-        // ======================
-        // CHECK MEMBERSHIP
-        // ======================
-
-        if (
-          !group.members ||
-          !group.members[
-            auth.currentUser.uid
-          ]
-        ) {
-          return;
-        }
-
 
         // ======================
         // GROUP ITEM
         // ======================
 
         const div =
-          document.createElement("div");
+          document.createElement(
+            "div"
+          );
+
 
         div.className =
           "friend";
@@ -3395,7 +3456,7 @@ async function loadGroups() {
         div.innerHTML = `
 
           <img
-            src="${photo}"
+            src="${escapeHTML(photo)}"
             alt="Group Photo"
             class="group-list-photo"
             onerror="
@@ -3403,10 +3464,12 @@ async function loadGroups() {
             "
           >
 
-          <span style="
-            flex:1;
-            font-weight:bold;
-          ">
+          <span
+            style="
+              flex:1;
+              font-weight:bold;
+            "
+          >
             ${escapeHTML(
               group.name ||
               "Unnamed Group"
@@ -3427,14 +3490,18 @@ async function loadGroups() {
             selectedGroupId =
               groupDoc.id;
 
+
             selectedFriendId =
               "";
+
 
             window.selectedFriendId =
               "";
 
+
             isGroupChat =
               true;
+
 
             currentGroupAdmin =
               group.admin || "";
@@ -3455,6 +3522,7 @@ async function loadGroups() {
               title.textContent =
                 group.name ||
                 "Group";
+
 
               title.style.cursor =
                 "pointer";
@@ -3488,10 +3556,13 @@ async function loadGroups() {
         );
 
 
-        list.appendChild(div);
+        list.appendChild(
+          div
+        );
 
       }
     );
+
 
   } catch (error) {
 
@@ -3499,6 +3570,26 @@ async function loadGroups() {
       "Load groups error:",
       error
     );
+
+
+    list.innerHTML = `
+
+      <div
+        style="
+          padding:20px;
+          text-align:center;
+          color:#d00;
+        "
+      >
+        ❌ Unable to load groups.
+        <br><br>
+        ${escapeHTML(
+          error.message ||
+          "Unknown error"
+        )}
+      </div>
+
+    `;
 
   }
 
@@ -14680,8 +14771,7 @@ function loadAnnouncements() {
 
 const createBreakingNewsBtn =
   document.getElementById(
-    "createBreakingNewsBtn"
-  );
+0  );
 
 const breakingNewsPopover =
   document.getElementById(
@@ -15607,8 +15697,8 @@ if (photoViewer) {
 }
 
 
-// ==============================
-// CLICK PHOTO
+// ==============================5
+// CLICK PHO3drf4r5TO
 // ==============================
 
 if (photoViewerImage) {
