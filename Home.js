@@ -1939,9 +1939,9 @@ async function declineFriendRequest(
   }
 
 }
-// ======================
+// ==================================================
 // LOGIN CHECK
-// ======================
+// ==================================================
 
 onAuthStateChanged(
   auth,
@@ -1960,7 +1960,20 @@ onAuthStateChanged(
 
 
       // ======================
-      // CHECK IF LOGGED IN
+      // ADMIN PANEL BUTTON
+      // ======================
+
+      const rightAdminPanelBtn =
+        document.getElementById(
+          "rightAdminPanelBtn"
+        );
+
+      const ADMIN_UID =
+        "Ur72jn1ON4Z7zVdJAvgM2orOpnl2";
+
+
+      // ======================
+      // CHECK IF LOGGED OUT
       // ======================
 
       if (!user) {
@@ -1968,6 +1981,13 @@ onAuthStateChanged(
         console.log(
           "No user logged in"
         );
+
+        if (rightAdminPanelBtn) {
+
+          rightAdminPanelBtn.style.display =
+            "none";
+
+        }
 
         return;
 
@@ -1978,6 +1998,70 @@ onAuthStateChanged(
         "Logged in:",
         user.uid
       );
+
+
+      // ======================
+      // SHOW ADMIN BUTTON
+      // ONLY FOR ADMIN
+      // ======================
+
+      if (rightAdminPanelBtn) {
+
+        if (
+          user.uid ===
+          ADMIN_UID
+        ) {
+
+          rightAdminPanelBtn.style.display =
+            "flex";
+
+        } else {
+
+          rightAdminPanelBtn.style.display =
+            "none";
+
+        }
+
+      }
+
+
+      // ======================
+      // ADMIN BUTTON ACTION
+      // ======================
+
+      if (
+        rightAdminPanelBtn &&
+        !rightAdminPanelBtn.dataset.connected
+      ) {
+
+        rightAdminPanelBtn.dataset.connected =
+          "true";
+
+        rightAdminPanelBtn.addEventListener(
+          "click",
+          () => {
+
+            if (
+              auth.currentUser &&
+              auth.currentUser.uid ===
+              ADMIN_UID
+            ) {
+
+              window.location.href =
+                "Admin.html";
+
+            } else {
+
+              alert(
+                "❌ Administrator access required."
+              );
+
+            }
+
+          }
+        );
+
+      }
 
 
       // ======================
@@ -2065,7 +2149,9 @@ onAuthStateChanged(
 
       await loadFriends();
 
-startUnreadMessageListeners();
+      startUnreadMessageListeners();
+
+
       // ======================
       // LOAD FRIEND REQUESTS
       // ======================
@@ -2079,15 +2165,26 @@ startUnreadMessageListeners();
 
       await loadGroups();
 
-loadAnnouncements();
+
+      // ======================
+      // LOAD ANNOUNCEMENTS
+      // ======================
+
+      loadAnnouncements();
+
+
       // ======================
       // LOAD FRIEND SELECTOR
       // ======================
 
       await loadFriendSelector();
-await loadMyProfilePopover();
-      await
-        loadMyProfilePicture();
+
+
+      await loadMyProfilePopover();
+
+
+      await loadMyProfilePicture();
+
 
       console.log(
         "Homepage loaded successfully"
@@ -2099,7 +2196,7 @@ await loadMyProfilePopover();
       console.error(
         "HOME ERROR:",
         error
-      );
+          );
 
 
       alert(
@@ -2111,6 +2208,7 @@ await loadMyProfilePopover();
 
   }
 );
+       
 // ======================
 // MESSAGE INPUT
 // ======================
