@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Admin Panel</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      color: #222;
+    }
+
+    .admin-header {
+      background: #111;
+      color: white;
+      padding: 18px;
+      text-align: center;
+    }
+
+    .admin-header h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .admin-header p {
+      margin: 6px 0 0;
+      color: #aaa;
+      font-size: 13px;
+    }
+
+    .admin-container {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 15px;
+    }
+
+    .admin-card {
+      background: white;
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.08);
+    }
+
+    .admin-card h2 {
+      margin-top: 0;
+    }
+
+    .user-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .user-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background: #fafafa;
+    }
+
+    .user-photo {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #ddd;
+    }
+
+    .user-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .user-name {
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .user-email {
+      font-size: 13px;
+      color: #666;
+      word-break: break-word;
+    }
+
+    .user-uid {
+      font-size: 10px;
+      color: #999;
+      word-break: break-all;
+      margin-top: 4px;
+    }
+
+    .delete-btn {
+      border: none;
+      background: #d93025;
+      color: white;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .delete-btn:hover {
+      opacity: .9;
+    }
+
+    .delete-btn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    .status {
+      padding: 12px;
+      border-radius: 8px;
+      background: #eee;
+      margin-bottom: 15px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .logout-btn {
+      border: none;
+      background: #555;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 600px) {
+
+      .user-item {
+        align-items: flex-start;
+      }
+
+      .delete-btn {
+        font-size: 12px;
+        padding: 8px;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+  <!-- =====================================================
+       ADMIN HEADER
+  ====================================================== -->
+
+  <header class="admin-header">
+
+    <h1>
+      🔐 Admin Panel
+    </h1>
+
+    <p>
+      User Account Management
+    </p>
+
+  </header>
+
+
+  <!-- =====================================================
+       MAIN
+  ====================================================== -->
+
+  <main class="admin-container">
+
+
+    <!-- STATUS -->
+
+    <div
+      id="adminStatus"
+      class="status"
+    >
+      Checking administrator access...
+    </div>
+
+
+    <!-- USERS -->
+
+    <div
+      id="adminContent"
+      class="hidden"
+    >
+
+      <div class="admin-card">
+
+        <h2>
+          👥 Users
+        </h2>
+
+        <p>
+          Manage registered user accounts.
+        </p>
+
+        <div
+          id="userList"
+          class="user-list"
+        >
+        </div>
+
+      </div>
+
+
+      <button
+        id="logoutBtn"
+        class="logout-btn"
+        type="button"
+      >
+        Log Out
+      </button>
+
+    </div>
+
+  </main>
+
+
+  <!-- =====================================================
+       FIREBASE
+  ====================================================== -->
+
+  <script type="module">
+
+    import {
+      initializeApp
+    } from
+    "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+
+
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut
+    } from
+    "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+
+
+    import {
+      getFirestore,
+      collection,
+      getDocs
+    } from
+    "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+
+    // =====================================================
+    // FIREBASE CONFIG
+    // =====================================================
+    //
+    // IMPORTANT:
+    // Replace these with the SAME Firebase config
+    // already used by your existing app.
+    //
+    // This is NOT your private service-account key.
+    // =====================================================
+
+  const firebaseConfig = {
+  apiKey: "AIzaSyAxVyuHiNb-NEeXLfMfaq0RS9ERfahORt4",
+  authDomain: "friend-zone-chat-city.firebaseapp.com",
+  projectId: "friend-zone-chat-city",
+  storageBucket: "friend-zone-chat-city.firebasestorage.app",
+  messagingSenderId: "1077723243409",
+  appId: "1:1077723243409:web:f030fdcd210f0326d93030",
+  measurementId: "G-3RD3QLSF3F"
+};
+
+    // =====================================================
+    // INITIALIZE FIREBASE
+    // =====================================================
+
+    const app =
+      initializeApp(
+        firebaseConfig
+      );
+
+
+    const auth =
+      getAuth(app);
+
+
+    const db =
+      getFirestore(app);
+
+
+    // =====================================================
+    // ADMIN UID
+    // =====================================================
+    //
+  
+    //ADMIN_UID variable.
+    // =====================================================
+
+    const ADMIN_UID =
+      "Ur72jn1ON4Z7zVdJAvgM2orOpnl2";
+
+
+    // =====================================================
+    // ELEMENTS
+    // =====================================================
+
+    const adminStatus =
+      document.getElementById(
+        "adminStatus"
+      );
+
+
+    const adminContent =
+      document.getElementById(
+        "adminContent"
+      );
+
+
+    const userList =
+      document.getElementById(
+        "userList"
+      );
+
+
+    const logoutBtn =
+      document.getElementById(
+        "logoutBtn"
+      );
+
+
+    // =====================================================
+    // ESCAPE HTML
+    // =====================================================
+
+    function escapeHTML(value) {
+
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+    }
+
+
+    // =====================================================
+    // CHECK ADMIN
+    // =====================================================
+
+    onAuthStateChanged(
+      auth,
+      async (user) => {
+
+        if (!user) {
+
+          adminStatus.textContent =
+            "❌ Please log in first.";
+
+          adminContent.classList.add(
+            "hidden"
+          );
+
+          return;
+
+        }
+
+
+        if (
+          user.uid !==
+          ADMIN_UID
+        ) {
+
+          adminStatus.textContent =
+            "❌ Access denied. Administrator only.";
+
+          adminContent.classList.add(
+            "hidden"
+          );
+
+          return;
+
+        }
+
+
+        adminStatus.textContent =
+          "✅ Administrator access granted.";
+
+        adminContent.classList.remove(
+          "hidden"
+        );
+
+
+        await loadUsers();
+
+      }
+    );
+
+
+    // =====================================================
+    // LOAD USERS
+    // =====================================================
+
+    async function loadUsers() {
+
+      userList.innerHTML =
+        "<div>Loading users...</div>";
+
+
+      try {
+
+        const snapshot =
+          await getDocs(
+            collection(
+              db,
+              "users"
+            )
+          );
+
+
+        userList.innerHTML = "";
+
+
+        if (
+          snapshot.empty
+        ) {
+
+          userList.innerHTML =
+            "<div>No users found.</div>";
+
+          return;
+
+        }
+
+
+        snapshot.forEach(
+          (userDoc) => {
+
+            const user =
+              userDoc.data();
+
+
+            const uid =
+              userDoc.id;
+
+
+            const item =
+              document.createElement(
+                "div"
+              );
+
+
+            item.className =
+              "user-item";
+
+
+            const photo =
+              user.photoURL ||
+              "images/default-profile.png";
+
+
+            item.innerHTML = `
+
+              <img
+                class="user-photo"
+                src="${escapeHTML(photo)}"
+                alt="Profile"
+                onerror="
+                  this.src='images/default-profile.png';
+                "
+              >
+
+              <div class="user-info">
+
+                <div class="user-name">
+
+                  ${escapeHTML(
+                    user.name ||
+                    user.username ||
+                    "Unknown User"
+                  )}
+
+                </div>
+
+                <div class="user-email">
+
+                  ${escapeHTML(
+                    user.email ||
+                    "No email"
+                  )}
+
+                </div>
+
+                <div class="user-uid">
+
+                  UID:
+                  ${escapeHTML(uid)}
+
+                </div>
+
+              </div>
+
+            `;
+
+
+            // =================================================
+            // DELETE BUTTON
+            // =================================================
+
+            if (
+              uid !== ADMIN_UID
+            ) {
+
+              const deleteBtn =
+                document.createElement(
+                  "button"
+                );
+
+
+              deleteBtn.className =
+                "delete-btn";
+
+
+              deleteBtn.type =
+                "button";
+
+
+              deleteBtn.textContent =
+                "🗑️ Delete";
+
+
+              deleteBtn.addEventListener(
+                "click",
+                () => {
+
+                  deleteUser(
+                    uid,
+                    user.name ||
+                    user.email ||
+                    "this user",
+                    deleteBtn
+                  );
+
+                }
+              );
+
+
+              item.appendChild(
+                deleteBtn
+              );
+
+            } else {
+
+              const adminLabel =
+                document.createElement(
+                  "span"
+                );
+
+
+              adminLabel.textContent =
+                "👑 ADMIN";
+
+
+              item.appendChild(
+                adminLabel
+              );
+
+            }
+
+
+            userList.appendChild(
+              item
+            );
+
+          }
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "Load users error:",
+          error
+        );
+
+
+        userList.innerHTML = `
+
+          <div>
+            ❌ Could not load users.
+            <br><br>
+            ${escapeHTML(
+              error.message
+            )}
+          </div>
+
+        `;
+
+      }
+
+    }
+
+
+    // =====================================================
+    // DELETE USER
+    // =====================================================
+
+    async function deleteUser(
+      uid,
+      name,
+      button
+    ) {
+
+      if (!auth.currentUser) {
+
+        alert(
+          "Please log in first."
+        );
+
+        return;
+
+      }
+
+
+      if (
+        auth.currentUser.uid !==
+        ADMIN_UID
+      ) {
+
+        alert(
+          "Access denied."
+        );
+
+        return;
+
+      }
+
+
+      if (
+        uid === ADMIN_UID
+      ) {
+
+        alert(
+          "You cannot delete the admin account."
+        );
+
+        return;
+
+      }
+
+
+      const confirmed =
+        confirm(
+          "⚠️ PERMANENT DELETE\n\n" +
+          "Delete " +
+          name +
+          "'s Firebase Authentication account?\n\n" +
+          "This action cannot be undone."
+        );
+
+
+      if (!confirmed) {
+        return;
+      }
+
+
+      try {
+
+        button.disabled =
+          true;
+
+        button.textContent =
+          "Deleting...";
+
+
+        // =================================================
+        // GET ADMIN TOKEN
+        // =================================================
+
+        const token =
+          await auth.currentUser.getIdToken(
+            true
+          );
+
+
+        // =================================================
+        // CALL VERCEL API
+        // =================================================
+
+        const response =
+          await fetch(
+            "/api/delete-user",
+            {
+
+              method:
+                "POST",
+
+              headers: {
+
+                "Content-Type":
+                  "application/json",
+
+                "Authorization":
+                  "Bearer " +
+                  token
+
+              },
+
+              body:
+                JSON.stringify({
+                  uid: uid
+                })
+
+            }
+          );
+
+
+        const result =
+          await response.json();
+
+
+        if (
+          !response.ok
+        ) {
+
+          throw new Error(
+            result.error ||
+            "Delete failed."
+          );
+
+        }
+
+
+        alert(
+          "✅ Account deleted successfully."
+        );
+
+
+        // =================================================
+        // REMOVE FROM SCREEN
+        // =================================================
+
+        await loadUsers();
+
+
+      } catch (error) {
+
+        console.error(
+          "Delete account error:",
+          error
+        );
+
+
+        alert(
+          "❌ Could not delete account:\n\n" +
+          error.message
+        );
+
+
+        button.disabled =
+          false;
+
+        button.textContent =
+          "🗑️ Delete";
+
+      }
+
+    }
+
+
+    // =====================================================
+    // LOGOUT
+    // =====================================================
+
+    logoutBtn.addEventListener(
+      "click",
+      async () => {
+
+        try {
+
+          await signOut(auth);
+
+          window.location.href =
+            "index.html";
+
+        } catch (error) {
+
+          console.error(
+            "Logout error:",
+            error
+          );
+
+        }
+
+      }
+    );
+
+  </script>
+
+</body>
+
+</html>
