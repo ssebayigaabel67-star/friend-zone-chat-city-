@@ -896,6 +896,1572 @@ body.dark-mode .reply-preview {
     rgba(138,92,255,.15)
   );
 }
+  /* =====================================================
+   🌈 LIVE ROOM — COLORFUL MESSAGE BUBBLES
+   ===================================================== */
+
+/* Smooth message entrance */
+.public-message {
+  animation: messageAppear .25s ease-out;
+}
+
+@keyframes messageAppear {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* =====================================================
+   AVATAR
+   ===================================================== */
+
+.public-message-avatar {
+  border: 3px solid transparent;
+
+  background:
+    linear-gradient(white, white) padding-box,
+    linear-gradient(
+      135deg,
+      #ff2d8b,
+      #ff8a00,
+      #ffd000,
+      #35d07f,
+      #00bfff,
+      #8a5cff
+    ) border-box;
+
+  box-shadow:
+    0 3px 10px rgba(138,92,255,.18);
+}
+
+
+/* =====================================================
+   MESSAGE CONTENT
+   ===================================================== */
+
+.public-message-content {
+  position: relative;
+}
+
+
+/* =====================================================
+   SENDER NAME
+   ===================================================== */
+
+.public-message-name {
+  background: linear-gradient(
+    90deg,
+    #ff2d8b,
+    #8a5cff,
+    #00a8ff
+  );
+-webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+
+/* =====================================================
+   MESSAGE BUBBLE
+   ===================================================== */
+
+.public-message-text {
+  position: relative;
+
+  border: 1px solid rgba(138,92,255,.16);
+
+  border-radius: 6px 17px 17px 17px;
+
+  padding: 10px 13px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,255,255,.98),
+      rgba(248,247,255,.98)
+    );
+
+  box-shadow:
+    0 4px 12px rgba(0,0,0,.07);
+
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease;
+}
+
+.public-message-text:hover {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 6px 16px rgba(138,92,255,.12);
+}
+
+
+/* Little colorful edge */
+.public-message-text::before {
+  content: "";
+
+  position: absolute;
+
+  left: -1px;
+  top: 8px;
+  bottom: 8px;
+
+  width: 3px;
+
+  border-radius: 5px;
+
+  background: linear-gradient(
+    180deg,
+    #ff2d8b,
+    #ff8a00,
+    #ffd000,
+    #35d07f,
+    #00bfff,
+    #8a5cff
+  );
+}
+
+
+/* =====================================================
+   REPLY INSIDE MESSAGE
+   ===================================================== */
+
+.message-reply {
+  border-left: 3px solid #ff4b91;
+
+  border-radius: 7px;
+
+  padding: 6px 8px;
+
+  margin-bottom: 7px;
+
+  background: linear-gradient(
+    90deg,
+    rgba(255,75,145,.10),
+    rgba(138,92,255,.08)
+  );
+
+  font-size: 11px;
+}
+
+.message-reply strong {
+  display: block;
+
+  color: #8a42ff;
+
+  font-size: 10px;
+
+  margin-bottom: 2px;
+}
+
+.message-reply span {
+  color: #666;
+}
+
+
+/* =====================================================
+   IMAGE MESSAGE
+   ===================================================== */
+
+.public-message-text img {
+  display: block;
+
+  max-width: 100%;
+
+  border-radius: 12px;
+
+  margin-top: 5px;
+
+  cursor: pointer;
+
+  transition: transform .2s ease;
+}
+
+.public-message-text img:hover {
+  transform: scale(1.02);
+}
+
+
+/* =====================================================
+   REPLY + DELETE BUTTONS
+   ===================================================== */
+
+.public-message button {
+  border: none;
+
+  border-radius: 12px;
+
+  padding: 4px 8px;
+
+  margin-top: 5px;
+
+  font-size: 10px;
+
+  cursor: pointer;
+
+  transition: .2s;
+}
+
+.public-message button:active {
+  transform: scale(.92);
+}
+
+
+/* =====================================================
+   DARK MODE
+   ===================================================== */
+
+body.dark-mode .public-message-avatar {
+  background:
+    linear-gradient(#24242f, #24242f) padding-box,
+    linear-gradient(
+      135deg,
+      #ff2d8b,
+      #ff8a00,
+      #35d07f,
+      #00bfff,
+      #8a5cff
+    ) border-box;
+}
+
+body.dark-mode .public-message-text {
+  background: linear-gradient(
+    135deg,
+    #252532,
+    #20202a
+  );
+
+  border-color: #3d3d4d;
+
+  box-shadow:
+    0 4px 14px rgba(0,0,0,.25);
+}
+
+body.dark-mode .message-reply {
+  background: linear-gradient(
+    90deg,
+    rgba(255,75,145,.15),
+    rgba(138,92,255,.12)
+  );
+}
+
+body.dark-mode .message-reply span {
+  color: #bbb;
+}
+
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+@media (max-width: 600px) {
+
+  .public-message-avatar {
+    width: 35px;
+    height: 35px;
+  }
+
+  .public-message-content {
+    max-width: 84%;
+  }
+
+  .public-message-text {
+    padding: 9px 11px;
+
+    border-radius: 6px 15px 15px 15px;
+
+    font-size: 13px;
+  }
+  }
+  /* =====================================================
+   🌈 PREMIUM FRIENDSZONE LIVE HEADER
+   ===================================================== */
+
+.live-header {
+  background-size: 300% 300%;
+
+  animation: rainbowHeader 10s ease infinite;
+
+  overflow: visible;
+}
+
+@keyframes rainbowHeader {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+
+/* =====================================================
+   LIVE ICON
+   ===================================================== */
+
+.room-icon {
+  position: relative;
+
+  animation: liveIconPulse 2s ease-in-out infinite;
+}
+
+.room-icon::after {
+  content: "";
+
+  position: absolute;
+
+  width: 8px;
+  height: 8px;
+
+  right: 1px;
+  bottom: 1px;
+
+  border-radius: 50%;
+
+  background: #00e676;
+
+  border: 2px solid white;
+
+  box-shadow: 0 0 8px rgba(0,230,118,.8);
+}
+
+@keyframes liveIconPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+
+/* =====================================================
+   TITLE
+   ===================================================== */
+
+.room-title h1 {
+  text-shadow:
+    0 2px 5px rgba(0,0,0,.25);
+
+  letter-spacing: .2px;
+}
+
+
+/* =====================================================
+   LIVE SUBTITLE
+   ===================================================== */
+
+.room-title span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.room-title span::before {
+  content: "";
+
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: #00ff62;
+
+  box-shadow:
+    0 0 7px #00ff62;
+
+  animation: liveDot 1.2s infinite;
+}
+
+@keyframes liveDot {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: .35;
+    transform: scale(.75);
+  }
+}
+
+
+/* =====================================================
+   ONLINE BUTTON GLOW
+   ===================================================== */
+
+.online-count-btn {
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.15),
+    0 4px 14px rgba(0,0,0,.12);
+
+  transition:
+    transform .2s ease,
+    background .2s ease,
+    box-shadow .2s ease;
+}
+
+.online-count-btn:hover {
+  background: rgba(255,255,255,.28);
+
+  box-shadow:
+    0 0 18px rgba(255,255,255,.25),
+    0 5px 18px rgba(0,0,0,.15);
+}
+
+.online-dot {
+  animation: onlineGlow 1.5s ease-in-out infinite;
+}
+
+@keyframes onlineGlow {
+  0%, 100% {
+    box-shadow:
+      0 0 0 3px rgba(0,255,98,.18),
+      0 0 7px #00ff62;
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 5px rgba(0,255,98,.08),
+      0 0 15px #00ff62;
+  }
+}
+
+
+/* =====================================================
+   HEADER LIGHT EFFECT
+   ===================================================== */
+
+.live-header::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  height: 2px;
+
+  background: linear-gradient(
+    90deg,
+    #ff2d8b,
+    #ff8a00,
+    #ffd000,
+    #35d07f,
+    #00bfff,
+    #8a5cff,
+    #ff2d8b
+  );
+
+  background-size: 300% 100%;
+
+  animation: rainbowLine 5s linear infinite;
+}
+
+@keyframes rainbowLine {
+  from {
+    background-position: 0% 50%;
+  }
+
+  to {
+    background-position: 300% 50%;
+  }
+}
+
+
+/* =====================================================
+   MOBILE HEADER
+   ===================================================== */
+
+@media (max-width: 600px) {
+
+  .live-header {
+    background-size: 400% 400%;
+  }
+
+  .room-title h1 {
+    text-shadow:
+      0 1px 4px rgba(0,0,0,.25);
+  }
+
+  .online-count-btn {
+    box-shadow:
+      0 2px 10px rgba(0,0,0,.15);
+  }
+}
+  /* =====================================================
+   🌈 PREMIUM LIVE ROOM MESSAGE BAR
+   ===================================================== */
+
+.message-bar {
+  position: relative;
+
+  padding: 9px 10px 10px;
+
+  background: rgba(255,255,255,.96);
+
+  border-top: none;
+
+  box-shadow:
+    0 -5px 20px rgba(80,60,180,.08);
+
+  gap: 8px;
+}
+
+
+/* Rainbow line above message bar */
+.message-bar::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  top: 0;
+
+  height: 2px;
+
+  background: linear-gradient(
+    90deg,
+    #ff2d8b,
+    #ff8a00,
+    #ffd000,
+    #35d07f,
+    #00bfff,
+    #8a5cff,
+    #ff2d8b
+  );
+
+  background-size: 300% 100%;
+
+  animation: messageRainbowLine 5s linear infinite;
+}
+
+@keyframes messageRainbowLine {
+  from {
+    background-position: 0% 50%;
+  }
+
+  to {
+    background-position: 300% 50%;
+  }
+}
+
+
+/* =====================================================
+   MESSAGE INPUT
+   ===================================================== */
+
+.message-bar input {
+  height: 44px;
+
+  border: 2px solid #e7e2ff;
+
+  background: #faf9ff;
+
+  box-shadow:
+    inset 0 1px 3px rgba(0,0,0,.03);
+
+  transition:
+    border-color .25s ease,
+    box-shadow .25s ease,
+    background .25s ease;
+}
+
+.message-bar input::placeholder {
+  color: #999;
+}
+
+.message-bar input:focus {
+  border-color: transparent;
+
+  background:
+    linear-gradient(#faf9ff,#faf9ff) padding-box,
+    linear-gradient(
+      90deg,
+      #ff2d8b,
+      #ff8a00,
+      #35d07f,
+      #00bfff,
+      #8a5cff
+    ) border-box;
+
+  box-shadow:
+    0 0 0 3px rgba(138,92,255,.10),
+    0 4px 12px rgba(138,92,255,.08);
+}
+
+
+/* =====================================================
+   IMAGE BUTTON
+   ===================================================== */
+
+#imageBtn {
+  position: relative;
+
+  overflow: hidden;
+
+  background: linear-gradient(
+    135deg,
+    #00bfff,
+    #6848ff
+  );
+
+  box-shadow:
+    0 4px 12px rgba(0,191,255,.25);
+
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease;
+}
+
+#imageBtn::after {
+  content: "";
+
+  position: absolute;
+
+  top: -40%;
+  left: -80%;
+
+  width: 50%;
+  height: 180%;
+
+  background: rgba(255,255,255,.3);
+
+  transform: rotate(25deg);
+
+  transition: left .5s ease;
+}
+
+#imageBtn:hover::after {
+  left: 130%;
+}
+
+#imageBtn:hover {
+  box-shadow:
+    0 5px 18px rgba(0,191,255,.35);
+}
+
+
+/* =====================================================
+   SEND BUTTON
+   ===================================================== */
+
+#sendBtn {
+  position: relative;
+
+  overflow: hidden;
+
+  background: linear-gradient(
+    135deg,
+    #ff2d8b,
+    #ff8a00
+  );
+
+  box-shadow:
+    0 4px 12px rgba(255,45,139,.25);
+
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease;
+}
+
+#sendBtn:hover {
+  box-shadow:
+    0 6px 18px rgba(255,45,139,.35);
+
+  transform: translateY(-1px);
+}
+
+#sendBtn:active {
+  transform: scale(.9);
+}
+
+
+/* Shiny effect on send button */
+#sendBtn::after {
+  content: "";
+
+  position: absolute;
+
+  top: -50%;
+  left: -80%;
+
+  width: 45%;
+  height: 200%;
+
+  background: rgba(255,255,255,.3);
+
+  transform: rotate(25deg);
+
+  transition: left .5s ease;
+}
+
+#sendBtn:hover::after {
+  left: 130%;
+}
+
+
+/* =====================================================
+   REPLY PREVIEW ABOVE INPUT
+   ===================================================== */
+
+.reply-preview {
+  position: relative;
+
+  margin: 0 10px 7px;
+
+  border-left: none;
+
+  border-radius: 11px;
+
+  padding: 8px 10px 8px 13px;
+
+  background:
+    linear-gradient(#fff,#fff) padding-box,
+    linear-gradient(
+      90deg,
+      #ff2d8b,
+      #ff8a00,
+      #35d07f,
+      #00bfff,
+      #8a5cff
+    ) border-box;
+
+  border: 1px solid transparent;
+
+  box-shadow:
+    0 3px 10px rgba(138,92,255,.08);
+}
+
+.reply-preview::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+
+  width: 3px;
+
+  border-radius: 5px;
+
+  background: linear-gradient(
+    180deg,
+    #ff2d8b,
+    #8a5cff,
+    #00bfff
+  );
+}
+
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+@media (max-width: 600px) {
+
+  .message-bar {
+    padding: 8px 7px 9px;
+    gap: 6px;
+  }
+
+  .message-bar input {
+    height: 42px;
+
+    padding-left: 13px;
+    padding-right: 13px;
+  }
+
+  #imageBtn,
+  #sendBtn {
+    width: 42px;
+    height: 42px;
+  }
+
+  .reply-preview {
+    margin-left: 7px;
+    margin-right: 7px;
+  }
+}
+
+
+/* =====================================================
+   DARK MODE
+   ===================================================== */
+
+body.dark-mode .message-bar {
+  background: rgba(25,25,35,.97);
+
+  box-shadow:
+    0 -5px 20px rgba(0,0,0,.25);
+}
+
+body.dark-mode .message-bar input {
+  background: #292936;
+
+  border-color: #44445a;
+
+  color: white;
+}
+
+body.dark-mode .message-bar input::placeholder {
+  color: #888;
+}
+
+body.dark-mode .message-bar input:focus {
+  background:
+    linear-gradient(#292936,#292936) padding-box,
+    linear-gradient(
+      90deg,
+      #ff2d8b,
+      #ff8a00,
+      #35d07f,
+      #00bfff,
+      #8a5cff
+    ) border-box;
+}
+
+body.dark-mode .reply-preview {
+  background:
+    linear-gradient(#24242f,#24242f) padding-box,
+    linear-gradient(
+      90deg,
+      #ff2d8b,
+      #ff8a00,
+      #35d07f,
+      #00bfff,
+      #8a5cff
+    ) border-box;
+}
+  /* =====================================================
+   🌈 PREMIUM MESSAGE FINISH
+   ===================================================== */
+
+/* Message bubble rainbow border */
+.public-message-text {
+  border: 1px solid transparent;
+
+  background:
+    linear-gradient(#ffffff, #ffffff) padding-box,
+    linear-gradient(
+      135deg,
+      rgba(255,45,139,.45),
+      rgba(255,138,0,.35),
+      rgba(53,208,127,.35),
+      rgba(0,191,255,.35),
+      rgba(138,92,255,.45)
+    ) border-box;
+
+  box-shadow:
+    0 4px 14px rgba(80,60,180,.08);
+}
+
+
+/* =====================================================
+   🌈 MESSAGE HOVER
+   ===================================================== */
+
+.public-message-text:hover {
+  box-shadow:
+    0 6px 18px rgba(138,92,255,.14);
+}
+
+
+/* =====================================================
+   👤 USERNAME
+   ===================================================== */
+
+.public-message-content small {
+  display: block;
+
+  margin-top: 2px;
+
+  font-size: 9px;
+
+  color: #999;
+
+  letter-spacing: .2px;
+}
+
+
+/* =====================================================
+   🖼️ IMAGE MESSAGES
+   ===================================================== */
+
+.public-message-text img {
+  max-width: 280px;
+  max-height: 320px;
+
+  object-fit: cover;
+
+  border-radius: 13px;
+
+  border: 2px solid transparent;
+
+  background:
+    linear-gradient(#fff,#fff) padding-box,
+    linear-gradient(
+      135deg,
+      #ff2d8b,
+      #ff8a00,
+      #35d07f,
+      #00bfff,
+      #8a5cff
+    ) border-box;
+
+  box-shadow:
+    0 5px 16px rgba(0,0,0,.12);
+
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease;
+}
+
+.public-message-text img:hover {
+  transform: scale(1.025);
+
+  box-shadow:
+    0 8px 22px rgba(138,92,255,.2);
+}
+
+
+/* =====================================================
+   ↩️ REPLY INSIDE MESSAGE
+   ===================================================== */
+
+.message-reply {
+  border-left: none;
+
+  position: relative;
+
+  padding-left: 11px;
+
+  background: linear-gradient(
+    90deg,
+    rgba(255,45,139,.08),
+    rgba(138,92,255,.07)
+  );
+}
+
+.message-reply::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+
+  width: 3px;
+
+  border-radius: 4px;
+
+  background: linear-gradient(
+    180deg,
+    #ff2d8b,
+    #8a5cff,
+    #00bfff
+  );
+}
+
+
+/* =====================================================
+   🕒 MESSAGE TIME
+   ===================================================== */
+
+.public-message-time {
+  padding-left: 2px;
+
+  transition: color .2s ease;
+}
+
+
+/* =====================================================
+   📱 MOBILE IMAGE SIZE
+   ===================================================== */
+
+@media (max-width: 600px) {
+
+  .public-message-text img {
+    max-width: 240px;
+    max-height: 280px;
+  }
+
+  .public-message-text {
+    box-shadow:
+      0 3px 10px rgba(80,60,180,.07);
+  }
+}
+
+
+/* =====================================================
+   🌙 DARK MODE
+   ===================================================== */
+
+body.dark-mode .public-message-text {
+  background:
+    linear-gradient(#252532, #252532) padding-box,
+    linear-gradient(
+      135deg,
+      rgba(255,45,139,.55),
+      rgba(255,138,0,.45),
+      rgba(53,208,127,.4),
+      rgba(0,191,255,.45),
+      rgba(138,92,255,.55)
+    ) border-box;
+
+  box-shadow:
+    0 5px 16px rgba(0,0,0,.25);
+}
+
+body.dark-mode .public-message-text img {
+  background:
+    linear-gradient(#252532,#252532) padding-box,
+    linear-gradient(
+      135deg,
+      #ff2d8b,
+      #ff8a00,
+      #35d07f,
+      #00bfff,
+      #8a5cff
+    ) border-box;
+}
+
+body.dark-mode .public-message-content small {
+  color: #888;
+  }
+  /* =====================================================
+   🎉 FRIENDSZONE LIVE — WELCOME SCREEN
+   ===================================================== */
+
+.welcome-message {
+  position: relative;
+
+  max-width: 420px;
+
+  margin: 45px auto 0;
+
+  padding: 25px 20px;
+
+  text-align: center;
+
+  overflow: hidden;
+
+  border-radius: 24px;
+
+  background: rgba(255,255,255,.72);
+
+  border: 1px solid rgba(138,92,255,.15);
+
+  box-shadow:
+    0 10px 35px rgba(80,60,180,.08);
+
+  backdrop-filter: blur(8px);
+}
+
+
+/* =====================================================
+   🌈 COLORFUL TOP LINE
+   ===================================================== */
+
+.welcome-message::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 0;
+  right: 0;
+
+  height: 4px;
+
+  background: linear-gradient(
+    90deg,
+    #ff2d8b,
+    #ff8a00,
+    #ffd000,
+    #35d07f,
+    #00bfff,
+    #8a5cff,
+    #ff2d8b
+  );
+
+  background-size: 300% 100%;
+
+  animation: welcomeRainbow 5s linear infinite;
+}
+
+@keyframes welcomeRainbow {
+  from {
+    background-position: 0% 50%;
+  }
+
+  to {
+    background-position: 300% 50%;
+  }
+}
+
+
+/* =====================================================
+   🌈 WELCOME ICON
+   ===================================================== */
+
+.welcome-icon {
+  width: 75px;
+  height: 75px;
+
+  margin: 0 auto 15px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  font-size: 38px;
+
+  background: linear-gradient(
+    135deg,
+    #ff2d8b,
+    #ff8a00,
+    #ffd000,
+    #35d07f,
+    #00bfff,
+    #8a5cff
+  );
+
+  background-size: 250% 250%;
+
+  animation:
+    welcomeIconMove 6s ease infinite,
+    welcomeFloat 3s ease-in-out infinite;
+
+  box-shadow:
+    0 8px 25px rgba(138,92,255,.2);
+}
+
+@keyframes welcomeIconMove {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes welcomeFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+
+/* =====================================================
+   ✨ WELCOME HEADING
+   ===================================================== */
+
+.welcome-message h2 {
+  margin-bottom: 8px;
+
+  font-size: 21px;
+
+  background: linear-gradient(
+    90deg,
+    #ff2d8b,
+    #ff8a00,
+    #6848ff,
+    #00a8ff
+  );
+
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+
+/* =====================================================
+   👋 WELCOME TEXT
+   ===================================================== */
+
+.welcome-message p {
+  font-size: 13px;
+
+  line-height: 1.5;
+
+  color: #777;
+}
+
+
+/* =====================================================
+   💫 DECORATIVE LIGHTS
+   ===================================================== */
+
+.welcome-message::after {
+  content: "✦   ✧   ✦";
+
+  position: absolute;
+
+  left: 0;
+  right: 0;
+
+  bottom: 10px;
+
+  font-size: 14px;
+
+  letter-spacing: 18px;
+
+  opacity: .25;
+
+  animation: welcomeStars 3s ease-in-out infinite;
+}
+
+@keyframes welcomeStars {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: .2;
+  }
+
+  50% {
+    transform: translateY(-4px);
+    opacity: .45;
+  }
+}
+
+
+/* =====================================================
+   📱 MOBILE
+   ===================================================== */
+
+@media (max-width: 600px) {
+
+  .welcome-message {
+    margin: 30px 12px 0;
+
+    padding: 22px 15px;
+
+    border-radius: 20px;
+  }
+
+  .welcome-icon {
+    width: 65px;
+    height: 65px;
+
+    font-size: 32px;
+  }
+
+  .welcome-message h2 {
+    font-size: 18px;
+  }
+
+  .welcome-message p {
+    font-size: 12px;
+  }
+}
+
+
+/* =====================================================
+   🌙 DARK MODE
+   ===================================================== */
+
+body.dark-mode .welcome-message {
+  background: rgba(30,30,42,.82);
+
+  border-color: rgba(138,92,255,.25);
+
+  box-shadow:
+    0 10px 35px rgba(0,0,0,.3);
+}
+
+body.dark-mode .welcome-message p {
+  color: #aaa;
+  }
+  /* =====================================================
+   📸 FRIENDSZONE LIVE — IMAGE MESSAGE UPGRADE
+   ===================================================== */
+
+.public-message-text img {
+  display: block;
+
+  width: auto;
+  max-width: min(300px, 75vw);
+  max-height: 360px;
+
+  object-fit: cover;
+
+  margin: 3px 0 2px;
+
+  padding: 2px;
+
+  border-radius: 16px;
+
+  background: linear-gradient(
+    135deg,
+    #ff2d8b,
+    #ff8a00,
+    #ffd000,
+    #35d07f,
+    #00bfff,
+    #8a5cff
+  );
+
+  box-shadow:
+    0 7px 20px rgba(80,60,180,.16);
+
+  cursor: pointer;
+
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease;
+}
+
+
+/* Hover effect */
+.public-message-text img:hover {
+  transform: scale(1.025);
+
+  box-shadow:
+    0 10px 28px rgba(138,92,255,.25);
+}
+
+
+/* =====================================================
+   📱 MOBILE IMAGE
+   ===================================================== */
+
+@media (max-width: 600px) {
+
+  .public-message-text img {
+    max-width: min(260px, 70vw);
+    max-height: 310px;
+
+    border-radius: 14px;
+  }
+}
+
+
+/* =====================================================
+   📱 VERY SMALL PHONES
+   ===================================================== */
+
+@media (max-width: 380px) {
+
+  .public-message-text img {
+    max-width: 220px;
+    max-height: 270px;
+  }
+}
+
+
+/* =====================================================
+   🌙 DARK MODE
+   ===================================================== */
+
+body.dark-mode .public-message-text img {
+  box-shadow:
+    0 8px 24px rgba(0,0,0,.35);
+}
+
+body.dark-mode .public-message-text img:hover {
+  box-shadow:
+    0 10px 28px rgba(138,92,255,.25);
+}
+  /* =====================================================
+   📱 LIVE ROOM — KEEP MESSAGE BAR ON SCREEN
+   ===================================================== */
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.live-container {
+  height: 100dvh;
+  min-height: 0;
+  padding-bottom: 0;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-section {
+  flex: 1;
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.messages {
+  flex: 1;
+  min-height: 0;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  padding-bottom: 8px;
+}
+
+.typing-indicator {
+  flex: 0 0 auto;
+  min-height: 20px;
+  max-height: 20px;
+
+  overflow: hidden;
+}
+
+.reply-preview {
+  flex: 0 0 auto;
+  max-height: 58px;
+  overflow: hidden;
+}
+
+.message-bar {
+  flex: 0 0 auto;
+
+  width: 100%;
+
+  padding:
+    7px
+    max(7px, env(safe-area-inset-left))
+    calc(7px + env(safe-area-inset-bottom))
+    max(7px, env(safe-area-inset-right));
+
+  display: flex;
+  align-items: center;
+
+  min-height: 56px;
+}
+
+.message-bar input {
+  min-width: 0;
+  width: 100%;
+}
+
+.message-bar button {
+  flex: 0 0 42px;
+}
+
+
+/* =====================================================
+   📱 PHONE SCREEN
+   ===================================================== */
+
+@media (max-width: 600px) {
+
+  .live-header {
+    height: 58px;
+  }
+
+  .live-container {
+    height: 100dvh;
+    padding-top: 58px;
+  }
+
+  .messages {
+    padding:
+      10px
+      10px
+      6px;
+  }
+
+  .typing-indicator {
+    min-height: 18px;
+    max-height: 18px;
+
+    padding-left: 10px;
+    padding-right: 10px;
+
+    font-size: 10px;
+  }
+
+  .reply-preview {
+    max-height: 52px;
+
+    margin:
+      0
+      7px
+      5px;
+  }
+
+  .message-bar {
+    min-height: 54px;
+
+    padding:
+      6px
+      7px
+      calc(6px + env(safe-area-inset-bottom))
+      7px;
+
+    gap: 5px;
+  }
+
+  .message-bar input {
+    height: 40px;
+
+    padding:
+      8px
+      12px;
+
+    font-size: 13px;
+  }
+
+  .message-bar button {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+
+    font-size: 16px;
+  }
+}
+
+
+/* =====================================================
+   📱 VERY SMALL PHONE
+   ===================================================== */
+
+@media (max-width: 380px) {
+
+  .message-bar {
+    gap: 4px;
+  }
+
+  .message-bar input {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .message-bar button {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
+  }
+}
 </style>
 <body>
 
