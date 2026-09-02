@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>FriendsZone Live</title>
+
+  <link
+    rel="stylesheet"
+    href="live-room.css"
+  >
+</head>
+<style>
+  /* =====================================================
+   FRIENDSZONE LIVE ROOM — 🌈 RAINBOW THEME
+   ===================================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  height: 100vh;
+  overflow: hidden;
+  color: #222;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(255, 0, 128, .12), transparent 30%),
+    radial-gradient(circle at 90% 20%, rgba(0, 200, 255, .12), transparent 30%),
+    radial-gradient(circle at 50% 100%, rgba(120, 0, 255, .12), transparent 35%),
+    #f8f9ff;
+}
+
+
+/* =====================================================
+   HEADER
+   ===================================================== */
+
+.live-header {
+  height: 64px;
+  background: linear-gradient(
+    90deg,
+    #ff4b91,
+    #ff7a00,
+    #ffd000,
+    #35d07f,
+    #00bfff,
+    #8a5cff
+  );
+
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+  gap: 12px;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  z-index: 100;
+  box-shadow: 0 3px 15px rgba(0,0,0,.15);
+}
+
+
+/* =====================================================
+   BACK BUTTON
+   ===================================================== */
+
+.back-btn {
+  width: 42px;
+  height: 42px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: rgba(255,255,255,.9);
+  color: #6c2cff;
+
+  font-size: 24px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 3px 10px rgba(0,0,0,.15);
+
+  transition: .2s;
+}
+
+.back-btn:active {
+  transform: scale(.92);
+}
+
+
+/* =====================================================
+   ROOM TITLE
+   ===================================================== */
+
+.room-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+}
+
+.room-icon {
+  width: 42px;
+  height: 42px;
+
+  border-radius: 50%;
+
+  background: rgba(255,255,255,.95);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 22px;
+
+  box-shadow: 0 3px 10px rgba(0,0,0,.15);
+}
+
+.room-title h1 {
+  font-size: 18px;
+  margin-bottom: 2px;
+}
+
+.room-title span {
+  font-size: 12px;
+  color: rgba(255,255,255,.9);
+}
+
+
+/* =====================================================
+   ONLINE SECTION
+   ===================================================== */
+
+.online-section {
+  margin-left: auto;
+  position: relative;
+}
+
+
+/* =====================================================
+   ONLINE BUTTON
+   ===================================================== */
+
+.online-count-btn {
+  height: 42px;
+
+  border: 2px solid rgba(255,255,255,.8);
+  border-radius: 22px;
+
+  padding: 0 13px;
+
+  background: rgba(255,255,255,.18);
+  color: white;
+
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  font-size: 13px;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  backdrop-filter: blur(8px);
+
+  transition: .2s;
+}
+
+.online-count-btn:active {
+  transform: scale(.95);
+}
+
+.online-dot {
+  width: 9px;
+  height: 9px;
+
+  border-radius: 50%;
+
+  background: #00ff62;
+
+  box-shadow:
+    0 0 0 3px rgba(0,255,98,.2),
+    0 0 10px #00ff62;
+}
+
+.online-arrow {
+  font-size: 14px;
+}
+
+
+/* =====================================================
+   ONLINE POPOVER
+   ===================================================== */
+
+.online-popover {
+  position: absolute;
+
+  top: calc(100% + 8px);
+  right: 0;
+
+  width: 280px;
+  max-width: calc(100vw - 20px);
+
+  max-height: 390px;
+
+  background: rgba(255,255,255,.97);
+
+  border: 2px solid transparent;
+  border-radius: 16px;
+
+  box-shadow:
+    0 12px 35px rgba(0,0,0,.2);
+
+  overflow: hidden;
+
+  display: none;
+
+  z-index: 500;
+}
+
+.online-popover.show {
+  display: block;
+}
+
+
+/* =====================================================
+   POPOVER HEADER
+   ===================================================== */
+
+.online-popover-header {
+  padding: 13px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: linear-gradient(
+    90deg,
+    #ff4b91,
+    #8a5cff,
+    #00bfff
+  );
+
+  color: white;
+}
+
+.online-popover-header strong {
+  display: block;
+  font-size: 14px;
+}
+
+.online-popover-header small {
+  display: block;
+  margin-top: 3px;
+  font-size: 10px;
+  opacity: .9;
+}
+
+.close-online-popover {
+  width: 30px;
+  height: 30px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: rgba(255,255,255,.2);
+  color: white;
+
+  cursor: pointer;
+  font-size: 15px;
+}
+
+
+/* =====================================================
+   ONLINE USERS
+   ===================================================== */
+
+.online-users {
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+
+  padding: 8px;
+
+  max-height: 325px;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.online-user {
+  width: 100%;
+  min-height: 54px;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 7px 9px;
+
+  border-radius: 11px;
+
+  background: linear-gradient(
+    90deg,
+    rgba(255,75,145,.08),
+    rgba(0,191,255,.08)
+  );
+
+  transition: .2s;
+}
+
+.online-user:hover {
+  transform: translateX(3px);
+  background: linear-gradient(
+    90deg,
+    rgba(255,75,145,.16),
+    rgba(138,92,255,.16),
+    rgba(0,191,255,.16)
+  );
+}
+
+.online-user-photo {
+  width: 40px;
+  height: 40px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  border: 3px solid #35d07f;
+
+  box-shadow: 0 0 8px rgba(53,208,127,.4);
+
+  flex-shrink: 0;
+}
+
+.online-user-name {
+  display: block;
+
+  font-size: 13px;
+  font-weight: bold;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.empty-text {
+  padding: 15px;
+
+  text-align: center;
+
+  font-size: 12px;
+  color: #888;
+}
+
+
+/* =====================================================
+   MAIN CONTAINER
+   ===================================================== */
+
+.live-container {
+  padding-top: 64px;
+
+  height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* =====================================================
+   CHAT
+   ===================================================== */
+
+.chat-section {
+  flex: 1;
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.messages {
+  flex: 1;
+
+  overflow-y: auto;
+
+  padding: 15px;
+
+  scroll-behavior: smooth;
+}
+
+
+/* =====================================================
+   WELCOME
+   ===================================================== */
+
+.welcome-message {
+  text-align: center;
+
+  margin-top: 35px;
+
+  color: #777;
+}
+
+.welcome-icon {
+  font-size: 48px;
+
+  margin-bottom: 10px;
+
+  animation: rainbowFloat 2s ease-in-out infinite;
+}
+
+@keyframes rainbowFloat {
+  0%,100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.welcome-message h2 {
+  font-size: 19px;
+
+  margin-bottom: 6px;
+
+  background: linear-gradient(
+    90deg,
+    #ff2d8b,
+    #ff8a00,
+    #00bfff,
+    #8a5cff
+  );
+
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.welcome-message p {
+  font-size: 13px;
+}
+
+
+/* =====================================================
+   PUBLIC MESSAGE
+   ===================================================== */
+
+.public-message {
+  display: flex;
+
+  gap: 9px;
+
+  margin-bottom: 14px;
+}
+
+.public-message-avatar {
+  width: 38px;
+  height: 38px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  border: 2px solid #ff4b91;
+
+  flex-shrink: 0;
+}
+
+.public-message-content {
+  max-width: 75%;
+}
+
+.public-message-name {
+  font-size: 12px;
+
+  font-weight: bold;
+
+  margin-bottom: 4px;
+
+  background: linear-gradient(
+    90deg,
+    #ff2d8b,
+    #6848ff
+  );
+
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.public-message-text {
+  background: white;
+
+  border: 2px solid transparent;
+
+  border-radius: 14px;
+
+  padding: 9px 12px;
+
+  font-size: 14px;
+
+  line-height: 1.4;
+
+  word-wrap: break-word;
+
+  box-shadow: 0 3px 10px rgba(0,0,0,.06);
+
+  position: relative;
+}
+
+.public-message-time {
+  font-size: 9px;
+
+  color: #999;
+
+  margin-top: 4px;
+}
+
+
+/* =====================================================
+   REPLY PREVIEW
+   ===================================================== */
+
+.reply-preview {
+  margin: 0 10px 7px;
+
+  padding: 8px 10px;
+
+  border-left: 4px solid #ff4b91;
+
+  border-radius: 9px;
+
+  background: linear-gradient(
+    90deg,
+    rgba(255,75,145,.12),
+    rgba(138,92,255,.10)
+  );
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 10px;
+}
+
+.reply-preview strong {
+  display: block;
+
+  font-size: 11px;
+
+  color: #8a42ff;
+}
+
+.reply-preview span {
+  display: block;
+
+  margin-top: 2px;
+
+  font-size: 12px;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+.reply-preview button {
+  width: 28px;
+  height: 28px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #ff4b91;
+
+  color: white;
+
+  cursor: pointer;
+
+  flex-shrink: 0;
+}
+
+
+/* =====================================================
+   TYPING
+   ===================================================== */
+
+.typing-indicator {
+  min-height: 20px;
+
+  padding: 0 15px;
+
+  font-size: 11px;
+
+  color: #8a5cff;
+}
+
+
+/* =====================================================
+   MESSAGE BAR
+   ===================================================== */
+
+.message-bar {
+  background: rgba(255,255,255,.95);
+
+  border-top: 1px solid #e3e3e3;
+
+  padding: 10px;
+
+  display: flex;
+
+  gap: 8px;
+
+  box-shadow: 0 -3px 15px rgba(0,0,0,.05);
+}
+
+.message-bar input {
+  flex: 1;
+
+  min-width: 0;
+
+  border: 2px solid #e1ddff;
+
+  border-radius: 22px;
+
+  padding: 11px 15px;
+
+  outline: none;
+
+  font-size: 14px;
+
+  background: #f8f7ff;
+
+  color: #222;
+
+  transition: .2s;
+}
+
+.message-bar input:focus {
+  border-color: #8a5cff;
+
+  box-shadow: 0 0 0 3px rgba(138,92,255,.12);
+}
+
+
+/* =====================================================
+   MESSAGE BUTTONS
+   ===================================================== */
+
+.message-bar button {
+  width: 45px;
+  height: 45px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  color: white;
+
+  font-size: 18px;
+
+  cursor: pointer;
+
+  flex-shrink: 0;
+
+  box-shadow: 0 4px 10px rgba(0,0,0,.15);
+
+  transition: .2s;
+}
+
+#imageBtn {
+  background: linear-gradient(
+    135deg,
+    #00bfff,
+    #6848ff
+  );
+}
+
+#sendBtn {
+  background: linear-gradient(
+    135deg,
+    #ff2d8b,
+    #ff8a00
+  );
+}
+
+.message-bar button:active {
+  transform: scale(.9);
+}
+
+
+/* =====================================================
+   SCROLLBARS
+   ===================================================== */
+
+.messages::-webkit-scrollbar,
+.online-users::-webkit-scrollbar {
+  width: 5px;
+}
+
+.messages::-webkit-scrollbar-thumb,
+.online-users::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    #ff4b91,
+    #8a5cff,
+    #00bfff
+  );
+
+  border-radius: 10px;
+}
+
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+@media (max-width: 600px) {
+
+  .live-header {
+    height: 58px;
+    padding: 0 9px;
+    gap: 8px;
+  }
+
+  .live-container {
+    padding-top: 58px;
+  }
+
+  .back-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 21px;
+  }
+
+  .room-icon {
+    width: 37px;
+    height: 37px;
+    font-size: 19px;
+  }
+
+  .room-title {
+    gap: 7px;
+  }
+
+  .room-title h1 {
+    font-size: 15px;
+  }
+
+  .room-title span {
+    font-size: 10px;
+  }
+
+  .online-count-btn {
+    height: 37px;
+    padding: 0 9px;
+    font-size: 11px;
+  }
+
+  .online-popover {
+    width: 270px;
+  }
+
+  .messages {
+    padding: 11px;
+  }
+
+  .public-message-content {
+    max-width: 82%;
+  }
+
+  .public-message-text {
+    font-size: 13px;
+  }
+
+  .message-bar {
+    padding: 7px;
+    gap: 6px;
+  }
+
+  .message-bar input {
+    padding: 10px 13px;
+    font-size: 13px;
+  }
+
+  .message-bar button {
+    width: 42px;
+    height: 42px;
+    font-size: 17px;
+  }
+}
+
+
+/* =====================================================
+   VERY SMALL PHONES
+   ===================================================== */
+
+@media (max-width: 380px) {
+
+  .room-title span {
+    display: none;
+  }
+
+  .online-count-btn {
+    padding: 0 8px;
+  }
+
+  .online-arrow {
+    display: none;
+  }
+
+  .message-bar button {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+
+/* =====================================================
+   DARK MODE — RAINBOW
+   ===================================================== */
+
+body.dark-mode {
+  color: white;
+
+  background:
+    radial-gradient(circle at 10% 10%, rgba(255,0,128,.18), transparent 30%),
+    radial-gradient(circle at 90% 20%, rgba(0,200,255,.18), transparent 30%),
+    #101018;
+}
+
+body.dark-mode .message-bar {
+  background: rgba(25,25,35,.97);
+  border-color: #333;
+}
+
+body.dark-mode .online-popover {
+  background: #20202b;
+  border-color: #3b3b4a;
+}
+
+body.dark-mode .online-user {
+  background: linear-gradient(
+    90deg,
+    rgba(255,75,145,.10),
+    rgba(0,191,255,.10)
+  );
+}
+
+body.dark-mode .public-message-text {
+  background: #24242f;
+  color: white;
+  border-color: #393947;
+}
+
+body.dark-mode .public-message-time {
+  color: #aaa;
+}
+
+body.dark-mode .message-bar input {
+  background: #292936;
+  color: white;
+  border-color: #45455a;
+}
+
+body.dark-mode .message-bar input:focus {
+  border-color: #a17aff;
+}
+
+body.dark-mode .reply-preview {
+  background: linear-gradient(
+    90deg,
+    rgba(255,75,145,.15),
+    rgba(138,92,255,.15)
+  );
+}
+</style>
+<body>
+
+  <!-- HEADER -->
+  <header class="live-header">
+
+    <button
+      id="backBtn"
+      class="back-btn"
+      type="button"
+    >
+      ←
+    </button>
+
+    <div class="room-title">
+
+      <div class="room-icon">
+        🌍
+      </div>
+
+      <div>
+        <h1>FriendsZone Live</h1>
+
+        <span id="onlineCount">
+          0 online
+        </span>
+      </div>
+
+    </div>
+
+  </header>
+
+
+  <!-- MAIN ROOM -->
+  <main class="live-container">
+
+  <!-- ==========================================
+     ONLINE MEMBERS
+========================================== -->
+
+<div class="online-section">
+
+  <button
+    id="onlineCount"
+    class="online-count-btn"
+    type="button"
+  >
+    <span class="online-dot"></span>
+
+    <span id="onlineCountText">
+      0 online
+    </span>
+
+    <span class="online-arrow">
+      ▾
+    </span>
+  </button>
+
+
+  <!-- ONLINE MEMBERS POPOVER -->
+
+  <div
+    id="onlinePopover"
+    class="online-popover"
+  >
+
+    <div class="online-popover-header">
+
+      <div>
+        <strong>Online Members</strong>
+
+        <small>
+          People currently in FriendsZone
+        </small>
+      </div>
+
+      <button
+        id="closeOnlinePopover"
+        type="button"
+        class="close-online-popover"
+      >
+        ✕
+      </button>
+
+    </div>
+
+
+    <div
+      id="onlineUsers"
+      class="online-users"
+    >
+    </div>
+
+  </div>
+
+</div>
+    <!-- PUBLIC CHAT -->
+    <section class="chat-section">
+
+      <div
+        id="messages"
+        class="messages"
+      >
+        <div class="welcome-message">
+
+          <div class="welcome-icon">
+            🌍
+          </div>
+
+          <h2>Welcome to FriendsZone Live!</h2>
+
+          <p>
+            Chat with everyone who is online.
+          </p>
+
+        </div>
+      </div>
+
+
+      <!-- TYPING -->
+      <div
+        id="typingIndicator"
+        class="typing-indicator"
+      ></div>
+
+<div
+  id="replyPreview"
+  class="reply-preview"
+  style="display: none;"
+>
+  <div>
+    <strong id="replyPreviewName">
+      Replying to
+    </strong>
+
+    <span id="replyPreviewText">
+    </span>
+  </div>
+
+  <button
+    id="cancelReplyBtn"
+    type="button"
+  >
+    ✕
+  </button>
+</div>
+      <!-- MESSAGE INPUT -->
+      <div class="message-bar">
+
+  <input
+    id="messageInput"
+    type="text"
+    placeholder="Message everyone..."
+    autocomplete="off"
+  >
+
+  <input
+    id="imageInput"
+    type="file"
+    accept="image/*"
+    hidden
+  >
+
+  <button
+    id="imageBtn"
+    type="button"
+    title="Send image"
+  >
+    📸
+  </button>
+
+  <button
+    id="sendBtn"
+    type="button"
+    title="Send message"
+  >
+    ➤
+  </button>
+
+</div>
+
+    </section>
+
+  </main>
+
+
+  <!-- FIREBASE + JAVASCRIPT -->
+
+  <script type="module" src="live-room.js"></script>
+
+</body>
+
+</html>

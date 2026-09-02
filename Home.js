@@ -166,7 +166,11 @@ async function markPrivateMessagesAsRead(friendId) {
         unreadQuery
       );
 
+const imageInput =
+  document.getElementById("imageInput");
 
+const imageBtn =
+  document.getElementById("imageBtn");
     // ======================
     // MARK EACH MESSAGE READ
     // ======================
@@ -184,8 +188,20 @@ async function markPrivateMessagesAsRead(friendId) {
       );
 
     }
+const liveRoomBtn =
+  document.getElementById("liveRoomBtn");
 
+if (liveRoomBtn) {
 
+  liveRoomBtn.onclick = function (event) {
+
+    event.preventDefault();
+
+    window.location.assign("./live-room.html");
+
+  };
+
+}
     // ======================
     // CLEAR LOCAL COUNT
     // ======================
@@ -15807,3 +15823,28 @@ if (photoViewerImage) {
   );
 
 }
+// ==========================================
+// OPEN FRIENDSZONE LIVE ROOM
+// ==========================================
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const liveRoomBtn =
+    document.getElementById("liveRoomBtn");
+
+  if (!liveRoomBtn) {
+    console.log("Live Room button not found");
+    return;
+  }
+
+  liveRoomBtn.addEventListener("click", (event) => {
+
+    event.preventDefault();
+
+    console.log("Live Room button clicked");
+
+    window.location.href = "./live-room.html";
+
+  });
+
+});
