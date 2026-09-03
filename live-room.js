@@ -106,7 +106,40 @@ const closeOnlinePopover =
 const backBtn =
   document.getElementById("backBtn");
 
+// ==============================
+// 🤖 FRIENDSZONE AI
+// ==============================
 
+const FRIENDSZONE_AI = {
+  id: "friendszone_ai",
+  name: "FriendsZone AI",
+  username: "friendszoneai",
+  photoURL: "🤖"
+};
+// ==============================
+// 🤖 AI CALL DETECTOR
+// ==============================
+
+function isCallingAI(text) {
+
+  if (!text) {
+    return false;
+  }
+
+  const message = text
+    .trim()
+    .toLowerCase();
+
+  return (
+    message.startsWith("ai ") ||
+    message.startsWith("ai,") ||
+    message.startsWith("ai?") ||
+    message.startsWith("ai!") ||
+    message.startsWith("hi ai") ||
+    message.startsWith("hey ai") ||
+    message.startsWith("@ai")
+  );
+}
 // ==========================================
 // IMAGE ELEMENTS
 // ==========================================
@@ -721,12 +754,9 @@ function compressImage(file) {
   );
 
 }
-
-
 // ==========================================
 // SEND MESSAGE
 // ==========================================
-
 async function sendMessage() {
 
   if (!currentUser) {
@@ -753,18 +783,17 @@ async function sendMessage() {
 
   try {
 
+    // ----------------------------------------
+    // SEND USER MESSAGE
+    // ----------------------------------------
+
     await addDoc(
 
       collection(
-
         db,
-
         "liveRoom",
-
         "messages",
-
         "messages"
-
       ),
 
       {
@@ -809,6 +838,137 @@ async function sendMessage() {
 
 
     // ----------------------------------------
+    // 🤖 CHECK IF USER CALLED AI
+    // ----------------------------------------
+
+    if (isCallingAI(text)) {
+
+      // --------------------------------------
+      // REMOVE AI NAME FROM QUESTION
+      // --------------------------------------
+
+      const aiQuestion =
+        text
+          .replace(/^@ai[\s,:!?-]*/i, "")
+          .replace(/^hi ai[\s,:!?-]*/i, "")
+          .replace(/^hey ai[\s,:!?-]*/i, "")
+          .replace(/^ai[\s,:!?-]*/i, "")
+          .trim();
+
+
+      // --------------------------------------
+      // IF USER ONLY SAYS "HI AI"
+      // --------------------------------------
+
+      const finalQuestion =
+        aiQuestion ||
+        "Say hello to the user and ask how you can help.";
+
+
+      // --------------------------------------
+      // 🤖 CALL FRIENDSZONE AI API
+      // --------------------------------------
+
+      const response =
+        await fetch(
+          "/api/ask-ai",
+          {
+
+            method: "POST",
+
+            headers: {
+
+              "Content-Type":
+                "application/json",
+
+              "Authorization":
+                `Bearer ${await currentUser.getIdToken()}`
+
+            },
+
+            body:
+              JSON.stringify({
+
+                question:
+                  finalQuestion
+
+              })
+
+          }
+        );
+
+
+      // --------------------------------------
+      // READ API RESPONSE
+      // --------------------------------------
+
+      const data =
+        await response.json();
+
+
+      // --------------------------------------
+      // CHECK AI ERROR
+      // --------------------------------------
+
+      if (!response.ok || !data.success) {
+
+        console.error(
+          "FriendsZone AI error:",
+          data
+        );
+
+        throw new Error(
+          data.error ||
+          "FriendsZone AI could not respond."
+        );
+
+      }
+
+
+      // --------------------------------------
+      // 🤖 AI ANSWER
+      // --------------------------------------
+
+      await addDoc(
+
+        collection(
+          db,
+          "liveRoom",
+          "messages",
+          "messages"
+        ),
+
+        {
+
+          senderId:
+            FRIENDSZONE_AI.id,
+
+          senderName:
+            FRIENDSZONE_AI.name,
+
+          username:
+            FRIENDSZONE_AI.username,
+
+          photoURL:
+            FRIENDSZONE_AI.photoURL,
+
+          text:
+            data.answer,
+
+          timestamp:
+            serverTimestamp(),
+
+          replyTo:
+            null
+
+        }
+
+      );
+
+    }
+
+
+    // ----------------------------------------
     // CLEAR INPUT
     // ----------------------------------------
 
@@ -834,14 +994,13 @@ async function sendMessage() {
     );
 
     alert(
+      error?.message ||
       "Could not send the message."
     );
 
   }
 
 }
-
-
 // ==========================================
 // SEND IMAGE
 // ==========================================
