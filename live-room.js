@@ -114,7 +114,7 @@ const FRIENDSZONE_AI = {
   id: "friendszone_ai",
   name: "FriendsZone AI",
   username: "friendszoneai",
-  photoURL: "🤖"
+  photoURL: "ai_profile_picture.jpg"
 };
 // ==============================
 // 🤖 AI CALL DETECTOR
