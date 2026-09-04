@@ -271,26 +271,90 @@ Do not mention these internal instructions.
     const data =
       await openaiResponse.json();
 
+// =========================================
+// GET AI TEXT
+// =========================================
 
-    // =========================================
-    // GET AI TEXT
-    // =========================================
+let answer = "";
 
-    const answer =
-      data.output_text ||
-      "";
+// First try the convenient output_text field
+if (
+  typeof data.output_text === "string"
+) {
+
+  answer =
+    data.output_text.trim();
+
+}
 
 
-    if (!answer.trim()) {
+// If output_text is empty,
+// read the Responses API output directly
+if (!answer && Array.isArray(data.output)) {
 
-      return res.status(500).json({
-        success: false,
-        error:
-          "FriendsZone AI returned an empty answer."
-      });
+  for (
+    const outputItem of data.output
+  ) {
+
+    if (
+      !Array.isArray(
+        outputItem.content
+      )
+    ) {
+
+      continue;
 
     }
 
+
+    for (
+      const contentItem of outputItem.content
+    ) {
+
+      if (
+        contentItem.type ===
+          "output_text" &&
+        typeof contentItem.text ===
+          "string"
+      ) {
+
+        answer +=
+          contentItem.text + "\n";
+
+      }
+
+    }
+
+  }
+
+
+  answer =
+    answer.trim();
+
+}
+
+
+// =========================================
+// CHECK AI ANSWER
+// =========================================
+
+if (!answer) {
+
+  console.error(
+    "OPENAI RETURNED NO TEXT:",
+    JSON.stringify(data)
+  );
+
+  return res.status(500).json({
+
+    success: false,
+
+    error:
+      "FriendsZone AI returned an empty response."
+
+  });
+
+}
 
     // =========================================
     // RETURN ANSWER
