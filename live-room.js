@@ -924,47 +924,11 @@ async function sendMessage() {
 
       }
 
-
       // --------------------------------------
-      // 🤖 AI ANSWER
+      // AI MESSAGE IS ALREADY SAVED
+      // BY /api/ask-ai
       // --------------------------------------
-
-      await addDoc(
-
-        collection(
-          db,
-          "liveRoom",
-          "messages",
-          "messages"
-        ),
-
-        {
-
-          senderId:
-            FRIENDSZONE_AI.id,
-
-          senderName:
-            FRIENDSZONE_AI.name,
-
-          username:
-            FRIENDSZONE_AI.username,
-
-          photoURL:
-            FRIENDSZONE_AI.photoURL,
-
-          text:
-            data.answer,
-
-          timestamp:
-            serverTimestamp(),
-
-          replyTo:
-            null
-
-        }
-
-      );
-
+      
     }
 
 
