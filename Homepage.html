@@ -276,7 +276,7 @@ body.dark-mode
   position: relative;
 }
 /* ==================================================
-   FRIENDSZONE — RAINBOW SIDEBAR
+   🌈 FRIENDSZONE — BRIGHT RAINBOW SIDEBAR
 ================================================== */
 
 .sidebar {
@@ -285,37 +285,40 @@ body.dark-mode
 
   height: calc(100vh - 60px);
 
+  /* ☀️ BRIGHT COLORFUL BACKGROUND */
   background:
     radial-gradient(
-      circle at 15% 10%,
-      rgba(255, 0, 128, 0.45),
-      transparent 35%
+      circle at 10% 10%,
+      rgba(255, 80, 120, 0.45),
+      transparent 30%
     ),
     radial-gradient(
-      circle at 90% 20%,
-      rgba(0, 255, 255, 0.35),
-      transparent 35%
+      circle at 90% 15%,
+      rgba(0, 210, 255, 0.40),
+      transparent 30%
     ),
     radial-gradient(
-      circle at 20% 75%,
-      rgba(255, 220, 0, 0.35),
-      transparent 35%
+      circle at 15% 55%,
+      rgba(255, 210, 50, 0.40),
+      transparent 32%
     ),
     radial-gradient(
-      circle at 90% 85%,
-      rgba(140, 0, 255, 0.45),
-      transparent 40%
+      circle at 90% 60%,
+      rgba(50, 230, 150, 0.38),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 45% 95%,
+      rgba(255, 100, 190, 0.38),
+      transparent 35%
     ),
     linear-gradient(
-      135deg,
-      #ff006e,
-      #8338ec,
-      #3a86ff,
-      #00f5d4,
-      #00bbf9,
-      #fee440,
-      #ff9f1c,
-      #ff006e
+      145deg,
+      #fff5f7,
+      #eaffff,
+      #fffde8,
+      #effff5,
+      #fff0fa
     );
 
   background-size:
@@ -323,16 +326,19 @@ body.dark-mode
     180% 180%,
     180% 180%,
     180% 180%,
-    500% 500%;
+    180% 180%,
+    300% 300%;
 
-  animation: rainbowSidebar 12s ease infinite;
+  animation: brightSidebarMove 14s ease infinite;
 
-  border-right: 3px solid rgba(255, 255, 255, 0.7);
+  /* ✨ CLEAN BORDER */
+  border-right: 2px solid rgba(255, 255, 255, 0.9);
 
+  /* 💎 SOFT PREMIUM SHADOW */
   box-shadow:
-    5px 0 25px rgba(255, 0, 128, 0.35),
-    0 0 35px rgba(0, 229, 255, 0.25),
-    inset -2px 0 15px rgba(255, 255, 255, 0.15);
+    6px 0 25px rgba(0, 0, 0, 0.12),
+    0 0 25px rgba(0, 220, 255, 0.18),
+    inset -2px 0 15px rgba(255, 255, 255, 0.75);
 
   overflow-y: auto;
   overflow-x: hidden;
@@ -352,32 +358,35 @@ body.dark-mode
 
   pointer-events: auto;
 
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
 
 /* ==================================================
-   RAINBOW ANIMATION
+   🌈 SOFT COLOR MOVEMENT
 ================================================== */
 
-@keyframes rainbowSidebar {
+@keyframes brightSidebarMove {
+
   0% {
     background-position:
       0% 0%,
       100% 0%,
       0% 100%,
       100% 100%,
+      50% 100%,
       0% 50%;
   }
 
   25% {
     background-position:
-      100% 0%,
+      100% 20%,
+      0% 40%,
+      100% 80%,
+      20% 0%,
       0% 50%,
-      100% 100%,
-      0% 0%,
-      50% 50%;
+      50% 0%;
   }
 
   50% {
@@ -386,16 +395,18 @@ body.dark-mode
       0% 100%,
       100% 0%,
       0% 100%,
+      100% 0%,
       100% 50%;
   }
 
   75% {
     background-position:
-      0% 100%,
-      100% 50%,
-      0% 0%,
-      100% 100%,
-      50% 50%;
+      0% 80%,
+      100% 60%,
+      0% 20%,
+      80% 100%,
+      50% 50%,
+      50% 100%;
   }
 
   100% {
@@ -404,16 +415,18 @@ body.dark-mode
       100% 0%,
       0% 100%,
       100% 100%,
+      50% 100%,
       0% 50%;
   }
 }
 
 
 /* ==================================================
-   RAINBOW EDGE
+   🌈 RAINBOW EDGE
 ================================================== */
 
 .sidebar::before {
+
   content: "";
 
   position: absolute;
@@ -424,57 +437,132 @@ body.dark-mode
   width: 5px;
   height: 100%;
 
-  background: linear-gradient(
-    180deg,
-    #ff0000,
-    #ff7a00,
-    #ffe600,
-    #00ff66,
-    #00e5ff,
-    #0066ff,
-    #8a2be2,
-    #ff00cc,
-    #ff0000
-  );
+  background:
+    linear-gradient(
+      180deg,
+      #ff3b30,
+      #ff9500,
+      #ffd60a,
+      #34c759,
+      #00c7ff,
+      #ff2d92,
+      #ff3b30
+    );
 
   background-size: 100% 400%;
 
-  animation: rainbowEdge 5s linear infinite;
+  animation: brightRainbowEdge 5s linear infinite;
 
   box-shadow:
-    0 0 10px #00e5ff,
-    0 0 20px #ff00cc,
-    0 0 30px rgba(255,255,255,0.5);
+    0 0 8px rgba(0, 199, 255, 0.8),
+    0 0 16px rgba(255, 45, 146, 0.5),
+    0 0 25px rgba(255, 149, 0, 0.35);
+
+  z-index: 10;
 
   pointer-events: none;
 }
 
 
-@keyframes rainbowEdge {
+@keyframes brightRainbowEdge {
+
   0% {
-    background-position: 0% 0%;
+    background-position: 0 0;
   }
 
   100% {
-    background-position: 0% 400%;
+    background-position: 0 400%;
   }
+
 }
 
 
 /* ==================================================
-   SIDEBAR HOVER GLOW
+   ✨ RAINBOW TOP LINE
+================================================== */
+
+.sidebar::after {
+
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 3px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #ff3b30,
+      #ff9500,
+      #ffd60a,
+      #34c759,
+      #00c7ff,
+      #ff2d92,
+      #ff3b30
+    );
+
+  background-size: 300% 100%;
+
+  animation: rainbowTop 4s linear infinite;
+
+  box-shadow:
+    0 0 8px rgba(0, 199, 255, 0.55);
+
+  pointer-events: none;
+}
+
+
+@keyframes rainbowTop {
+
+  0% {
+    background-position: 0% 50%;
+  }
+
+  100% {
+    background-position: 300% 50%;
+  }
+
+}
+
+
+/* ==================================================
+   💫 SIDEBAR OPEN
+================================================== */
+
+/* IMPORTANT:
+   Use the class your JavaScript actually adds.
+*/
+
+.sidebar.sidebar-open {
+
+  transform: translateX(0);
+
+  box-shadow:
+    8px 0 30px rgba(0, 0, 0, 0.15),
+    0 0 30px rgba(0, 199, 255, 0.18),
+    0 0 45px rgba(255, 45, 146, 0.12);
+}
+
+
+/* ==================================================
+   ✨ HOVER GLOW
 ================================================== */
 
 .sidebar:hover {
+
   box-shadow:
-    8px 0 35px rgba(255, 0, 128, 0.45),
-    0 0 40px rgba(0, 229, 255, 0.3),
-    inset -2px 0 20px rgba(255, 255, 255, 0.18);
+    8px 0 32px rgba(0, 0, 0, 0.16),
+    0 0 30px rgba(0, 199, 255, 0.20),
+    0 0 45px rgba(255, 45, 146, 0.14);
 }
 
 
 /* ==================================================
-   RAINBOW SCROLLBAR
+   🖱️ RAINBOW SCROLLBAR
 ================================================== */
 
 .sidebar::-webkit-scrollbar {
@@ -482,104 +570,43 @@ body.dark-mode
 }
 
 .sidebar::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.45);
 }
 
 .sidebar::-webkit-scrollbar-thumb {
-  background: linear-gradient(
-    180deg,
-    #ff004c,
-    #ff9900,
-    #ffee00,
-    #00ff88,
-    #00d9ff,
-    #8c00ff,
-    #ff00c8
-  );
+
+  background:
+    linear-gradient(
+      180deg,
+      #ff3b30,
+      #ff9500,
+      #ffd60a,
+      #34c759,
+      #00c7ff,
+      #ff2d92
+    );
 
   border-radius: 20px;
 
   box-shadow:
-    0 0 8px rgba(255,255,255,0.7);
+    0 0 8px rgba(255, 255, 255, 0.7);
 }
 
 .sidebar::-webkit-scrollbar-thumb:hover {
-  filter: brightness(1.4);
-  }
-  /* ==================================================
-   FRIENDSZONE — NEON RGB GAMING SIDEBAR
-================================================== */
-
-.sidebar {
-  background:
-    radial-gradient(circle at 20% 10%, rgba(255, 0, 140, .25), transparent 30%),
-    radial-gradient(circle at 85% 25%, rgba(0, 220, 255, .22), transparent 30%),
-    radial-gradient(circle at 15% 80%, rgba(120, 0, 255, .25), transparent 30%),
-    linear-gradient(145deg, #050510, #090b1f 45%, #050510);
-
-  border-right: 1px solid rgba(0, 255, 255, .55);
-
-  box-shadow:
-    0 0 15px rgba(0, 255, 255, .18),
-    5px 0 30px rgba(255, 0, 170, .15),
-    inset -1px 0 15px rgba(0, 255, 255, .08);
-
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  filter: brightness(1.15);
 }
 
 
 /* ==================================================
-    RGB SIDE LIGHT
+   📱 TOUCH FEEDBACK
 ================================================== */
 
-.sidebar::before {
-  content: "";
+.sidebar button:active,
+.sidebar a:active {
 
-  position: absolute;
+  transform: scale(0.97);
 
-  left: 0;
-  top: 0;
-
-  width: 4px;
-  height: 100%;
-
-  background: linear-gradient(
-    180deg,
-    #ff0055,
-    #ff8800,
-    #ffee00,
-    #00ff66,
-    #00eaff,
-    #0066ff,
-    #8c00ff,
-    #ff00cc,
-    #ff0055
-  );
-
-  background-size: 100% 500%;
-
-  animation: rgbSideLight 4s linear infinite;
-
-  box-shadow:
-    0 0 8px #00eaff,
-    0 0 18px #ff00cc,
-    0 0 30px rgba(255, 255, 255, .25);
-
-  z-index: 5;
-}
-
-@keyframes rgbSideLight {
-  0% {
-    background-position: 0 0;
   }
-
-  100% {
-    background-position: 0 500%;
-  }
-}
-
-
 /* ==================================================
    SIDEBAR BUTTONS
 ================================================== */
