@@ -1,13 +1,15 @@
 // ======================
 // FIREBASE IMPORTS
 // ======================
+
 import {
   initializeApp
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 
 import {
   getAuth,
-  createUserWithEmailAndPassword
+  createUserWithEmailAndPassword,
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
 import {
@@ -21,6 +23,8 @@ import {
   getToken,
   onMessage
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-messaging.js";
+
+
 // ======================
 // FIREBASE CONFIG
 // ======================
@@ -39,66 +43,177 @@ const firebaseConfig = {
 // ======================
 // INITIALIZE FIREBASE
 // ======================
-const app =
-  initializeApp(firebaseConfig);
 
-const auth =
-  getAuth(app);
+const app = initializeApp(firebaseConfig);
 
-const db =
-  getFirestore(app);
+const auth = getAuth(app);
 
-const messaging =
-  getMessaging(app);
+const db = getFirestore(app);
+
+const messaging = getMessaging(app);
+
+
+// ==================================================
+// FIREBASE CLOUD MESSAGING + AUTH
+// ==================================================
+
 if ("serviceWorker" in navigator) {
+
   navigator.serviceWorker
     .register("/firebase-messaging-sw.js")
+
     .then((registration) => {
+
       console.log(
-        "Firebase messaging service worker registered:",
-        registration.scope
+        "Firebase messaging service worker registered."
       );
+
+
+      // ==================================================
+      // CHECK LOGGED-IN USER
+      // ==================================================
+
+      onAuthStateChanged(auth, async (user) => {
+
+        if (!user) {
+
+          console.log(
+            "No user is signed in."
+          );
+
+          return;
+        }
+
+
+        console.log(
+          "Logged-in user:",
+          user.uid
+        );
+
+
+        try {
+
+          // ======================
+          // NOTIFICATION PERMISSION
+          // ======================
+
+          if (
+            Notification.permission !== "granted"
+          ) {
+
+            const permission =
+              await Notification.requestPermission();
+
+
+            if (
+              permission !== "granted"
+            ) {
+
+              console.log(
+                "Notification permission denied."
+              );
+
+              return;
+            }
+          }
+
+
+          // ======================
+          // GET FCM TOKEN
+          // ======================
+
+          const token =
+            await getToken(
+              messaging,
+              {
+                vapidKey:
+                  "BH6XiMfNNPSfvcnvFFtQNawwu1IcW1g25KUnMzvd9WDnB7UgalJoIkCkA4Kz2g_6BvOhCdUP1iY4LTD11xeW2e8",
+
+                serviceWorkerRegistration:
+                  registration
+              }
+            );
+
+
+          if (!token) {
+
+            console.log(
+              "No FCM token available."
+            );
+
+            return;
+          }
+
+
+          console.log(
+            "FCM Token:",
+            token
+          );
+
+
+          // ======================
+          // SAVE TOKEN TO FIRESTORE
+          // ======================
+
+          await setDoc(
+            doc(
+              db,
+              "users",
+              user.uid
+            ),
+            {
+              fcmToken: token
+            },
+            {
+              merge: true
+            }
+          );
+
+
+          console.log(
+            "FCM token saved to Firestore."
+          );
+
+
+        } catch (error) {
+
+          console.error(
+            "FCM token setup failed:",
+            error
+          );
+
+        }
+
+      });
+
     })
+
     .catch((error) => {
-  console.error(
-    "Service worker registration failed:",
-    error.name,
-    error.message
-  );
-});
-}
-Notification.requestPermission().then((permission) => {
-  if (permission === "granted") {
-    console.log("Notification permission granted.");
-  } else {
-    console.log("Notification permission denied.");
-  }
-});
-if (Notification.permission === "granted") {
-  getToken(messaging, {
-    vapidKey: "BH6XiMfNNPSfvcnvFFtQNawwu1IcW1g25KUnMzvd9WDnB7UgalJoIkCkA4Kz2g_6BvOhCdUP1iY4LTD11xeW2e8"
-  })
-    .then((token) => {
-      if (token) {
-        console.log("FCM Token:", token);
-      } else {
-        console.log("No FCM token available.");
-      }
-    })
-    .catch((error) => {
-      console.error("Error getting FCM token:", error);
+
+      console.error(
+        "Firebase Messaging setup failed:",
+        error
+      );
+
     });
+
 }
 
-// ======================
-// CREATE ACCOUNT
-// ======================
 
-document
-  .getElementById("signupBtn")
-  .addEventListener(
+// ==================================================
+// CREATE ACCOUNT
+// ==================================================
+
+const signupBtn =
+  document.getElementById("signupBtn");
+
+
+if (signupBtn) {
+
+  signupBtn.addEventListener(
     "click",
     async () => {
+
 
       // ======================
       // GET FORM VALUES
@@ -110,27 +225,32 @@ document
           .value
           .trim();
 
+
       const email =
         document
           .getElementById("email")
           .value
           .trim();
 
+
       const password =
         document
           .getElementById("password")
           .value;
+
 
       const dob =
         document
           .getElementById("dob")
           .value;
 
+
       const phone =
         document
           .getElementById("phone")
           .value
           .trim();
+
 
       const nationality =
         document
@@ -147,6 +267,7 @@ document
         document.querySelector(
           'input[name="gender"]:checked'
         );
+
 
       const gender =
         genderInput
@@ -251,6 +372,7 @@ document
           error
         );
 
+
         alert(
           error.message
         );
@@ -259,6 +381,10 @@ document
 
     }
   );
+
+}
+
+
 // ==================================================
 // NEWS ROOM
 // ==================================================
@@ -295,6 +421,7 @@ if (
     (event) => {
 
       event.preventDefault();
+
       event.stopPropagation();
 
 
@@ -322,6 +449,7 @@ if (
     (event) => {
 
       event.preventDefault();
+
       event.stopPropagation();
 
 
@@ -333,19 +461,28 @@ if (
   );
 
 }
+
+
 // ==================================================
 // NEWS ROOM CONNECTION TEST
 // ==================================================
 
-console.log("📰 NEWS ROOM JS LOADED");
+console.log(
+  "📰 NEWS ROOM JS LOADED"
+);
+
 
 const testNewsButton =
-  document.getElementById("rightNewsBtn");
+  document.getElementById(
+    "rightNewsBtn"
+  );
+
 
 console.log(
   "News button:",
   testNewsButton
 );
+
 
 if (testNewsButton) {
 
@@ -356,6 +493,7 @@ if (testNewsButton) {
       console.log(
         "📰 NEWS BUTTON CLICKED"
       );
+
 
       alert(
         "News Room button is connected!"
