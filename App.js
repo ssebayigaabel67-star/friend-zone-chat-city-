@@ -1,7 +1,6 @@
 // ======================
 // FIREBASE IMPORTS
 // ======================
-
 import {
   initializeApp
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
@@ -17,7 +16,11 @@ import {
   setDoc
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-
+import {
+  getMessaging,
+  getToken,
+  onMessage
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-messaging.js";
 // ======================
 // FIREBASE CONFIG
 // ======================
@@ -36,7 +39,6 @@ const firebaseConfig = {
 // ======================
 // INITIALIZE FIREBASE
 // ======================
-
 const app =
   initializeApp(firebaseConfig);
 
@@ -46,6 +48,46 @@ const auth =
 const db =
   getFirestore(app);
 
+const messaging =
+  getMessaging(app);
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker
+    .register("/firebase-messaging-sw.js")
+    .then((registration) => {
+      console.log(
+        "Firebase messaging service worker registered:",
+        registration.scope
+      );
+    })
+    .catch((error) => {
+      console.error(
+        "Service worker registration failed:",
+        error
+      );
+    });
+}
+Notification.requestPermission().then((permission) => {
+  if (permission === "granted") {
+    console.log("Notification permission granted.");
+  } else {
+    console.log("Notification permission denied.");
+  }
+});
+if (Notification.permission === "granted") {
+  getToken(messaging, {
+    vapidKey: "BH6XiMfNNPSfvcnvFFtQNawwu1IcW1g25KUnMzvd9WDnB7UgalJoIkCkA4Kz2g_6BvOhCdUP1iY4LTD11xeW2e8"
+  })
+    .then((token) => {
+      if (token) {
+        console.log("FCM Token:", token);
+      } else {
+        console.log("No FCM token available.");
+      }
+    })
+    .catch((error) => {
+      console.error("Error getting FCM token:", error);
+    });
+}
 
 // ======================
 // CREATE ACCOUNT
@@ -216,3 +258,115 @@ document
 
     }
   );
+// ==================================================
+// NEWS ROOM
+// ==================================================
+
+const rightNewsBtn =
+  document.getElementById(
+    "rightNewsBtn"
+  );
+
+
+const newsRoomPopover =
+  document.getElementById(
+    "newsRoomPopover"
+  );
+
+
+const closeNewsRoomPopover =
+  document.getElementById(
+    "closeNewsRoomPopover"
+  );
+
+
+// ======================
+// OPEN NEWS ROOM
+// ======================
+
+if (
+  rightNewsBtn &&
+  newsRoomPopover
+) {
+
+  rightNewsBtn.addEventListener(
+    "click",
+    (event) => {
+
+      event.preventDefault();
+      event.stopPropagation();
+
+
+      newsRoomPopover.classList.add(
+        "show"
+      );
+
+    }
+  );
+
+}
+
+
+// ======================
+// CLOSE NEWS ROOM
+// ======================
+
+if (
+  closeNewsRoomPopover &&
+  newsRoomPopover
+) {
+
+  closeNewsRoomPopover.addEventListener(
+    "click",
+    (event) => {
+
+      event.preventDefault();
+      event.stopPropagation();
+
+
+      newsRoomPopover.classList.remove(
+        "show"
+      );
+
+    }
+  );
+
+}
+// ==================================================
+// NEWS ROOM CONNECTION TEST
+// ==================================================
+
+console.log("📰 NEWS ROOM JS LOADED");
+
+const testNewsButton =
+  document.getElementById("rightNewsBtn");
+
+console.log(
+  "News button:",
+  testNewsButton
+);
+
+if (testNewsButton) {
+
+  testNewsButton.addEventListener(
+    "click",
+    () => {
+
+      console.log(
+        "📰 NEWS BUTTON CLICKED"
+      );
+
+      alert(
+        "News Room button is connected!"
+      );
+
+    }
+  );
+
+} else {
+
+  console.error(
+    "❌ rightNewsBtn was NOT found."
+  );
+
+}
