@@ -60,11 +60,12 @@ if ("serviceWorker" in navigator) {
       );
     })
     .catch((error) => {
-      console.error(
-        "Service worker registration failed:",
-        error
-      );
-    });
+  console.error(
+    "Service worker registration failed:",
+    error.name,
+    error.message
+  );
+});
 }
 Notification.requestPermission().then((permission) => {
   if (permission === "granted") {
