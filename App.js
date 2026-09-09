@@ -9,7 +9,6 @@ import {
 import {
   getAuth,
   createUserWithEmailAndPassword,
-  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
 import {
@@ -52,9 +51,8 @@ const db = getFirestore(app);
 
 const messaging = getMessaging(app);
 
-
 // ==================================================
-// FIREBASE CLOUD MESSAGING + AUTH
+// FIREBASE CLOUD MESSAGING
 // ==================================================
 
 if ("serviceWorker" in navigator) {
@@ -62,129 +60,52 @@ if ("serviceWorker" in navigator) {
   navigator.serviceWorker
     .register("/firebase-messaging-sw.js")
 
-    .then((registration) => {
+    .then(async (registration) => {
 
       console.log(
         "Firebase messaging service worker registered."
       );
 
+      if (Notification.permission !== "granted") {
 
-      // ==================================================
-      // CHECK LOGGED-IN USER
-      // ==================================================
+        const permission =
+          await Notification.requestPermission();
 
-      onAuthStateChanged(auth, async (user) => {
-
-        if (!user) {
+        if (permission !== "granted") {
 
           console.log(
-            "No user is signed in."
+            "Notification permission denied."
           );
 
           return;
         }
+      }
 
+      const token = await getToken(
+        messaging,
+        {
+          vapidKey:
+            "BH6XiMfNNPSfvcnvFFtQNawwu1IcW1g25KUnMzvd9WDnB7UgalJoIkCkA4Kz2g_6BvOhCdUP1iY4LTD11xeW2e8",
+
+          serviceWorkerRegistration:
+            registration
+        }
+      );
+
+      if (token) {
 
         console.log(
-          "Logged-in user:",
-          user.uid
+          "FCM Token:",
+          token
         );
 
+      } else {
 
-        try {
+        console.log(
+          "No FCM token available."
+        );
 
-          // ======================
-          // NOTIFICATION PERMISSION
-          // ======================
-
-          if (
-            Notification.permission !== "granted"
-          ) {
-
-            const permission =
-              await Notification.requestPermission();
-
-
-            if (
-              permission !== "granted"
-            ) {
-
-              console.log(
-                "Notification permission denied."
-              );
-
-              return;
-            }
-          }
-
-
-          // ======================
-          // GET FCM TOKEN
-          // ======================
-
-          const token =
-            await getToken(
-              messaging,
-              {
-                vapidKey:
-                  "BH6XiMfNNPSfvcnvFFtQNawwu1IcW1g25KUnMzvd9WDnB7UgalJoIkCkA4Kz2g_6BvOhCdUP1iY4LTD11xeW2e8",
-
-                serviceWorkerRegistration:
-                  registration
-              }
-            );
-
-
-          if (!token) {
-
-            console.log(
-              "No FCM token available."
-            );
-
-            return;
-          }
-
-
-          console.log(
-            "FCM Token:",
-            token
-          );
-
-
-          // ======================
-          // SAVE TOKEN TO FIRESTORE
-          // ======================
-
-          await setDoc(
-            doc(
-              db,
-              "users",
-              user.uid
-            ),
-            {
-              fcmToken: token
-            },
-            {
-              merge: true
-            }
-          );
-
-
-          console.log(
-            "FCM token saved to Firestore."
-          );
-
-
-        } catch (error) {
-
-          console.error(
-            "FCM token setup failed:",
-            error
-          );
-
-        }
-
-      });
+      }
 
     })
 
@@ -198,7 +119,6 @@ if ("serviceWorker" in navigator) {
     });
 
 }
-
 
 // ==================================================
 // CREATE ACCOUNT

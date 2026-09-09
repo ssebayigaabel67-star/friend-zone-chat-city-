@@ -2122,12 +2122,10 @@ if (userSnap.exists()) {
 
   const data =
     userSnap.data();
-
-  currentUserName =
-    data.name ||
-    data.username ||
-    "User";
-
+currentUserName =
+  data.username ||
+  data.name ||
+  "User";
 } else {
 
   currentUserName =
