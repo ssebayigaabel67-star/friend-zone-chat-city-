@@ -81,26 +81,7 @@ if ("serviceWorker" in navigator) {
         }
       }
 
-      const token = await getToken(
-        messaging,
-        {
-          vapidKey:
-            "BH6XiMfNNPSfvcnvFFtQNawwu1IcW1g25KUnMzvd9WDnB7UgalJoIkCkA4Kz2g_6BvOhCdUP1iY4LTD11xeW2e8",
-
-          serviceWorkerRegistration:
-            registration
-        }
-      );
-
-      if (token) {
-
-        console.log(
-          "FCM Token:",
-          token
-        );
-
-      } else {
-
+ else {
         console.log(
           "No FCM token available."
         );
