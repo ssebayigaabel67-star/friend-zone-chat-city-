@@ -2114,32 +2114,26 @@ onAuthStateChanged(
           merge: true
         }
       );
-
-
       // ======================
-      // LOAD USER NAME
-      // ======================
+// LOAD USER NAME
+// ======================
 
-      if (
-        userSnap.exists()
-      ) {
+if (userSnap.exists()) {
 
-        const data =
-          userSnap.data();
+  const data =
+    userSnap.data();
 
-        currentUserName =
-          data.name ||
-          user.email ||
-          "User";
+  currentUserName =
+    data.name ||
+    data.username ||
+    "User";
 
-      } else {
+} else {
 
-        currentUserName =
-          user.email ||
-          "User";
+  currentUserName =
+    "User";
 
-      }
-
+}
 
       // ======================
       // DISPLAY USERNAME
