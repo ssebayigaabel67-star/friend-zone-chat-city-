@@ -2548,7 +2548,79 @@ console.log("SEND BUTTON CLICKED");
             }
           );
 
+// ======================
+// SEND PUSH NOTIFICATION
+// ======================
 
+try {
+
+  const receiverRef =
+    doc(db, "users", selectedFriendId);
+
+  const receiverSnap =
+    await getDoc(receiverRef);
+
+  if (receiverSnap.exists()) {
+
+    const receiverData =
+      receiverSnap.data();
+
+    const receiverToken =
+      receiverData.fcmToken;
+
+    if (receiverToken) {
+
+      await fetch(
+        "/api/send-notification",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+            token: receiverToken,
+
+            title:
+              currentUserName,
+
+            body:
+              text,
+
+            data: {
+              type: "chat",
+              chatId: chatId,
+              senderId:
+                auth.currentUser.uid
+            }
+          })
+        }
+      );
+
+      console.log(
+        "✅ Push notification sent"
+      );
+
+    } else {
+
+      console.log(
+        "⚠️ Receiver has no FCM token"
+      );
+
+    }
+
+  }
+
+} catch (notificationError) {
+
+  console.error(
+    "Notification error:",
+    notificationError
+  );
+
+}
           input.value = "";
 
           replyingTo = null;
