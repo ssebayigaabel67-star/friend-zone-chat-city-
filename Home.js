@@ -15966,3 +15966,77 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 });
+const testNotificationBtn =
+  document.getElementById("testNotificationBtn");
+
+if (testNotificationBtn) {
+
+  testNotificationBtn.addEventListener("click", async () => {
+
+    const token = prompt(
+      "Paste your FCM token from Firestore:"
+    );
+
+    if (!token) {
+      alert("No FCM token entered.");
+      return;
+    }
+
+    try {
+
+      const response = await fetch(
+        "/api/send-notification",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json"
+          },
+
+          body: JSON.stringify({
+            token: token,
+
+            title: "FriendsZone Chat City",
+
+            body: "🎉 Your push notification is working!",
+
+            data: {
+              type: "test"
+            }
+          })
+        }
+      );
+
+      const result = await response.json();
+
+      console.log("Notification result:", result);
+
+      if (result.success) {
+
+        alert("✅ Notification sent!");
+
+      } else {
+
+        alert(
+          "❌ Notification failed: " +
+          (result.error || "Unknown error")
+        );
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Notification test error:",
+        error
+      );
+
+      alert(
+        "❌ Error: " +
+        error.message
+      );
+    }
+
+  });
+
+}
