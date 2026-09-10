@@ -8,6 +8,8 @@ import {
 
 import {
   getAuth,
+  updatePassword,
+  updateEmail,
   signOut,
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
@@ -1407,7 +1409,6 @@ const addFriendBtn =
     "addFriendBtn"
   );
 
-
 if (addFriendBtn) {
 
   addFriendBtn.addEventListener(
@@ -2319,7 +2320,7 @@ try {
 
       await loadMyProfilePicture();
 
-
+updatePassword()
       console.log(
         "Homepage loaded successfully"
       );
@@ -16107,6 +16108,819 @@ if (testNotificationBtn) {
         "❌ Error: " +
         error.message
       );
+    }
+
+  });
+
+}
+// ==================================================
+// ACCOUNT INFORMATION
+// ==================================================
+
+const accountInfoBtn = document.getElementById("accountInfoBtn");
+const accountInfoModal = document.getElementById("accountInfoModal");
+const accountInfoCloseBtn = document.getElementById("accountInfoCloseBtn");
+
+if (accountInfoBtn && accountInfoModal) {
+
+  accountInfoBtn.addEventListener("click", async () => {
+
+    if (!auth.currentUser) {
+      alert("Please log in first.");
+      return;
+    }
+
+    accountInfoModal.classList.add("show");
+
+    try {
+
+      const userRef = doc(
+        db,
+        "users",
+        auth.currentUser.uid
+      );
+
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) {
+        alert("Account information could not be found.");
+        return;
+      }
+
+      const data = userSnap.data();
+
+      const photo =
+        data.photoURL ||
+        data.profilePicture ||
+        data.photo ||
+        "images/default-profile.png";
+
+      document.getElementById("accountInfoPhoto").src = photo;
+
+      document.getElementById("accountInfoName").textContent =
+        data.name || auth.currentUser.displayName || "Not set";
+
+      document.getElementById("accountInfoUsername").textContent =
+        data.username || "Not set";
+
+      document.getElementById("accountInfoEmail").textContent =
+        data.email || auth.currentUser.email || "Not set";
+
+      document.getElementById("accountInfoAge").textContent =
+        data.age || "Not set";
+
+      document.getElementById("accountInfoNationality").textContent =
+        data.nationality || "Not set";
+
+      document.getElementById("accountInfoLikes").textContent =
+        data.likesCount ?? data.likes ?? 0;
+
+      document.getElementById("accountInfoFriends").textContent =
+        data.friendsCount ?? data.friends ?? 0;
+
+    } catch (error) {
+
+      console.error(
+        "Account information error:",
+        error
+      );
+
+      alert(
+        "Could not load account information: " +
+        error.message
+      );
+    }
+  });
+}
+
+
+// Close Account Information
+
+if (accountInfoCloseBtn && accountInfoModal) {
+
+  accountInfoCloseBtn.addEventListener(
+    "click",
+    () => {
+      accountInfoModal.classList.remove("show");
+    }
+  );
+}
+
+
+// Close when clicking outside
+
+if (accountInfoModal) {
+
+  accountInfoModal.addEventListener(
+    "click",
+    (event) => {
+
+      if (event.target === accountInfoModal) {
+        accountInfoModal.classList.remove("show");
+      }
+
+    }
+  );
+}
+// ==================================================
+// EDIT ACCOUNT
+// ==================================================
+
+const editAccountBtn = document.getElementById("editAccountBtn");
+const editAccountModal = document.getElementById("editAccountModal");
+const editAccountCloseBtn = document.getElementById("editAccountCloseBtn");
+
+const editAccountName = document.getElementById("editAccountName");
+const editAccountUsername = document.getElementById("editAccountUsername");
+const editAccountAge = document.getElementById("editAccountAge");
+const editAccountNationality = document.getElementById("editAccountNationality");
+
+const editAccountPhoto = document.getElementById("editAccountPhoto");
+const editAccountPhotoInput = document.getElementById("editAccountPhotoInput");
+
+const saveAccountChangesBtn =
+  document.getElementById("saveAccountChangesBtn");
+
+let editAccountPhotoData = "";
+
+
+// Open Edit Account
+
+if (editAccountBtn && editAccountModal) {
+
+  editAccountBtn.addEventListener("click", async () => {
+
+    if (!auth.currentUser) {
+      alert("Please log in first.");
+      return;
+    }
+
+    editAccountModal.classList.add("show");
+
+    try {
+
+      const userRef = doc(
+        db,
+        "users",
+        auth.currentUser.uid
+      );
+
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) {
+        alert("Account information could not be found.");
+        return;
+      }
+
+      const data = userSnap.data();
+
+      editAccountName.value =
+        data.name || "";
+
+      editAccountUsername.value =
+        data.username || "";
+
+      editAccountAge.value =
+        data.age || "";
+
+      editAccountNationality.value =
+        data.nationality || "";
+
+      editAccountPhotoData =
+        data.photoURL ||
+        data.profilePicture ||
+        data.photo ||
+        "images/default-profile.png";
+
+      editAccountPhoto.src =
+        editAccountPhotoData;
+
+    } catch (error) {
+
+      console.error(
+        "Load edit account error:",
+        error
+      );
+
+      alert(
+        "Could not load account: " +
+        error.message
+      );
+    }
+  });
+}
+
+
+// Choose new profile picture
+
+if (editAccountPhotoInput) {
+
+  editAccountPhotoInput.addEventListener(
+    "change",
+    () => {
+
+      const file =
+        editAccountPhotoInput.files[0];
+
+      if (!file) return;
+
+      if (!file.type.startsWith("image/")) {
+
+        alert("Please select an image.");
+
+        editAccountPhotoInput.value = "";
+
+        return;
+      }
+
+      if (file.size > 800 * 1024) {
+
+        alert(
+          "Please choose an image smaller than 800KB."
+        );
+
+        editAccountPhotoInput.value = "";
+
+        return;
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = (event) => {
+
+        editAccountPhotoData =
+          event.target.result;
+
+        editAccountPhoto.src =
+          editAccountPhotoData;
+      };
+
+      reader.readAsDataURL(file);
+    }
+  );
+}
+
+
+// Save changes
+
+if (saveAccountChangesBtn) {
+
+  saveAccountChangesBtn.addEventListener(
+    "click",
+    async () => {
+
+      if (!auth.currentUser) {
+
+        alert("Please log in first.");
+
+        return;
+      }
+
+      const name =
+        editAccountName.value.trim();
+
+      const username =
+        editAccountUsername.value.trim();
+
+      const age =
+        editAccountAge.value.trim();
+
+      const nationality =
+        editAccountNationality.value.trim();
+
+
+      if (!name) {
+
+        alert("Please enter your name.");
+
+        return;
+      }
+
+      if (!username) {
+
+        alert("Please enter your username.");
+
+        return;
+      }
+
+
+      try {
+
+        saveAccountChangesBtn.disabled = true;
+
+        saveAccountChangesBtn.textContent =
+          "Saving...";
+
+
+        const userRef = doc(
+          db,
+          "users",
+          auth.currentUser.uid
+        );
+
+
+        await updateDoc(userRef, {
+
+          name: name,
+
+          username: username,
+
+          age: age,
+
+          nationality: nationality,
+
+          photoURL: editAccountPhotoData
+
+        });
+
+
+        // Keep the current name updated
+
+        currentUserName = name;
+
+
+        const usernameElement =
+          document.getElementById("username");
+
+        if (usernameElement) {
+          usernameElement.textContent =
+            name;
+        }
+
+
+        if (typeof loadFriends === "function") {
+          await loadFriends();
+        }
+
+
+        if (typeof loadMyProfilePopover === "function") {
+          await loadMyProfilePopover();
+        }
+
+
+        if (typeof loadMyProfilePicture === "function") {
+          await loadMyProfilePicture();
+        }
+
+
+        alert(
+          "Account updated successfully!"
+        );
+
+        editAccountModal.classList.remove("show");
+
+
+      } catch (error) {
+
+        console.error(
+          "Save account error:",
+          error
+        );
+
+        alert(
+          "Failed to update account: " +
+          error.message
+        );
+
+      } finally {
+
+        saveAccountChangesBtn.disabled = false;
+
+        saveAccountChangesBtn.textContent =
+          "💾 Save Changes";
+      }
+    }
+  );
+}
+
+
+// Close Edit Account
+
+if (editAccountCloseBtn && editAccountModal) {
+
+  editAccountCloseBtn.addEventListener(
+    "click",
+    () => {
+      editAccountModal.classList.remove("show");
+    }
+  );
+}
+
+
+// Close by clicking outside
+
+if (editAccountModal) {
+
+  editAccountModal.addEventListener(
+    "click",
+    (event) => {
+
+      if (event.target === editAccountModal) {
+        editAccountModal.classList.remove("show");
+      }
+
+    }
+  );
+}
+// ==================================================
+// CHANGE PASSWORD
+// ==================================================
+
+const changePasswordBtn =
+  document.getElementById("changePasswordBtn");
+
+const changePasswordModal =
+  document.getElementById("changePasswordModal");
+
+const changePasswordCloseBtn =
+  document.getElementById("changePasswordCloseBtn");
+
+const newPasswordInput =
+  document.getElementById("newPasswordInput");
+
+const confirmPasswordInput =
+  document.getElementById("confirmPasswordInput");
+
+const saveNewPasswordBtn =
+  document.getElementById("saveNewPasswordBtn");
+
+
+// Open Change Password
+
+if (changePasswordBtn && changePasswordModal) {
+
+  changePasswordBtn.addEventListener("click", () => {
+
+    if (!auth.currentUser) {
+      alert("Please log in first.");
+      return;
+    }
+
+    newPasswordInput.value = "";
+    confirmPasswordInput.value = "";
+
+    changePasswordModal.classList.add("show");
+
+  });
+}
+
+
+// Save new password
+
+if (saveNewPasswordBtn) {
+
+  saveNewPasswordBtn.addEventListener(
+    "click",
+    async () => {
+
+      const newPassword =
+        newPasswordInput.value;
+
+      const confirmPassword =
+        confirmPasswordInput.value;
+
+
+      if (!newPassword) {
+        alert("Please enter a new password.");
+        return;
+      }
+
+      if (newPassword.length < 6) {
+        alert("Password must be at least 6 characters.");
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        alert("The passwords do not match.");
+        return;
+      }
+
+      if (!auth.currentUser) {
+        alert("Please log in again.");
+        return;
+      }
+
+
+      try {
+
+        saveNewPasswordBtn.disabled = true;
+
+        saveNewPasswordBtn.textContent =
+          "Changing...";
+
+
+        await updatePassword(
+          auth.currentUser,
+          newPassword
+        );
+
+
+        alert(
+          "Password changed successfully!"
+        );
+
+
+        changePasswordModal.classList.remove("show");
+
+
+      } catch (error) {
+
+        console.error(
+          "Change password error:",
+          error
+        );
+
+
+        if (error.code === "auth/requires-recent-login") {
+
+          alert(
+            "For security, please log out and log in again before changing your password."
+          );
+
+        } else {
+
+          alert(
+            "Failed to change password: " +
+            error.message
+          );
+
+        }
+
+      } finally {
+
+        saveNewPasswordBtn.disabled = false;
+
+        saveNewPasswordBtn.textContent =
+          "🔑 Change Password";
+
+      }
+
+    }
+  );
+}
+
+
+// Close
+
+if (changePasswordCloseBtn && changePasswordModal) {
+
+  changePasswordCloseBtn.addEventListener(
+    "click",
+    () => {
+      changePasswordModal.classList.remove("show");
+    }
+  );
+
+}
+
+
+// Close by clicking outside
+
+if (changePasswordModal) {
+
+  changePasswordModal.addEventListener(
+    "click",
+    (event) => {
+
+      if (event.target === changePasswordModal) {
+        changePasswordModal.classList.remove("show");
+      }
+
+    }
+  );
+
+}
+// ==================================================
+// CHANGE EMAIL
+// ==================================================
+
+const changeEmailBtn =
+  document.getElementById("changeEmailBtn");
+
+const changeEmailModal =
+  document.getElementById("changeEmailModal");
+
+const changeEmailCloseBtn =
+  document.getElementById("changeEmailCloseBtn");
+
+const newEmailInput =
+  document.getElementById("newEmailInput");
+
+const saveNewEmailBtn =
+  document.getElementById("saveNewEmailBtn");
+
+
+// Open Change Email
+
+if (changeEmailBtn && changeEmailModal) {
+
+  changeEmailBtn.addEventListener("click", () => {
+
+    if (!auth.currentUser) {
+      alert("Please log in first.");
+      return;
+    }
+
+    newEmailInput.value =
+      auth.currentUser.email || "";
+
+    changeEmailModal.classList.add("show");
+
+  });
+
+}
+
+
+// Save new email
+
+if (saveNewEmailBtn) {
+
+  saveNewEmailBtn.addEventListener(
+    "click",
+    async () => {
+
+      if (!auth.currentUser) {
+        alert("Please log in first.");
+        return;
+      }
+
+      const newEmail =
+        newEmailInput.value.trim();
+
+
+      if (!newEmail) {
+        alert("Please enter a new email.");
+        return;
+      }
+
+
+      if (!newEmail.includes("@")) {
+        alert("Please enter a valid email address.");
+        return;
+      }
+
+
+      if (
+        newEmail.toLowerCase() ===
+        auth.currentUser.email?.toLowerCase()
+      ) {
+
+        alert(
+          "This is already your current email."
+        );
+
+        return;
+      }
+
+
+      try {
+
+        saveNewEmailBtn.disabled = true;
+
+        saveNewEmailBtn.textContent =
+          "Changing...";
+
+
+        // Change Firebase Authentication email
+
+        await updateEmail(
+          auth.currentUser,
+          newEmail
+        );
+
+
+        // Update Firestore profile
+
+        const userRef = doc(
+          db,
+          "users",
+          auth.currentUser.uid
+        );
+
+        await updateDoc(userRef, {
+          email: newEmail
+        });
+
+
+        alert(
+          "Email changed successfully!"
+        );
+
+
+        changeEmailModal.classList.remove("show");
+
+
+      } catch (error) {
+
+        console.error(
+          "Change email error:",
+          error
+        );
+
+
+        if (
+          error.code ===
+          "auth/requires-recent-login"
+        ) {
+
+          alert(
+            "For security, please log out and log in again, then try changing your email."
+          );
+
+        } else if (
+          error.code ===
+          "auth/email-already-in-use"
+        ) {
+
+          alert(
+            "That email is already being used by another account."
+          );
+
+        } else if (
+          error.code ===
+          "auth/invalid-email"
+        ) {
+
+          alert(
+            "Please enter a valid email address."
+          );
+
+        } else {
+
+          alert(
+            "Failed to change email: " +
+            error.message
+          );
+
+        }
+
+      } finally {
+
+        saveNewEmailBtn.disabled = false;
+
+        saveNewEmailBtn.textContent =
+          "📧 Change Email";
+
+      }
+
+    }
+  );
+
+}
+
+
+// Close button
+
+if (changeEmailCloseBtn && changeEmailModal) {
+
+  changeEmailCloseBtn.addEventListener(
+    "click",
+    () => {
+
+      changeEmailModal.classList.remove("show");
+
+    }
+  );
+
+}
+
+
+// Close outside
+
+if (changeEmailModal) {
+
+  changeEmailModal.addEventListener(
+    "click",
+    (event) => {
+
+      if (event.target === changeEmailModal) {
+
+        changeEmailModal.classList.remove("show");
+
+      }
+
+    }
+  );
+
+}
+// ==================================================
+// ACCOUNT — ONLY ONE POPOVER OPEN AT A TIME
+// ==================================================
+
+const accountSubPopovers = [
+  document.getElementById("accountInfoModal"),
+  document.getElementById("editAccountModal"),
+  document.getElementById("changePasswordModal"),
+  document.getElementById("profileVisibilityModal"),
+  document.getElementById("changeEmailModal")
+];
+
+function closeAllAccountSubPopovers(exceptModal = null) {
+
+  accountSubPopovers.forEach((modal) => {
+
+    if (modal && modal !== exceptModal) {
+      modal.classList.remove("show");
     }
 
   });

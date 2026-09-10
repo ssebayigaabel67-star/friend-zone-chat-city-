@@ -14923,6 +14923,204 @@ header {
     background-position: 0% 50%;
   }
 }
+  /* ==================================================
+   ACCOUNT INFORMATION
+================================================== */
+
+.account-info-modal {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100000;
+}
+
+.account-info-modal.show {
+  display: flex;
+}
+
+.account-info-popover {
+  position: relative;
+  width: 400px;
+  max-width: calc(100vw - 30px);
+  max-height: 85vh;
+  overflow-y: auto;
+  background: #ffffff;
+  color: #222;
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.35);
+}
+
+.account-profile-photo {
+  display: flex;
+  justify-content: center;
+  margin: 15px 0 20px;
+}
+
+.account-profile-photo img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #777;
+}
+
+.account-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.account-info-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #f3f3f3;
+}
+
+.account-info-row > span {
+  font-size: 22px;
+  width: 30px;
+  text-align: center;
+}
+
+.account-info-row div {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.account-info-row small {
+  color: #777;
+  font-size: 12px;
+}
+
+.account-info-row strong {
+  font-size: 15px;
+  word-break: break-word;
+}
+
+/* Dark mode */
+
+body.dark-mode .account-info-popover {
+  background: #181818;
+  color: #fff;
+}
+
+body.dark-mode .account-info-row {
+  background: #242424;
+}
+
+body.dark-mode .account-info-row small {
+  color: #aaa;
+  }
+  /* ==================================================
+   EDIT ACCOUNT
+================================================== */
+
+.edit-account-photo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin: 15px 0 20px;
+}
+
+.edit-account-photo img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #777;
+}
+
+.change-photo-btn {
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: #333;
+  color: white;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.edit-account-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.edit-account-form label {
+  font-size: 13px;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+.edit-account-form input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+}
+
+.save-account-btn {
+  margin-top: 12px;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #222;
+  color: white;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.save-account-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+body.dark-mode .edit-account-form input {
+  background: #242424;
+  color: white;
+  border-color: #444;
+}
+
+body.dark-mode .change-photo-btn,
+body.dark-mode .save-account-btn {
+  background: #444;
+}
+  /* ==================================================
+   ACCOUNT SUB-POPOVERS — ALWAYS ABOVE ACCOUNT
+================================================== */
+
+#editAccountModal,
+#changePasswordModal,
+#changeEmailModal,
+#profileVisibilityModal,
+#accountInfoModal {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 200000 !important;
+}
+
+#editAccountModal .account-info-popover,
+#changePasswordModal .account-info-popover,
+#changeEmailModal .account-info-popover,
+#profileVisibilityModal .account-info-popover,
+#accountInfoModal .account-info-popover {
+  position: relative !important;
+  z-index: 200001 !important;
+  }
 </style>
  </head>
 <body>
@@ -15513,9 +15711,6 @@ header {
 
     </div>
 
-<button id="testNotificationBtn">
-  🔔 Test Notification
-</button>
     <!-- ==================================================
          FRIEND REQUESTS
     ================================================== -->
@@ -16703,6 +16898,99 @@ header {
   type="module"
   src="Calls.js"
 ></script>
+    <!-- ==================================================
+     ACCOUNT INFORMATION
+================================================== -->
+
+<div id="accountInfoModal" class="account-info-modal">
+
+  <div class="account-info-popover">
+
+    <button
+      id="accountInfoCloseBtn"
+      class="account-close"
+      type="button"
+    >
+      ✕
+    </button>
+    <h2>Account                    Information
+    </h2>
+
+    <p class="account-subtitle">
+      Your FriendsZone account details
+    </p>
+
+    <div class="account-profile-photo">
+      <img
+        id="accountInfoPhoto"
+        src="images/default-profile.png"
+        alt="Profile"
+      >
+    </div>
+
+    <div class="account-info-list">
+
+      <div class="account-info-row">
+        <span>👤</span>
+        <div>
+          <small>Name</small>
+          <strong id="accountInfoName">Loading...</strong>
+        </div>
+      </div>
+
+      <div class="account-info-row">
+        <span>🏷️</span>
+        <div>
+          <small>Username</small>
+          <strong id="accountInfoUsername">Loading...</strong>
+        </div>
+      </div>
+
+      <div class="account-info-row">
+        <span>📧</span>
+        <div>
+          <small>Email</small>
+          <strong id="accountInfoEmail">Loading...</strong>
+        </div>
+      </div>
+
+      <div class="account-info-row">
+        <span>🎂</span>
+        <div>
+          <small>Age</small>
+          <strong id="accountInfoAge">Not set</strong>
+        </div>
+      </div>
+
+      <div class="account-info-row">
+        <span>🌍</span>
+        <div>
+          <small>Nationality</small>
+          <strong id="accountInfoNationality">Not set</strong>
+        </div>
+      </div>
+
+      <div class="account-info-row">
+        <span>❤️</span>
+        <div>
+          <small>Likes</small>
+          <strong id="accountInfoLikes">0</strong>
+        </div>
+      </div>
+
+      <div class="account-info-row">
+        <span>👥</span>
+        <div>
+          <small>Friends</small>
+          <strong id="accountInfoFriends">0</strong>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
 <!-- =================================
      SETTINGS POPOVER
 ================================= -->
@@ -16793,7 +17081,91 @@ header {
   </div>
 
 </div>
+<!-- LAST SEEN -->
 
+<button
+  class="privacy-option"
+  id="lastSeenPrivacyBtn"
+>
+
+  <span>🕐</span>
+
+  <div>
+    <strong>Last Seen</strong>
+
+    <small>
+      Control your last activity visibility
+    </small>
+  </div>
+
+  <b>›</b>
+
+</button>
+
+    <!-- MESSAGE REQUESTS -->
+
+    <button
+      class="privacy-option"
+      id="messagePrivacyBtn"
+    >
+
+      <span>💬</span>
+
+      <div>
+        <strong>Message Requests</strong>
+
+        <small>
+          Control who can message you
+        </small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- CALL PRIVACY -->
+
+    <button
+      class="privacy-option"
+      id="callPrivacyBtn"
+    >
+
+      <span>📞</span>
+
+      <div>
+        <strong>Call Privacy</strong>
+
+        <small>
+          Control who can call you
+        </small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+
+
+    <!-- BLOCKED USERS -->
+
+    <button
+      class="privacy-option"
+      id="blockedUsersBtn"
+    >
+
+      <span>🚫</span>
+
+      <div>
+        <strong>Blocked Users</strong>
+
+        <small>
+          Manage people you have blocked
+        </small>
+      </div>
+
+      <b>›</b>
+
+    </button>
       <!-- =====================================
      NOTIFICATIONS POPOVER
 ===================================== -->
@@ -16897,6 +17269,7 @@ header {
   </div>
 
 </div>
+  
   <!-- =====================================
      ACCOUNT POPOVER
 ===================================== -->
@@ -16977,6 +17350,57 @@ header {
       <b>›</b>
 
     </button>
+    <!-- CHANGE PASSWORD MODAL -->
+
+<div id="changePasswordModal" class="account-info-modal">
+
+  <div class="account-info-popover">
+
+    <button
+      id="changePasswordCloseBtn"
+      class="account-close"
+      type="button"
+    >
+      ✕
+    </button>
+
+    <div class="account-icon">🔑</div>
+
+    <h2>Change Password</h2>
+
+    <p class="account-subtitle">
+      Create a new password for your account
+    </p>
+
+    <div class="edit-account-form">
+
+      <label>New Password</label>
+      <input
+        type="password"
+        id="newPasswordInput"
+        placeholder="Enter new password"
+      >
+
+      <label>Confirm New Password</label>
+      <input
+        type="password"
+        id="confirmPasswordInput"
+        placeholder="Confirm new password"
+      >
+
+      <button
+        id="saveNewPasswordBtn"
+        class="save-account-btn"
+        type="button"
+      >
+        🔑 Change Password
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
     <button
       class="privacy-option"
       id="profileVisibilityBtn"
@@ -17010,6 +17434,147 @@ header {
       <b>›</b>
 
     </button>
+
+  </div>
+
+</div>
+  <!-- ==================================================
+     CHANGE EMAIL MODAL
+================================================== -->
+
+<div id="changeEmailModal" class="account-info-modal">
+
+  <div class="account-info-popover">
+
+    <button
+      id="changeEmailCloseBtn"
+      class="account-close"
+      type="button"
+    >
+      ✕
+    </button>
+
+    <div class="account-icon">📧</div>
+
+    <h2>Change Email</h2>
+
+    <p class="account-subtitle">
+      Update the email address connected to your account
+    </p>
+
+    <div class="edit-account-form">
+
+      <label>New Email</label>
+
+      <input
+        type="email"
+        id="newEmailInput"
+        placeholder="Enter your new email"
+      >
+
+      <button
+        id="saveNewEmailBtn"
+        class="save-account-btn"
+        type="button"
+      >
+        📧 Change Email
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+<!-- ==================================================
+     EDIT ACCOUNT MODAL
+================================================== -->
+
+<div id="editAccountModal" class="account-info-modal">
+
+  <div class="account-info-popover">
+
+    <button
+      id="editAccountCloseBtn"
+      class="account-close"
+      type="button"
+    >
+      ✕
+    </button>
+
+    <div class="account-icon">
+      ✏️
+    </div>
+
+    <h2>Edit Account</h2>
+
+    <p class="account-subtitle">
+      Update your FriendsZone profile
+    </p>
+
+    <div class="edit-account-photo">
+      <img
+        id="editAccountPhoto"
+        src="images/default-profile.png"
+        alt="Profile"
+      >
+
+      <label
+        for="editAccountPhotoInput"
+        class="change-photo-btn"
+      >
+        📷 Change Photo
+      </label>
+
+      <input
+        type="file"
+        id="editAccountPhotoInput"
+        accept="image/*"
+        hidden
+      >
+    </div>
+
+    <div class="edit-account-form">
+
+      <label>Name</label>
+      <input
+        type="text"
+        id="editAccountName"
+        placeholder="Enter your name"
+      >
+
+      <label>Username</label>
+      <input
+        type="text"
+        id="editAccountUsername"
+        placeholder="Enter your username"
+      >
+
+      <label>Age</label>
+      <input
+        type="number"
+        id="editAccountAge"
+        placeholder="Enter your age"
+        min="1"
+        max="120"
+      >
+
+      <label>Nationality</label>
+      <input
+        type="text"
+        id="editAccountNationality"
+        placeholder="Enter your nationality"
+      >
+
+      <button
+        id="saveAccountChangesBtn"
+        class="save-account-btn"
+        type="button"
+      >
+        
+        💾 Save Changes
+      </button>
+
+    </div>
 
   </div>
 
@@ -18754,92 +19319,6 @@ header {
 
       <b>›</b>
 
-
-<!-- LAST SEEN -->
-
-<button
-  class="privacy-option"
-  id="lastSeenPrivacyBtn"
->
-
-  <span>🕐</span>
-
-  <div>
-    <strong>Last Seen</strong>
-
-    <small>
-      Control your last activity visibility
-    </small>
-  </div>
-
-  <b>›</b>
-
-</button>
-
-    <!-- MESSAGE REQUESTS -->
-
-    <button
-      class="privacy-option"
-      id="messagePrivacyBtn"
-    >
-
-      <span>💬</span>
-
-      <div>
-        <strong>Message Requests</strong>
-
-        <small>
-          Control who can message you
-        </small>
-      </div>
-
-      <b>›</b>
-
-    </button>
-
-
-    <!-- CALL PRIVACY -->
-
-    <button
-      class="privacy-option"
-      id="callPrivacyBtn"
-    >
-
-      <span>📞</span>
-
-      <div>
-        <strong>Call Privacy</strong>
-
-        <small>
-          Control who can call you
-        </small>
-      </div>
-
-      <b>›</b>
-
-    </button>
-
-
-    <!-- BLOCKED USERS -->
-
-    <button
-      class="privacy-option"
-      id="blockedUsersBtn"
-    >
-
-      <span>🚫</span>
-
-      <div>
-        <strong>Blocked Users</strong>
-
-        <small>
-          Manage people you have blocked
-        </small>
-      </div>
-
-      <b>›</b>
-
-    </button>
 <!-- =====================================
      BLOCKED USERS POPOVER
 ===================================== -->
