@@ -15,8 +15,7 @@ if (!getApps().length) {
     );
 
   initializeApp({
-    credential:
-      cert(serviceAccount)
+    credential: cert(serviceAccount)
   });
 
 }
@@ -26,10 +25,7 @@ if (!getApps().length) {
 // DELETE ACCOUNT
 // =====================================
 
-export default async function handler(
-  req,
-  res
-) {
+export default async function handler(req, res) {
 
   if (req.method !== "POST") {
 
@@ -43,7 +39,6 @@ export default async function handler(
 
   try {
 
-    // Get Firebase ID token
     const authorization =
       req.headers.authorization || "";
 
@@ -64,28 +59,18 @@ export default async function handler(
 
     // Verify the logged-in user
     const decodedToken =
-      await getAuth().verifyIdToken(
-        idToken
-      );
+      await getAuth().verifyIdToken(idToken);
 
 
     const uid =
       decodedToken.uid;
 
 
-    // =================================
-    // DELETE FIREBASE AUTH ACCOUNT
-    // =================================
-
-    await getAuth().deleteUser(
-      uid
-    );
+    // Delete Firebase Authentication account
+    await getAuth().deleteUser(uid);
 
 
-    // =================================
-    // DELETE FIRESTORE PROFILE
-    // =================================
-
+    // Delete Firestore user profile
     await getFirestore()
       .collection("users")
       .doc(uid)
@@ -93,12 +78,8 @@ export default async function handler(
 
 
     return res.status(200).json({
-
       success: true,
-
-      message:
-        "Account deleted successfully"
-
+      message: "Account deleted successfully"
     });
 
 
@@ -111,12 +92,10 @@ export default async function handler(
 
 
     return res.status(500).json({
-
       success: false,
-
       message:
+        error.message ||
         "Could not delete account"
-
     });
 
   }
