@@ -139,7 +139,28 @@ async function markPrivateMessagesAsRead(friendId) {
         chatId,
         "messages"
       );
+const responseText =
+  await response.text();
 
+let result = {};
+
+try {
+
+  result =
+    JSON.parse(responseText);
+
+} catch (parseError) {
+
+  console.error(
+    "SERVER RESPONSE:",
+    responseText
+  );
+
+  throw new Error(
+    "Server returned an invalid response. Check the Vercel deployment."
+  );
+
+}
 
     // ======================
     // FIND UNREAD MESSAGES
