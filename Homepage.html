@@ -9567,6 +9567,7 @@ body.dark-mode .unblock-user-btn {
   }
 
 }
+  
   /* ==================================================
    LONG MESSAGE CLEANUP
 ================================================== */
@@ -15120,6 +15121,176 @@ body.dark-mode .save-account-btn {
 #accountInfoModal .account-info-popover {
   position: relative !important;
   z-index: 200001 !important;
+}
+/*DELETE ACCOUNT CONFIRMATION */
+#deleteAccountPopover {
+  display: none;
+
+  position: fixed !important;
+
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+
+  width: 100vw !important;
+  height: 100vh !important;
+
+  z-index: 999999 !important;
+
+  background: rgba(0, 0, 0, 0.65);
+
+  align-items: center;
+  justify-content: center;
+}
+
+#deleteAccountPopover.show {
+  display: flex !important;
+}
+
+
+/* DELETE ACCOUNT BOX */
+
+#deleteAccountPopover .delete-account-box {
+  position: relative;
+
+  z-index: 1000000 !important;
+
+  width: min(90%, 380px);
+
+  padding: 25px;
+
+  border-radius: 16px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 15px 50px rgba(0, 0, 0, 0.5);
+
+  text-align: center;
+}
+
+
+/* TITLE */
+
+#deleteAccountPopover .delete-account-box h3 {
+  margin: 0 0 12px;
+
+  font-size: 22px;
+}
+
+
+/* MESSAGE */
+
+#deleteAccountPopover .delete-account-box p {
+  margin: 0 0 22px;
+
+  line-height: 1.5;
+
+  color: #555;
+}
+
+
+/* BUTTONS */
+
+#deleteAccountPopover .delete-account-actions {
+  display: flex;
+
+  gap: 12px;
+
+  justify-content: center;
+}
+
+
+#deleteAccountPopover .delete-account-actions button {
+  flex: 1;
+
+  padding: 11px 15px;
+
+  border: none;
+
+  border-radius: 9px;
+
+  cursor: pointer;
+
+  font-size: 14px;
+
+  font-weight: 600;
+}
+
+
+/* CANCEL */
+
+#cancelDeleteAccountBtn {
+  background: #e5e5e5;
+
+  color: #222;
+}
+
+
+/* DELETE */
+
+#confirmDeleteAccountBtn {
+  background: #d32f2f;
+
+  color: #ffffff;
+}
+.delete-account-popover.show {
+  display: flex;
+}
+
+.delete-account-box {
+  width: min(90%, 380px);
+  padding: 25px;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  text-align: center;
+}
+
+.delete-account-box h3 {
+  margin: 0 0 12px;
+  font-size: 22px;
+}
+
+.delete-account-box p {
+  margin: 0 0 22px;
+  line-height: 1.5;
+  color: #555;
+}
+
+.delete-account-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.delete-account-actions button {
+  flex: 1;
+  padding: 11px 15px;
+  border: none;
+  border-radius: 9px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+#cancelDeleteAccountBtn {
+  background: #e5e5e5;
+  color: #222;
+}
+
+#confirmDeleteAccountBtn {
+  background: #d32f2f;
+  color: #fff;
+}
+
+#cancelDeleteAccountBtn:hover {
+  background: #d5d5d5;
+}
+
+#confirmDeleteAccountBtn:hover {
+  background: #b71c1c;
   }
 </style>
  </head>
@@ -15238,19 +15409,6 @@ body.dark-mode .save-account-btn {
   >
     ⚙️
   </button>
-
-
-  <!-- DELETE ACCOUNT -->
-
-  <button
-    class="right-feature-btn delete-feature-btn"
-    id="rightDeleteAccountBtn"
-    title="Delete Account"
-    type="button"
-  >
-    🗑️
-  </button>
-
 
   <!-- LOGOUT -->
 
@@ -17431,10 +17589,18 @@ body.dark-mode .save-account-btn {
         <small>Update your email address</small>
       </div>
 
-      <b>›</b>
-
     </button>
 
+  <!-- DELETE ACCOUNT -->
+
+  <button
+    class="right-feature-btn delete-feature-btn"
+    id="rightDeleteAccountBtn"
+    title="Delete Account"
+    type="button"
+  >
+    🗑️Delete Account
+  </button>
   </div>
 
 </div>
@@ -19740,6 +19906,35 @@ body.dark-mode .save-account-btn {
 
   <img id="photoViewerImage" src="" alt="Photo">
 
+</div>
+  <!-- DELETE ACCOUNT CONFIRMATION -->
+<div id="deleteAccountPopover" class="delete-account-popover">
+  <div class="delete-account-box">
+
+    <h3>Delete Account?</h3>
+
+    <p>
+      Are you sure you want to delete your account?
+      This action cannot be undone.
+    </p>
+
+    <div class="delete-account-actions">
+      <button
+        id="cancelDeleteAccountBtn"
+        type="button"
+      >
+        Cancel
+      </button>
+
+      <button
+        id="confirmDeleteAccountBtn"
+        type="button"
+      >
+        Delete Account
+      </button>
+    </div>
+
+  </div>
 </div>
 </body>
 </html>

@@ -2343,7 +2343,7 @@ updatePassword()
 
   }
 );
-       
+
 // ======================
 // MESSAGE INPUT
 // ======================
@@ -10609,8 +10609,6 @@ if (rightHelpBtn) {
   );
 
 }
-
-
 // =====================================
 // DELETE ACCOUNT
 // =====================================
@@ -10621,18 +10619,18 @@ if (rightDeleteAccountBtn) {
     "click",
     () => {
 
-      const confirmed =
-        confirm(
-          "⚠️ Are you sure you want to delete your account?"
+      const deletePopover =
+        document.getElementById(
+          "deleteAccountPopover"
         );
 
-      if (!confirmed) {
-        return;
-      }
+      if (deletePopover) {
 
-      alert(
-        "Account deletion will be connected next."
-      );
+        deletePopover.classList.add(
+          "show"
+        );
+
+      }
 
     }
   );
@@ -10713,6 +10711,111 @@ if (cancelDeleteAccountBtn) {
   cancelDeleteAccountBtn.addEventListener(
     "click",
     closeDeleteAccountPopover
+  );
+
+}
+// =====================================
+// CONFIRM DELETE ACCOUNT
+// =====================================
+
+const confirmDeleteAccountBtn =
+  document.getElementById(
+    "confirmDeleteAccountBtn"
+  );
+
+if (confirmDeleteAccountBtn) {
+
+  confirmDeleteAccountBtn.addEventListener(
+    "click",
+    async () => {
+
+      const user = auth.currentUser;
+
+      if (!user) {
+
+        alert("Please log in first.");
+
+        return;
+
+      }
+
+      try {
+
+        confirmDeleteAccountBtn.disabled = true;
+
+        confirmDeleteAccountBtn.textContent =
+          "Deleting...";
+
+
+        // Get the user's Firebase ID token
+        const idToken =
+          await user.getIdToken();
+
+
+        // Send deletion request to Vercel
+        const response =
+          await fetch(
+            "/api/delete-account",
+            {
+              method: "POST",
+
+              headers: {
+                "Authorization":
+                  `Bearer ${idToken}`,
+
+                "Content-Type":
+                  "application/json"
+              }
+            }
+          );
+
+
+        const result =
+          await response.json();
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            result.message ||
+            "Account deletion failed."
+          );
+
+        }
+
+
+        alert(
+          "Your account has been deleted."
+        );
+
+
+        window.location.href =
+          "index.html";
+
+
+      } catch (error) {
+
+        console.error(
+          "Delete account error:",
+          error
+        );
+
+
+        confirmDeleteAccountBtn.disabled =
+          false;
+
+        confirmDeleteAccountBtn.textContent =
+          "Delete Account";
+
+
+        alert(
+          error.message ||
+          "Could not delete your account. Please try again."
+        );
+
+      }
+
+    }
   );
 
 }
