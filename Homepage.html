@@ -278,309 +278,194 @@ body.dark-mode
 /* =====================================
   FRIENDSZONE — RAINBOW SIDEBAR
 ================================================== */
-
-.sidebar {
-width: 220px;
-min-width: 220px;
-
-height: calc(100vh - 60px);
-
-background:
-radial-gradient(
-circle at 15% 10%,
-rgba(255, 0, 128, 0.45),
-transparent 35%
-),
-radial-gradient(
-circle at 90% 20%,
-rgba(0, 255, 255, 0.35),
-transparent 35%
-),
-radial-gradient(
-circle at 20% 75%,
-rgba(255, 220, 0, 0.35),
-transparent 35%
-),
-radial-gradient(
-circle at 90% 85%,
-rgba(140, 0, 255, 0.45),
-transparent 40%
-),
-linear-gradient(
-135deg,
-#ff006e,
-#8338ec,
-#3a86ff,
-#00f5d4,
-#00bbf9,
-#fee440,
-#ff9f1c,
-#ff006e
-);
-
-background-size:
-180% 180%,
-180% 180%,
-180% 180%,
-180% 180%,
-500% 500%;
-
-animation: rainbowSidebar 12s ease infinite;
-
-border-right: 3px solid rgba(255, 255, 255, 0.7);
-
-box-shadow:
-5px 0 25px rgba(255, 0, 128, 0.35),
-0 0 35px rgba(0, 229, 255, 0.25),
-inset -2px 0 15px rgba(255, 255, 255, 0.15);
-
-overflow-y: auto;
-overflow-x: hidden;
-
-position: fixed;
-
-top: 60px;
-left: 0;
-
-z-index: 2000;
-
-transform: translateX(-100%);
-
-transition:
-transform 0.3s ease,
-box-shadow 0.3s ease;
-
-pointer-events: auto;
-
-backdrop-filter: blur(15px);
--webkit-backdrop-filter: blur(15px);
-}
-
 /* ==================================================
-RAINBOW ANIMATION
+   FRIENDSZONE — CLEAN PREMIUM SIDEBAR
+   FAST • ATTRACTIVE • EASY TO READ
 ================================================== */
 
-@keyframes rainbowSidebar {
-0% {
-background-position:
-0% 0%,
-100% 0%,
-0% 100%,
-100% 100%,
-0% 50%;
+.sidebar {
+  width: 220px;
+  min-width: 220px;
+
+  height: calc(100vh - 60px);
+
+  /* CLEAN MAIN COLOR */
+  background: #f4f1e8;
+
+  color: #292929;
+
+  /* PREMIUM BORDER */
+  border-right: 2px solid #c9b98a;
+
+  /* LIGHT SHADOW */
+  box-shadow:
+    5px 0 15px rgba(0, 0, 0, 0.12);
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  position: fixed;
+
+  top: 60px;
+  left: 0;
+
+  z-index: 2000;
+
+  transform: translateX(-100%);
+
+  transition: transform 0.25s ease;
+
+  pointer-events: auto;
+
+  /* IMPORTANT:
+     Removed blur because it slows mobile scrolling */
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
-25% {
-background-position:
-100% 0%,
-0% 50%,
-100% 100%,
-0% 0%,
-50% 50%;
-}
-
-50% {
-background-position:
-100% 100%,
-0% 100%,
-100% 0%,
-0% 100%,
-100% 50%;
-}
-
-75% {
-background-position:
-0% 100%,
-100% 50%,
-0% 0%,
-100% 100%,
-50% 50%;
-}
-
-100% {
-background-position:
-0% 0%,
-100% 0%,
-0% 100%,
-100% 100%,
-0% 50%;
-}
-}
 
 /* ==================================================
-RAINBOW EDGE
+   🟠 SIDEBAR SIDE ACCENT
 ================================================== */
 
 .sidebar::before {
-content: "";
+  content: "";
 
-position: absolute;
+  position: absolute;
 
-top: 0;
-left: 0;
+  top: 0;
+  left: 0;
 
-width: 5px;
-height: 100%;
+  width: 4px;
+  height: 100%;
 
-background: linear-gradient(
-180deg,
-#ff0000,
-#ff7a00,
-#ffe600,
-#00ff66,
-#00e5ff,
-#0066ff,
-#8a2be2,
-#ff00cc,
-#ff0000
-);
+  background: #d9822b;
 
-background-size: 100% 400%;
+  box-shadow:
+    0 0 7px rgba(217, 130, 43, 0.35);
 
-animation: rainbowEdge 5s linear infinite;
-
-box-shadow:
-0 0 10px #00e5ff,
-0 0 20px #ff00cc,
-0 0 30px rgba(255,255,255,0.5);
-
-pointer-events: none;
+  pointer-events: none;
 }
 
-@keyframes rainbowEdge {
-0% {
-background-position: 0% 0%;
-}
-
-100% {
-background-position: 0% 400%;
-}
-}
 
 /* ==================================================
-SIDEBAR HOVER GLOW
+   🟢 TOP ACCENT
 ================================================== */
 
-.sidebar:hover {
-box-shadow:
-8px 0 35px rgba(255, 0, 128, 0.45),
-0 0 40px rgba(0, 229, 255, 0.3),
-inset -2px 0 20px rgba(255, 255, 255, 0.18);
+.sidebar::after {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 3px;
+
+  background: #4f7f55;
+
+  pointer-events: none;
 }
 
+
 /* ==================================================
-RAINBOW SCROLLBAR
+   💫 SIDEBAR OPEN
+================================================== */
+
+.sidebar.sidebar-open {
+  transform: translateX(0);
+
+  box-shadow:
+    7px 0 20px rgba(0, 0, 0, 0.15);
+}
+
+
+/* ==================================================
+   📝 KEEP CONTENT CLEAR
+================================================== */
+
+.sidebar > * {
+  position: relative;
+  z-index: 2;
+}
+
+
+/* ==================================================
+   ✨ SIDEBAR TEXT
+================================================== */
+
+.sidebar h1,
+.sidebar h2,
+.sidebar h3,
+.sidebar h4,
+.sidebar h5,
+.sidebar h6,
+.sidebar p,
+.sidebar span,
+.sidebar label {
+  color: #292929;
+}
+
+
+/* ==================================================
+   🔘 SIDEBAR BUTTONS
+================================================== */
+
+.sidebar button,
+.sidebar a {
+  transition: background-color 0.12s ease;
+}
+
+
+/* ==================================================
+   🟠 BUTTON HOVER
+================================================== */
+
+.sidebar button:hover,
+.sidebar a:hover {
+  background: #e8e0cc;
+
+  box-shadow:
+    inset 3px 0 0 #d9822b;
+}
+
+
+/* ==================================================
+   👆 TOUCH
+================================================== */
+
+.sidebar button:active,
+.sidebar a:active {
+  background: #ddd3b9;
+}
+
+
+/* ==================================================
+   📜 FAST SCROLLBAR
 ================================================== */
 
 .sidebar::-webkit-scrollbar {
-width: 6px;
+  width: 5px;
 }
 
 .sidebar::-webkit-scrollbar-track {
-background: rgba(255, 255, 255, 0.08);
+  background: #e9e5da;
 }
 
 .sidebar::-webkit-scrollbar-thumb {
-background: linear-gradient(
-180deg,
-#ff004c,
-#ff9900,
-#ffee00,
-#00ff88,
-#00d9ff,
-#8c00ff,
-#ff00c8
-);
+  background: #b89552;
 
-border-radius: 20px;
-
-box-shadow:
-0 0 8px rgba(255,255,255,0.7);
+  border-radius: 20px;
 }
 
 .sidebar::-webkit-scrollbar-thumb:hover {
-filter: brightness(1.4);
-}
-/* ==================================================
-FRIENDSZONE — NEON RGB GAMING SIDEBAR
-================================================== */
-
-.sidebar {
-background:
-radial-gradient(circle at 20% 10%, rgba(255, 0, 140, .25), transparent 30%),
-radial-gradient(circle at 85% 25%, rgba(0, 220, 255, .22), transparent 30%),
-radial-gradient(circle at 15% 80%, rgba(120, 0, 255, .25), transparent 30%),
-linear-gradient(145deg, #050510, #090b1f 45%, #050510);
-
-border-right: 1px solid rgba(0, 255, 255, .55);
-
-box-shadow:
-0 0 15px rgba(0, 255, 255, .18),
-5px 0 30px rgba(255, 0, 170, .15),
-inset -1px 0 15px rgba(0, 255, 255, .08);
-
-backdrop-filter: blur(18px);
--webkit-backdrop-filter: blur(18px);
-}
-
-/* ==================================================
-RGB SIDE LIGHT
-================================================== */
-
-.sidebar::before {
-content: "";
-
-position: absolute;
-
-left: 0;
-top: 0;
-
-width: 4px;
-height: 100%;
-
-background: linear-gradient(
-180deg,
-#ff0055,
-#ff8800,
-#ffee00,
-#00ff66,
-#00eaff,
-#0066ff,
-#8c00ff,
-#ff00cc,
-#ff0055
-);
-
-background-size: 100% 500%;
-
-animation: rgbSideLight 4s linear infinite;
-
-box-shadow:
-0 0 8px #00eaff,
-0 0 18px #ff00cc,
-0 0 30px rgba(255, 255, 255, .25);
-
-z-index: 5;
-}
-@keyframes rgbSideLight {
-0% {
-background-position: 0 0;
-}
-
-100% {
-background-position: 0 500%;
-}
-}
+  background: #967536;
+  }
 
 /* ==================================================
    SIDEBAR BUTTONS
 ================================================== */
-
-/*
-  This targets common buttons/links inside the sidebar.
-  If your buttons have another class, tell me the class
-  and I'll target it exactly.
-*/
 
 .sidebar button,
 .sidebar a,
