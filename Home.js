@@ -349,7 +349,6 @@ async function loadFriends() {
 
         }
 
-
         // ======================
         // FRIEND HTML
         // ======================
@@ -14812,7 +14811,150 @@ if (publishAnnouncementBtn) {
   publishAnnouncementBtn.addEventListener(
     "click",
     async () => {
+let imageData = "";
 
+if (
+  announcementImageInput &&
+  announcementImageInput.files.length > 0
+) {
+
+  const file =
+    announcementImageInput.files[0];
+
+  if (!file.type.startsWith("image/")) {
+
+    alert("Please select an image file.");
+
+    return;
+  }
+
+
+  imageData = await new Promise(
+    (resolve, reject) => {
+
+      const reader = new FileReader();
+
+      reader.onload = () => {
+
+        const img = new Image();
+
+        img.onload = () => {
+
+          const maxWidth = 1000;
+          const maxHeight = 1000;
+
+          let width = img.width;
+          let height = img.height;
+
+
+          // Resize large images
+
+          if (width > maxWidth) {
+
+            height =
+              height *
+              (maxWidth / width);
+
+            width = maxWidth;
+          }
+
+
+          if (height > maxHeight) {
+
+            width =
+              width *
+              (maxHeight / height);
+
+            height = maxHeight;
+          }
+
+
+          const canvas =
+            document.createElement("canvas");
+
+          canvas.width =
+            Math.round(width);
+
+          canvas.height =
+            Math.round(height);
+
+
+          const ctx =
+            canvas.getContext("2d");
+
+          ctx.drawImage(
+            img,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+          );
+
+
+          // Compress image
+
+          const compressedImage =
+            canvas.toDataURL(
+              "image/jpeg",
+              0.75
+            );
+
+
+          // Prevent extremely large data
+
+          if (
+            compressedImage.length >
+            900000
+          ) {
+
+            reject(
+              new Error(
+                "Image is still too large. Please choose a smaller image."
+              )
+            );
+
+            return;
+          }
+
+
+          resolve(compressedImage);
+
+        };
+
+
+        img.onerror = () => {
+
+          reject(
+            new Error(
+              "Could not process the image."
+            )
+          );
+
+        };
+
+
+        img.src =
+          reader.result;
+
+      };
+
+
+      reader.onerror = () => {
+
+        reject(
+          new Error(
+            "Could not read image."
+          )
+        );
+
+      };
+
+
+      reader.readAsDataURL(file);
+
+    }
+  );
+}
       // ======================
       // LOGIN CHECK
       // ======================
@@ -15155,7 +15297,20 @@ function loadAnnouncements() {
                 )}
 
               </div>
-
+${
+  data.imageURL
+    ? `
+      <div class="announcement-image-container">
+        <img
+          src="${data.imageURL}"
+          class="announcement-item-image"
+          alt="Announcement image"
+          loading="lazy"
+        >
+      </div>
+    `
+    : ""
+}
 
               <div class="announcement-item-footer">
 
