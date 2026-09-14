@@ -1976,6 +1976,116 @@ async function declineFriendRequest(
   }
 
 }
+// ======================
+// AUTOMATIC FCM REGISTRATION
+// ======================
+
+async function registerFCMToken(user) {
+
+  try {
+
+    if (!user) {
+      return;
+    }
+
+    if (!("serviceWorker" in navigator)) {
+
+      console.log(
+        "⚠️ Service workers are not supported."
+      );
+
+      return;
+    }
+
+    // Wait for Firebase messaging service worker
+    const registration =
+      await navigator.serviceWorker.ready;
+
+    // ======================
+    // NOTIFICATION PERMISSION
+    // ======================
+
+    let permission =
+      Notification.permission;
+
+    if (permission !== "granted") {
+
+      permission =
+        await Notification.requestPermission();
+
+    }
+
+    if (permission !== "granted") {
+
+      console.log(
+        "⚠️ Notification permission denied."
+      );
+
+      return;
+    }
+
+    // ======================
+    // GET FCM TOKEN
+    // ======================
+
+    const token =
+      await getToken(
+        messaging,
+        {
+          vapidKey:
+            "BH6XiMfNNPSfvcnvFFtQNawwu1IcW1g25KUnMzvd9WDnB7UgalJoIkCkA4Kz2g_6BvOhCdUP1iY4LTD11xeW2e8",
+
+          serviceWorkerRegistration:
+            registration
+        }
+      );
+
+    if (!token) {
+
+      console.log(
+        "⚠️ No FCM token generated."
+      );
+
+      return;
+    }
+
+    console.log(
+      "FCM Token:",
+      token
+    );
+
+    // ======================
+    // SAVE TOKEN TO USER
+    // ======================
+
+    const userRef =
+      doc(db, "users", user.uid);
+
+    await setDoc(
+      userRef,
+      {
+        fcmToken: token
+      },
+      {
+        merge: true
+      }
+    );
+
+    console.log(
+      "✅ FCM token automatically registered for:",
+      user.uid
+    );
+
+  } catch (error) {
+
+    console.error(
+      "❌ Automatic FCM registration error:",
+      error
+    );
+
+  }
+
+}
 // ==================================================
 // LOGIN CHECK
 // ==================================================
@@ -2112,7 +2222,7 @@ onAuthStateChanged(
           user.uid
         );
 
-
+await registerFCMToken(user);
       const userSnap =
         await getDoc(
           userRef
