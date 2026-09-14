@@ -3,12 +3,14 @@
 // ======================
 
 import {
-  initializeApp
+  initializeApp,
+  getApps,
+  getApp
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 
 import {
   getAuth,
-  createUserWithEmailAndPassword,
+  createUserWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
 import {
@@ -16,12 +18,6 @@ import {
   doc,
   setDoc
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-
-import {
-  getMessaging,
-  getToken,
-  onMessage
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-messaging.js";
 
 
 // ======================
@@ -37,89 +33,35 @@ const firebaseConfig = {
   appId: "1:1077723243409:web:f030fdcd210f0326d93030",
   measurementId: "G-3RD3QLSF3F"
 };
-
-
 // ======================
 // INITIALIZE FIREBASE
 // ======================
-
-const app = initializeApp(firebaseConfig);
-
-const auth = getAuth(app);
-
-const db = getFirestore(app);
-
-const messaging = getMessaging(app);
-
+const app =
+  getApps().length > 0
+    ? getApp()
+    : initializeApp(firebaseConfig);
+const auth =
+  getAuth(app);
+const db =
+  getFirestore(app);
 // ==================================================
 // FIREBASE CLOUD MESSAGING
 // ==================================================
-
-if ("serviceWorker" in navigator) {
-
-  navigator.serviceWorker
-    .register("/firebase-messaging-sw.js")
-
-    .then(async (registration) => {
-
-      console.log(
-        "Firebase messaging service worker registered."
-      );
-
-      if (Notification.permission !== "granted") {
-
-        const permission =
-          await Notification.requestPermission();
-
-        if (permission !== "granted") {
-
-          console.log(
-            "Notification permission denied."
-          );
-
-          return;
-        }
-      }
-
- else {
-        console.log(
-          "No FCM token available."
-        );
-
-      }
-
-    })
-
-    .catch((error) => {
-
-      console.error(
-        "Firebase Messaging setup failed:",
-        error
-      );
-
-    });
-
-}
-
+console.log(
+  "Firebase Messaging is handled by Home.js."
+);
 // ==================================================
 // CREATE ACCOUNT
 // ==================================================
-
 const signupBtn =
   document.getElementById("signupBtn");
-
-
 if (signupBtn) {
-
   signupBtn.addEventListener(
     "click",
     async () => {
-
-
       // ======================
       // GET FORM VALUES
       // ======================
-
       const name =
         document
           .getElementById("name")

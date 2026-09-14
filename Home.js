@@ -2619,20 +2619,14 @@ try {
           })
         }
       );
-
-      console.log(
-        "✅ Push notification sent"
-      );
-
+alert("✅ Push notification request sent!");
     } else {
 
-      console.log(
-        "⚠️ Receiver has no FCM token"
-      );
-
+  alert("⚠️ Receiver has no FCM token!");
     }
 
   }
+  
 
 } catch (notificationError) {
 
@@ -15211,7 +15205,11 @@ function loadAnnouncements() {
 
             const data =
               docSnap.data();
-
+const announcementImage =
+  data.imageURL ||
+  data.imageData ||
+  data.image ||
+  "";
 
             const item =
               document.createElement(
