@@ -2552,28 +2552,24 @@ if (messageInput) {
 // ======================
 // SEND TEXT MESSAGE
 // ======================
-
 if (sendBtn) {
 
   sendBtn.addEventListener(
     "click",
     async () => {
-console.log("SEND BUTTON CLICKED");
+
+      console.log("SEND BUTTON CLICKED");
+
       if (!auth.currentUser) {
 
-        alert(
-          "Please log in first."
-        );
+        alert("Please log in first.");
 
         return;
-
       }
 
 
       const input =
-        document.getElementById(
-          "messageInput"
-        );
+        document.getElementById("messageInput");
 
 
       if (!input) {
@@ -2636,73 +2632,9 @@ console.log("SEND BUTTON CLICKED");
             }
           );
 
-// ======================
-// SEND PUSH NOTIFICATION
-// ======================
 
-try {
+          // Clear immediately after message is saved
 
-  const receiverRef =
-    doc(db, "users", selectedFriendId);
-
-  const receiverSnap =
-    await getDoc(receiverRef);
-
-  if (receiverSnap.exists()) {
-
-    const receiverData =
-      receiverSnap.data();
-
-    const receiverToken =
-      receiverData.fcmToken;
-
-    if (receiverToken) {
-
-      await fetch(
-        "/api/send-notification",
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
-
-          body: JSON.stringify({
-            token: receiverToken,
-
-            title:
-              currentUserName,
-
-            body:
-              text,
-
-            data: {
-              type: "chat",
-              chatId: chatId,
-              senderId:
-                auth.currentUser.uid
-            }
-          })
-        }
-      );
-alert("✅ Push notification request sent!");
-    } else {
-
-  alert("⚠️ Receiver has no FCM token!");
-    }
-
-  }
-  
-
-} catch (notificationError) {
-
-  console.error(
-    "Notification error:",
-    notificationError
-  );
-
-}
           input.value = "";
 
           replyingTo = null;
@@ -2710,8 +2642,8 @@ alert("✅ Push notification request sent!");
           input.placeholder =
             "Type your message...";
 
-          return;
 
+          return;
         }
 
 
@@ -2726,7 +2658,6 @@ alert("✅ Push notification request sent!");
           );
 
           return;
-
         }
 
 
@@ -2773,12 +2704,99 @@ alert("✅ Push notification request sent!");
         );
 
 
+        // ======================
+        // CLEAR INPUT IMMEDIATELY
+        // ======================
+
         input.value = "";
 
         replyingTo = null;
 
         input.placeholder =
           "Type your message...";
+
+
+        // ======================
+        // SEND PUSH NOTIFICATION
+        // ======================
+        // Do this AFTER clearing
+        // the message input.
+
+        try {
+
+          const receiverRef =
+            doc(
+              db,
+              "users",
+              selectedFriendId
+            );
+
+
+          const receiverSnap =
+            await getDoc(receiverRef);
+
+
+          if (receiverSnap.exists()) {
+
+            const receiverData =
+              receiverSnap.data();
+
+
+            const receiverToken =
+              receiverData.fcmToken;
+
+
+            if (receiverToken) {
+
+              await fetch(
+                "/api/send-notification",
+                {
+                  method: "POST",
+
+                  headers: {
+                    "Content-Type":
+                      "application/json"
+                  },
+
+                  body: JSON.stringify({
+
+                    token:
+                      receiverToken,
+
+                    title:
+                      currentUserName,
+
+                    body:
+                      text,
+
+                    data: {
+
+                      type:
+                        "chat",
+
+                      chatId:
+                        chatId,
+
+                      senderId:
+                        auth.currentUser.uid
+                    }
+
+                  })
+                }
+              );
+
+            }
+
+          }
+
+        } catch (notificationError) {
+
+          console.error(
+            "Notification error:",
+            notificationError
+          );
+
+        }
 
 
       } catch (error) {
