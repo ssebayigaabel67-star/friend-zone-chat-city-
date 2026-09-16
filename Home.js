@@ -2406,8 +2406,6 @@ try {
 
 
       await loadMyProfilePicture();
-
-updatePassword()
       console.log(
         "Homepage loaded successfully"
       );
