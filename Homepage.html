@@ -325,7 +325,7 @@ body.dark-mode
 
 
 /* ==================================================
-   🟠 SIDEBAR SIDE ACCENT
+   SIDEBAR SIDE ACCENT
 ================================================== */
 
 .sidebar::before {
@@ -349,7 +349,7 @@ body.dark-mode
 
 
 /* ==================================================
-   🟢 TOP ACCENT
+   TOP ACCENT
 ================================================== */
 
 .sidebar::after {
@@ -370,7 +370,7 @@ body.dark-mode
 
 
 /* ==================================================
-   💫 SIDEBAR OPEN
+   SIDEBAR OPEN
 ================================================== */
 
 .sidebar.sidebar-open {
@@ -392,7 +392,7 @@ body.dark-mode
 
 
 /* ==================================================
-   ✨ SIDEBAR TEXT
+   SIDEBAR TEXT
 ================================================== */
 
 .sidebar h1,
@@ -419,7 +419,7 @@ body.dark-mode
 
 
 /* ==================================================
-   🟠 BUTTON HOVER
+   BUTTON HOVER
 ================================================== */
 
 .sidebar button:hover,
@@ -1808,7 +1808,7 @@ body.dark-mode
 
 
 /* ==================================================
-   ⋮ GROUP THREE-DOT BUTTON
+   GROUP THREE-DOT BUTTON
 ================================================== */
 
 .groups-menu-btn {
@@ -3046,7 +3046,7 @@ CANCEL
 
 
 /* ==================================================
-   🎤 RECORDING STATE
+   RECORDING STATE
 ================================================== */
 
 #recordBtn.recording,
@@ -3200,7 +3200,7 @@ CANCEL
 
 
 /* ==================================================
-   🔊 AUDIO
+   AUDIO
 ================================================== */
 
 audio {
@@ -4955,7 +4955,7 @@ body.dark-mode #darkModeBtn {
   pointer-events: auto;
 }
   /* ==================================================
-   🌈 FRIENDSZONE — PREMIUM NEON RIGHT SIDEBAR
+   FRIENDSZONE — PREMIUM NEON RIGHT SIDEBAR
    ================================================== */
 
 .right-feature-bar {
@@ -4976,7 +4976,7 @@ body.dark-mode #darkModeBtn {
 
   padding: 12px 6px;
 
-  /* 🌈 Deep rainbow glass */
+  /* Deep rainbow glass */
   background:
     linear-gradient(
       180deg,
@@ -5000,14 +5000,14 @@ body.dark-mode #darkModeBtn {
 
   overflow-y: auto;
 
-  /* 🌈 subtle moving glow */
+  /* subtle moving glow */
   background-size: 100% 300%;
   animation: featureRainbow 12s ease-in-out infinite;
 }
 
 
 /* ==================================================
-   🌈 MOVING RAINBOW
+   MOVING RAINBOW
    ================================================== */
 
 @keyframes featureRainbow {
@@ -5027,7 +5027,7 @@ body.dark-mode #darkModeBtn {
 
 
 /* ==================================================
-   ✨ FEATURE BUTTONS
+   FEATURE BUTTONS
    ================================================== */
 
 .right-feature-bar button {
@@ -5073,7 +5073,7 @@ body.dark-mode #darkModeBtn {
 
 
 /* ==================================================
-   🌈 COLORFUL GLOW AROUND BUTTON
+   COLORFUL GLOW AROUND BUTTON
    ================================================== */
 
 .right-feature-bar button::before {
@@ -5124,7 +5124,7 @@ body.dark-mode #darkModeBtn {
 
 
 /* ==================================================
-   ✨ HOVER EFFECT
+   HOVER EFFECT
    ================================================== */
 
 .right-feature-bar button:hover {
@@ -5142,7 +5142,7 @@ body.dark-mode #darkModeBtn {
 
 
 /* ==================================================
-   💫 PRESS EFFECT
+   PRESS EFFECT
    ================================================== */
 
 .right-feature-bar button:active {
@@ -5155,7 +5155,7 @@ body.dark-mode #darkModeBtn {
 
 
 /* ==================================================
-   ✨ ICON GLOW
+   ICON GLOW
    ================================================== */
 
 .right-feature-bar button {
@@ -9452,7 +9452,7 @@ body.dark-mode .unblock-user-btn {
   }
 
 }
-  
+
   /* ==================================================
    LONG MESSAGE CLEANUP
 ================================================== */
@@ -15227,9 +15227,386 @@ body.dark-mode .save-account-btn {
   object-fit: contain;
   border-radius: 12px;
 }
+
+/* ==================================================
+   FRIENDSZONE SVG ICONS
+   Sizes and colors every real app icon that
+   replaced an emoji. Icons scale with each
+   button's own font-size and inherit its
+   color, exactly like the emoji they replaced.
+================================================== */
+
+.fz-icon {
+  width: 1.3em;
+  height: 1.3em;
+  display: inline-block;
+  flex-shrink: 0;
+  vertical-align: -0.22em;
+  fill: none;
+  color: inherit;
+  overflow: visible;
+}
+
+/* ==================================================
+   FRIENDSZONE ICON COLORS
+   Gives each icon a fitting accent color instead of
+   plain inherited text color, closer to how the
+   original colorful emoji read at a glance. Anywhere
+   an inline style already sets a color (status dots,
+   theme swatches) that still wins over these.
+================================================== */
+
+.fz-icon:has(use[href="#icon-globe"])      { color: #29B6F6; }
+.fz-icon:has(use[href="#icon-shield"])     { color: #26A69A; }
+.fz-icon:has(use[href="#icon-moon"])       { color: #B39DDB; }
+.fz-icon:has(use[href="#icon-megaphone"])  { color: #FF7043; }
+.fz-icon:has(use[href="#icon-logout"])     { color: #E53935; }
+.fz-icon:has(use[href="#icon-alert"])      { color: #E53935; }
+.fz-icon:has(use[href="#icon-camera"])     { color: #42A5F5; }
+.fz-icon:has(use[href="#icon-users"])      { color: #5C6BC0; }
+.fz-icon:has(use[href="#icon-user"])       { color: #5C6BC0; }
+.fz-icon:has(use[href="#icon-plus"])       { color: #43A047; }
+.fz-icon:has(use[href="#icon-phone"])      { color: #43A047; }
+.fz-icon:has(use[href="#icon-video"])      { color: #7E57C2; }
+.fz-icon:has(use[href="#icon-image"])      { color: #26A69A; }
+.fz-icon:has(use[href="#icon-mic"])        { color: #EC407A; }
+.fz-icon:has(use[href="#icon-heart"])      { color: #E53935; }
+.fz-icon:has(use[href="#icon-edit"])       { color: #42A5F5; }
+.fz-icon:has(use[href="#icon-save"])       { color: #2196F3; }
+.fz-icon:has(use[href="#icon-trash"])      { color: #E53935; }
+.fz-icon:has(use[href="#icon-message"])    { color: #25D366; }
+.fz-icon:has(use[href="#icon-calendar"])   { color: #FB8C00; }
+.fz-icon:has(use[href="#icon-key"])        { color: #FFB300; }
+.fz-icon:has(use[href="#icon-eye"])        { color: #29B6F6; }
+.fz-icon:has(use[href="#icon-ban"])        { color: #E53935; }
+.fz-icon:has(use[href="#icon-flag"])       { color: #E53935; }
+.fz-icon:has(use[href="#icon-sun"])        { color: #FFB300; }
+.fz-icon:has(use[href="#icon-sparkles"])   { color: #FFC107; }
+.fz-icon:has(use[href="#icon-refresh"])    { color: #42A5F5; }
+.fz-icon:has(use[href="#icon-link"])       { color: #42A5F5; }
+.fz-icon:has(use[href="#icon-door"])       { color: #8D6E63; }
+.fz-icon:has(use[href="#icon-crown"])      { color: #FFC107; }
+.fz-icon:has(use[href="#icon-bell"])       { color: #FFB300; }
+.fz-icon:has(use[href="#icon-mail"])       { color: #42A5F5; }
+.fz-icon:has(use[href="#icon-cake"])       { color: #F06292; }
+.fz-icon:has(use[href="#icon-wave"])       { color: #FFCA28; }
+.fz-icon:has(use[href="#icon-water"])      { color: #29B6F6; }
+.fz-icon:has(use[href="#icon-volume"])     { color: #42A5F5; }
+.fz-icon:has(use[href="#icon-clock"])      { color: #607D8B; }
+.fz-icon:has(use[href="#icon-clipboard"])  { color: #607D8B; }
+.fz-icon:has(use[href="#icon-tag"])        { color: #26A69A; }
+.fz-icon:has(use[href="#icon-id"])         { color: #42A5F5; }
+.fz-icon:has(use[href="#icon-leaf"])       { color: #66BB6A; }
+.fz-icon:has(use[href="#icon-flame"])      { color: #FF7043; }
+.fz-icon:has(use[href="#icon-rocket"])     { color: #7E57C2; }
+.fz-icon:has(use[href="#icon-burst"])      { color: #FF4081; }
+.fz-icon:has(use[href="#icon-check"])      { color: #43A047; }
+.fz-icon:has(use[href="#icon-rainbow"])    { color: #BA68C8; }
+.fz-icon:has(use[href="#icon-lock"])       { color: #78909C; }
 </style>
  </head>
 <body>
+
+<!-- FriendsZone SVG icon library -->
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  style="display:none;"
+  aria-hidden="true"
+>
+  <symbol id="icon-menu" viewBox="0 0 24 24">
+    <path d="M4 6h16M4 12h16M4 18h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="icon-globe" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18" fill="none" stroke="currentColor" stroke-width="1.7"/>
+  </symbol>
+
+  <symbol id="icon-shield" viewBox="0 0 24 24">
+    <path d="M12 3l8 3v5c0 5.2-3.4 8.7-8 10-4.6-1.3-8-4.8-8-10V6l8-3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+  </symbol>
+
+  <symbol id="icon-moon" viewBox="0 0 24 24">
+    <path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+  </symbol>
+
+  <symbol id="icon-newspaper" viewBox="0 0 24 24">
+    <path d="M4 4h16v16H4z" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M8 8h8M8 12h8M8 16h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="icon-megaphone" viewBox="0 0 24 24">
+    <path d="M3 11v2h4l10 5V6L7 11H3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M7 13l1.5 6h2L9 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M20 9a4 4 0 0 1 0 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="icon-settings" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.7 1.7-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6V20h-2.4v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L8 17l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H6v-2.4h.8a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L8 8.6l1.7-1.7.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.6V5h2.4v.7a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1 1.7 1.7-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.8V14h-.8a1.7 1.7 0 0 0-1.6 1z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+  </symbol>
+
+  <symbol id="icon-logout" viewBox="0 0 24 24">
+    <path d="M10 4H5v16h5M14 8l4 4-4 4M18 12H9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+
+  <symbol id="icon-x" viewBox="0 0 24 24">
+    <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="icon-alert" viewBox="0 0 24 24">
+    <path d="M12 3l9 17H3L12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M12 9v5M12 17h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="icon-camera" viewBox="0 0 24 24">
+    <path d="M4 7h4l1.5-2h5L16 7h4v12H4V7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <circle cx="12" cy="13" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/>
+  </symbol>
+
+  <symbol id="icon-users" viewBox="0 0 24 24">
+    <circle cx="9" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M3 20c0-3.3 2.7-5 6-5s6 1.7 6 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <path d="M16 6.5a3 3 0 0 1 0 5.8M17 15c2.3.5 4 2.1 4 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="icon-user" viewBox="0 0 24 24">
+    <circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M4 20c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="icon-plus" viewBox="0 0 24 24">
+    <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="icon-more" viewBox="0 0 24 24">
+    <circle cx="12" cy="5" r="1.5" fill="currentColor"/>
+    <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+    <circle cx="12" cy="19" r="1.5" fill="currentColor"/>
+  </symbol>
+
+  <symbol id="icon-phone" viewBox="0 0 24 24">
+    <path d="M6.5 4h3l1.5 4-2 1.5c1 2 2.5 3.5 4.5 4.5l1.5-2 4 1.5v3c0 1-1 2-2 2C10.4 18.5 5.5 13.6 5.5 7c0-1 0-3 1-3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+  </symbol>
+
+  <symbol id="icon-video" viewBox="0 0 24 24">
+    <path d="M3 6h12v12H3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M15 10l6-3.5v11L15 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+  </symbol>
+
+  <symbol id="icon-image" viewBox="0 0 24 24">
+    <path d="M4 5h16v14H4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <circle cx="9" cy="10" r="1.6" fill="currentColor"/>
+    <path d="M4 17l5-5 4 4 3-3 4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="icon-mic" viewBox="0 0 24 24">
+    <path d="M9 4h6v9a3 3 0 0 1-6 0V4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M9 21h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="icon-heart" viewBox="0 0 24 24">
+    <path d="M12 20.5S3.5 15 3.5 9a4.5 4.5 0 0 1 8.5-2 4.5 4.5 0 0 1 8.5 2c0 6-8.5 11.5-8.5 11.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+  </symbol>
+
+  <symbol id="icon-edit" viewBox="0 0 24 24">
+    <path d="M4 20l.7-4L16 4.7l3.3 3.3L8 19.3 4 20z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M13.5 6.5l4 4" fill="none" stroke="currentColor" stroke-width="2"/>
+  </symbol>
+
+  <symbol id="icon-save" viewBox="0 0 24 24">
+    <path d="M5 4h11l3 3v13H5V4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M8 4v6h8V4M8 14h8v6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+  </symbol>
+
+  <symbol id="icon-trash" viewBox="0 0 24 24">
+    <path d="M5 7h14M9 7V5h6v2M6 7l1 13h10l1-13" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+    <path d="M10 11v6M14 11v6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="icon-message" viewBox="0 0 24 24">
+    <path d="M4 5h16v11H8l-4 4V5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+  </symbol>
+
+  <symbol id="icon-calendar" viewBox="0 0 24 24">
+    <path d="M4 6h16v14H4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M4 10h16M8 3v4M16 3v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="icon-key" viewBox="0 0 24 24">
+    <circle cx="8" cy="14" r="4" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M11 11l9-9M17 5l2.5 2.5M14 8l2 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+
+  <symbol id="icon-lock" viewBox="0 0 24 24">
+    <path d="M6 11h12v9H6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2"/>
+  </symbol>
+
+  <symbol id="icon-eye" viewBox="0 0 24 24">
+    <path d="M2 12s3.8-7 10-7 10 7 10 7-3.8 7-10 7-10-7-10-7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/>
+  </symbol>
+
+  <symbol id="icon-ban" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M5.5 5.5l13 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="icon-flag" viewBox="0 0 24 24">
+    <path d="M6 3v18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <path d="M6 4h12l-3 4 3 4H6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+  </symbol>
+
+  <symbol id="icon-palette" viewBox="0 0 24 24">
+    <path d="M12 3a9 8 0 1 0 0 16c1.2 0 2-1 2-2s-.4-1.4-.4-2c0-1 1-2 2-2h1.6c2 0 3.8-1.8 3.8-4C21 5.6 17 3 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <circle cx="7.5" cy="10.5" r="1.3" fill="#E53935"/>
+    <circle cx="8.5" cy="14.5" r="1.3" fill="#43A047"/>
+    <circle cx="13" cy="7.5" r="1.3" fill="#FFB300"/>
+    <circle cx="16.5" cy="10" r="1.3" fill="#3F51B5"/>
+  </symbol>
+
+  <symbol id="icon-sun" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="icon-monitor" viewBox="0 0 24 24">
+    <path d="M3 5h18v11H3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M8 20h8M12 16v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="icon-type" viewBox="0 0 24 24">
+    <path d="M5 5h14M12 5v14M9 19h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="icon-sparkles" viewBox="0 0 24 24">
+    <path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6L12 3z" fill="currentColor"/>
+    <path d="M18.5 14l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8.8-2.2z" fill="currentColor"/>
+  </symbol>
+
+  <symbol id="icon-refresh" viewBox="0 0 24 24">
+    <path d="M4 12a8 8 0 0 1 13.6-5.7M20 12a8 8 0 0 1-13.6 5.7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <path d="M17.6 3.5v3.4H14.2M6.4 20.5v-3.4h3.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="icon-link" viewBox="0 0 24 24">
+    <path d="M9.5 14.5l5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <path d="M11 6.5l1.4-1.4a4 4 0 0 1 5.7 5.7L16.5 12.2M13 17.5l-1.4 1.4a4 4 0 0 1-5.7-5.7L7.5 11.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+
+  <symbol id="icon-door" viewBox="0 0 24 24">
+    <path d="M6 3h9v18H6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M15 3l3 1.5v15L15 21" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <circle cx="12" cy="12" r="1" fill="currentColor"/>
+  </symbol>
+
+  <symbol id="icon-crown" viewBox="0 0 24 24">
+    <path d="M4 8l3.5 3L12 6l4.5 5L20 8v9H4V8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M4 19h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="icon-bell" viewBox="0 0 24 24">
+    <path d="M6 10a6 6 0 0 1 12 0c0 4 1.5 5.5 1.5 5.5h-15S6 14 6 10z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M10 18.5a2 2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="icon-mail" viewBox="0 0 24 24">
+    <path d="M4 5h16v14H4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M4 6l8 7 8-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+  </symbol>
+
+  <symbol id="icon-cake" viewBox="0 0 24 24">
+    <path d="M4 20v-7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M4 20h16M8 11V8M12 11V8M16 11V8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <path d="M8 4.5c0 1-1 1-1 2s1 1.5 1 1.5M12 4.5c0 1-1 1-1 2s1 1.5 1 1.5M16 4.5c0 1-1 1-1 2s1 1.5 1 1.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="icon-wave" viewBox="0 0 24 24">
+    <path d="M8 21s-4-2-4-7c0-2 1-3 1-5V4l2 1v4l1-1V3l2 1v5l1-1.5V4l2 1v6l1-2V6l1.5.8v6.7c0 3-2.5 7.5-7.5 7.5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="icon-water" viewBox="0 0 24 24">
+    <path d="M2 9c2-2 4-2 6 0s4 2 6 0 4-2 6 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <path d="M2 15c2-2 4-2 6 0s4 2 6 0 4-2 6 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="icon-dot" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="7" fill="currentColor"/>
+  </symbol>
+
+  <symbol id="icon-circle" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/>
+  </symbol>
+
+  <symbol id="icon-volume" viewBox="0 0 24 24">
+    <path d="M4 9v6h4l5 4V5L8 9H4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M16.5 9a4.5 4.5 0 0 1 0 6M19 6.5a8 8 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="icon-clock" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M12 7v5l3.5 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+
+  <symbol id="icon-clipboard" viewBox="0 0 24 24">
+    <path d="M8 5h8v3H8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M6 6h2v2h8V6h2v15H6V6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M9 13h6M9 17h6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="icon-tag" viewBox="0 0 24 24">
+    <path d="M11 3H4v7l10 10 7-7L11 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <circle cx="8" cy="8" r="1.4" fill="currentColor"/>
+  </symbol>
+
+  <symbol id="icon-id" viewBox="0 0 24 24">
+    <path d="M3 6h18v12H3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <circle cx="8" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    <path d="M6 16.5c.5-1.5 1.5-2 2-2s1.5.5 2 2M13 10h6M13 14h6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="icon-leaf" viewBox="0 0 24 24">
+    <path d="M5 19c-1-6 1-13 14-15 1 12-6 15-14 15z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M6 18c3-4 6-7 12-13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="icon-flame" viewBox="0 0 24 24">
+    <path d="M12 2c1 4-3 5-3 9a3 3 0 0 0 6 0c1 1 2 2.5 2 4.5a5 5 0 0 1-10 0C7 10 9 6 12 2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+  </symbol>
+
+  <symbol id="icon-rocket" viewBox="0 0 24 24">
+    <path d="M12 2c3 1 5 5 5 9 0 2-1 4-2 5l-3 3-3-3c-1-1-2-3-2-5 0-4 2-8 5-9z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <circle cx="12" cy="9" r="1.6" fill="currentColor"/>
+    <path d="M9 16l-2.5 1v-3M15 16l2.5 1v-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+  </symbol>
+
+  <symbol id="icon-burst" viewBox="0 0 24 24">
+    <path d="M12 2l1.6 5.4L19 6l-2.6 4.8L22 12l-5.6 1.2L19 18l-5.4-1.6L12 22l-1.6-5.6L5 18l2.6-4.8L2 12l5.6-1.2L5 6l5.4 1.4L12 2z" fill="currentColor"/>
+  </symbol>
+
+  <symbol id="icon-pause" viewBox="0 0 24 24">
+    <path d="M8 5v14M16 5v14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="icon-check" viewBox="0 0 24 24">
+    <path d="M4 12l6 6L20 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+
+  <symbol id="icon-rainbow" viewBox="0 0 24 24">
+    <path d="M2 18a10 10 0 0 1 20 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <path d="M5.5 18a6.5 6.5 0 0 1 13 0" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity="0.6"/>
+  </symbol>
+
+  <symbol id="icon-arrow-up" viewBox="0 0 24 24">
+    <path d="M12 19V5M6 11l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="icon-arrow-down" viewBox="0 0 24 24">
+    <path d="M12 5v14M6 13l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+</svg>
+
 
 <!-- ==================================================
      HEADER
@@ -15245,7 +15622,7 @@ body.dark-mode .save-account-btn {
     type="button"
     aria-label="Open menu"
   >
-    ☰
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-menu"></use></svg>
   </button>
 
 
@@ -15288,7 +15665,7 @@ body.dark-mode .save-account-btn {
   type="button"
   class="menu-option"
 >
-  <span>🌍</span>
+  <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-globe"></use></svg></span>
 </button>
 <!-- ADMIN PANEL -->
 
@@ -15298,7 +15675,7 @@ body.dark-mode .save-account-btn {
   title="Admin Panel"
   type="button"
 >
-  🛡️
+  <svg class="fz-icon" aria-hidden="true"><use href="#icon-shield"></use></svg>
 </button>
   <!-- DARK MODE -->
 
@@ -15306,7 +15683,7 @@ body.dark-mode .save-account-btn {
     id="darkModeBtn"
     type="button"
   >
-    🌙
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-moon"></use></svg>
   </button>
 
 
@@ -15318,7 +15695,7 @@ body.dark-mode .save-account-btn {
     title="News Room"
     type="button"
   >
-    📰
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-newspaper"></use></svg>
   </button>
 
 
@@ -15330,7 +15707,7 @@ body.dark-mode .save-account-btn {
     title="Announcement Room"
     type="button"
   >
-    📢
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-megaphone"></use></svg>
   </button>
 
 
@@ -15342,7 +15719,7 @@ body.dark-mode .save-account-btn {
     title="Settings"
     type="button"
   >
-    ⚙️
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-settings"></use></svg>
   </button>
 
   <!-- LOGOUT -->
@@ -15352,7 +15729,7 @@ body.dark-mode .save-account-btn {
     title="Logout"
     type="button"
   >
-    &#9762;
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-logout"></use></svg>
   </button>
 
 </div>
@@ -15372,14 +15749,14 @@ body.dark-mode .save-account-btn {
     class="news-room-close"
     type="button"
   >
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
 
   <div class="news-room-header">
 
     <div class="news-room-icon">
-      📰
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-newspaper"></use></svg>
     </div>
 
 
@@ -15403,7 +15780,7 @@ body.dark-mode .save-account-btn {
     class="news-create-btn breaking"
     type="button"
   >
-    🚨 Share Breaking News
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-alert"></use></svg> Share Breaking News
   </button>
 
 
@@ -15413,7 +15790,7 @@ body.dark-mode .save-account-btn {
   >
 
     <div class="news-empty">
-      📰 No news yet.
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-newspaper"></use></svg> No news yet.
     </div>
 
   </div>
@@ -15433,12 +15810,12 @@ body.dark-mode .save-account-btn {
     class="breaking-news-close"
     type="button"
   >
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
 
   <div class="breaking-news-icon">
-    🚨
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-alert"></use></svg>
   </div>
 
 
@@ -15488,7 +15865,7 @@ body.dark-mode .save-account-btn {
 <div class="breaking-news-image-section">
 
   <label for="breakingNewsImageInput">
-    📷 Add News Photo
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-camera"></use></svg> Add News Photo
   </label>
 
   <input
@@ -15520,7 +15897,7 @@ body.dark-mode .save-account-btn {
       id="publishBreakingNewsBtn"
       type="button"
     >
-      🚨 Publish News
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-alert"></use></svg> Publish News
     </button>
 
   </div>
@@ -15545,14 +15922,14 @@ body.dark-mode .save-account-btn {
       class="announcement-room-close"
       type="button"
     >
-      ✕
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
     </button>
 
 
     <div class="announcement-room-header">
 
       <div class="announcement-room-icon">
-        📢
+        <svg class="fz-icon" aria-hidden="true"><use href="#icon-megaphone"></use></svg>
       </div>
 
       <div>
@@ -15579,7 +15956,7 @@ body.dark-mode .save-account-btn {
       class="announcement-create-btn"
       type="button"
     >
-      📢 Create Announcement
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-megaphone"></use></svg> Create Announcement
     </button>
 
 
@@ -15594,7 +15971,7 @@ body.dark-mode .save-account-btn {
 
       <div class="announcement-empty">
 
-        📢 No announcements yet.
+        <svg class="fz-icon" aria-hidden="true"><use href="#icon-megaphone"></use></svg> No announcements yet.
 
       </div>
 
@@ -15619,11 +15996,11 @@ body.dark-mode .save-account-btn {
       class="announcement-room-close"
       type="button"
     >
-      ✕
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
     </button>
 
 
-    <h2>📢 Create Announcement</h2>
+    <h2><svg class="fz-icon" aria-hidden="true"><use href="#icon-megaphone"></use></svg> Create Announcement</h2>
 
     <p>
       Share an important announcement with the community.
@@ -15656,16 +16033,16 @@ body.dark-mode .save-account-btn {
       id="announcementPriorityInput"
     >
 
-      <option value="normal">
-        🟢 Normal
+      <option value="normal" style="color:#25D366;">
+        ● Normal
       </option>
 
-      <option value="important">
-        🟡 Important
+      <option value="important" style="color:#FF9800;">
+        ● Important
       </option>
 
-      <option value="urgent">
-        🚨 Urgent
+      <option value="urgent" style="color:#E53935;">
+        ● Urgent
       </option>
 
     </select>
@@ -15676,7 +16053,7 @@ body.dark-mode .save-account-btn {
     <label
       class="announcement-image-label"
     >
-      📸 Add Image (Optional)
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-camera"></use></svg> Add Image (Optional)
 
       <input
         id="announcementImageInput"
@@ -15704,7 +16081,7 @@ body.dark-mode .save-account-btn {
       class="publish-announcement-btn"
       type="button"
     >
-      📢 Publish Announcement
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-megaphone"></use></svg> Publish Announcement
     </button>
 
   </div>
@@ -15768,14 +16145,14 @@ body.dark-mode .save-account-btn {
           id="voiceCallBtn"
           type="button"
         >
-          📞
+          <svg class="fz-icon" aria-hidden="true"><use href="#icon-phone"></use></svg>
         </button>
 
         <button
           id="videoCallBtn"
           type="button"
         >
-          🎥
+          <svg class="fz-icon" aria-hidden="true"><use href="#icon-video"></use></svg>
         </button>
 
       </div>
@@ -15841,7 +16218,7 @@ body.dark-mode .save-account-btn {
         type="button"
         aria-label="Group options"
       >
-        ⋮
+        <svg class="fz-icon" aria-hidden="true"><use href="#icon-more"></use></svg>
       </button>
 
     </div>
@@ -15856,7 +16233,7 @@ body.dark-mode .save-account-btn {
       class="create-group-main-btn"
       type="button"
     >
-      ➕ Create Group
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-plus"></use></svg> Create Group
     </button>
 
 
@@ -15870,7 +16247,7 @@ body.dark-mode .save-account-btn {
     >
 
       <div class="create-group-title">
-        👥 Create Group
+        <svg class="fz-icon" aria-hidden="true"><use href="#icon-users"></use></svg> Create Group
       </div>
 
 
@@ -15990,7 +16367,7 @@ body.dark-mode .save-account-btn {
         id="imageBtn"
         type="button"
       >
-        📷
+        <svg class="fz-icon" aria-hidden="true"><use href="#icon-camera"></use></svg>
       </button>
 
 
@@ -16000,7 +16377,7 @@ body.dark-mode .save-account-btn {
         id="recordBtn"
         type="button"
       >
-        🎤
+        <svg class="fz-icon" aria-hidden="true"><use href="#icon-mic"></use></svg>
       </button>
 
 
@@ -16048,7 +16425,7 @@ body.dark-mode .save-account-btn {
     class="my-profile-close"
     type="button"
   >
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
 
@@ -16069,7 +16446,7 @@ body.dark-mode .save-account-btn {
       type="button"
       class="change-profile-photo-btn"
     >
-      📷 +ADD/Change Photo
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-camera"></use></svg> +ADD/Change Photo
     </button>
 
   </div>
@@ -16098,7 +16475,7 @@ body.dark-mode .save-account-btn {
     id="myProfilePopoverStatus"
     class="my-profile-status"
   >
-    🟢 Online
+    <svg class="fz-icon" aria-hidden="true" style="color:#25D366"><use href="#icon-dot"></use></svg> Online
   </div>
 
 
@@ -16113,7 +16490,7 @@ body.dark-mode .save-account-btn {
       </strong>
 
       <span>
-        ❤️ Likes
+        <svg class="fz-icon" aria-hidden="true"><use href="#icon-heart"></use></svg> Likes
       </span>
 
     </div>
@@ -16126,7 +16503,7 @@ body.dark-mode .save-account-btn {
       </strong>
 
       <span>
-        👥 Friends
+        <svg class="fz-icon" aria-hidden="true"><use href="#icon-users"></use></svg> Friends
       </span>
 
     </div>
@@ -16139,7 +16516,7 @@ body.dark-mode .save-account-btn {
   <div class="my-profile-info">
 
     <div>
-      👤
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-user"></use></svg>
       <span id="myProfileUsername">
         Username: —
       </span>
@@ -16212,7 +16589,7 @@ body.dark-mode .save-account-btn {
     class="my-profile-action-btn"
     type="button"
   >
-    ✏️ Edit Profile
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-edit"></use></svg> Edit Profile
   </button>
 
 
@@ -16223,7 +16600,7 @@ body.dark-mode .save-account-btn {
     class="my-profile-action-btn"
     type="button"
   >
-    👥 My Friends
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-users"></use></svg> My Friends
   </button>
 
 
@@ -16234,7 +16611,7 @@ body.dark-mode .save-account-btn {
     class="my-profile-action-btn"
     type="button"
   >
-    ⚙️ Settings
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-settings"></use></svg> Settings
   </button>
 
 
@@ -16249,7 +16626,7 @@ body.dark-mode .save-account-btn {
   >
 
     <h3>
-      ✏️ Edit Profile
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-edit"></use></svg> Edit Profile
     </h3>
 
 
@@ -16336,7 +16713,7 @@ body.dark-mode .save-account-btn {
         id="saveProfileBtn"
         type="button"
       >
-        💾 Save
+        <svg class="fz-icon" aria-hidden="true"><use href="#icon-save"></use></svg> Save
       </button>
 
 
@@ -16368,7 +16745,7 @@ body.dark-mode .save-account-btn {
     class="group-admin-close"
     type="button"
   >
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 <div class="group-admin-icon group-photo-wrapper">
 
@@ -16387,12 +16764,12 @@ body.dark-mode .save-account-btn {
 
 
   <p id="adminGroupAdmin">
-    👑 Admin: -
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-crown"></use></svg> Admin: -
   </p>
 
 
   <p id="adminGroupMembers">
-    👥 Members: 0
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-users"></use></svg> Members: 0
   </p>
 
 
@@ -16402,7 +16779,7 @@ body.dark-mode .save-account-btn {
       id="groupNotificationsAction"
       type="button"
     >
-      🔔 Group Notifications
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-bell"></use></svg> Group Notifications
     </button>
 
 
@@ -16410,7 +16787,7 @@ body.dark-mode .save-account-btn {
       id="renameGroupAction"
       type="button"
     >
-      ✏️ Rename Group
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-edit"></use></svg> Rename Group
     </button>
 
 
@@ -16418,7 +16795,7 @@ body.dark-mode .save-account-btn {
       id="changeGroupPhotoAction"
       type="button"
     >
-      🖼️ Change Group Photo
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-image"></use></svg> Change Group Photo
     </button>
 
 
@@ -16426,7 +16803,7 @@ body.dark-mode .save-account-btn {
       id="groupInfoAction"
       type="button"
     >
-      🔗 Group Info
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-link"></use></svg> Group Info
     </button>
 
 
@@ -16434,7 +16811,7 @@ body.dark-mode .save-account-btn {
       id="leaveGroupAction"
       type="button"
     >
-      🚪 Leave Group
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-door"></use></svg> Leave Group
     </button>
 
 
@@ -16442,7 +16819,7 @@ body.dark-mode .save-account-btn {
       id="groupMembersAction"
       type="button"
     >
-      👥 Group Members
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-users"></use></svg> Group Members
     </button>
 
 
@@ -16451,7 +16828,7 @@ body.dark-mode .save-account-btn {
       type="button"
       class="danger"
     >
-      🗑️ Remove Group
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-trash"></use></svg> Remove Group
     </button>
 
   </div>
@@ -16473,12 +16850,12 @@ body.dark-mode .save-account-btn {
     class="rename-group-close"
     type="button"
   >
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
 
   <div class="rename-group-icon">
-    ✏️
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-edit"></use></svg>
   </div>
 
 
@@ -16537,12 +16914,12 @@ body.dark-mode .save-account-btn {
     class="change-group-photo-close"
     type="button"
   >
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
 
   <div class="change-group-photo-icon">
-    🖼️
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-image"></use></svg>
   </div>
 
 
@@ -16575,7 +16952,7 @@ body.dark-mode .save-account-btn {
     id="chooseGroupPhotoBtn"
     type="button"
   >
-    📷 Choose Photo
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-camera"></use></svg> Choose Photo
   </button>
 
 
@@ -16615,7 +16992,7 @@ body.dark-mode .save-account-btn {
     class="group-info-close"
     type="button"
   >
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
 <div class="group-info-icon group-photo-wrapper">
@@ -16637,7 +17014,7 @@ body.dark-mode .save-account-btn {
   <div class="group-info-details">
 
     <div class="group-info-row">
-      <span>👥 Group Name</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-users"></use></svg> Group Name</span>
 
       <strong id="groupInfoGroupName">
         -
@@ -16646,7 +17023,7 @@ body.dark-mode .save-account-btn {
 
 
     <div class="group-info-row">
-      <span>👑 Admin</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-crown"></use></svg> Admin</span>
 
       <strong id="groupInfoAdmin">
         -
@@ -16655,7 +17032,7 @@ body.dark-mode .save-account-btn {
 
 
     <div class="group-info-row">
-      <span>👤 Members</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-user"></use></svg> Members</span>
 
       <strong id="groupInfoMembers">
         0
@@ -16664,7 +17041,7 @@ body.dark-mode .save-account-btn {
 
 
     <div class="group-info-row">
-      <span>📅 Created</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-calendar"></use></svg> Created</span>
 
       <strong id="groupInfoCreated">
         -
@@ -16673,7 +17050,7 @@ body.dark-mode .save-account-btn {
 
 
     <div class="group-info-row">
-      <span>🆔 Group ID</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-id"></use></svg> Group ID</span>
 
       <strong
         id="groupInfoId"
@@ -16702,12 +17079,12 @@ body.dark-mode .save-account-btn {
     class="group-members-close"
     type="button"
   >
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
 
   <div class="group-members-icon">
-    👥
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-users"></use></svg>
   </div>
 
 
@@ -16742,7 +17119,7 @@ body.dark-mode .save-account-btn {
     class="user-profile-close"
     type="button"
   >
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
 
@@ -16771,14 +17148,14 @@ body.dark-mode .save-account-btn {
     id="userPopoverStatus"
     class="user-popover-status"
   >
-    ⚫ Offline
+    <svg class="fz-icon" aria-hidden="true" style="color:#555555"><use href="#icon-dot"></use></svg> Offline
   </div>
 
 
   <div class="user-popover-info">
 
     <div>
-      🎂
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-cake"></use></svg>
       <span id="userPopoverAge">
         Age: —
       </span>
@@ -16786,7 +17163,7 @@ body.dark-mode .save-account-btn {
 
 
     <div>
-      🌍
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-globe"></use></svg>
       <span id="userPopoverNationality">
         Nationality: —
       </span>
@@ -16794,7 +17171,7 @@ body.dark-mode .save-account-btn {
 
 
     <div>
-      👥
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-users"></use></svg>
       <span id="userPopoverFriends">
         Friends: 0
       </span>
@@ -16802,7 +17179,7 @@ body.dark-mode .save-account-btn {
 
 
     <div>
-      ❤️
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-heart"></use></svg>
       <span id="userPopoverLikes">
         Likes: 0
       </span>
@@ -16817,7 +17194,7 @@ body.dark-mode .save-account-btn {
       id="likeUserBtn"
       type="button"
     >
-      ❤️ Like
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-heart"></use></svg> Like
     </button>
 
 
@@ -16836,7 +17213,7 @@ body.dark-mode .save-account-btn {
     class="message-user-btn"
     type="button"
   >
-    💬 Message
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-message"></use></svg> Message
   </button>
 
 </div>
@@ -16885,7 +17262,7 @@ body.dark-mode .save-account-btn {
 >
 
   <h3>
-    📞 Incoming Call
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-phone"></use></svg> Incoming Call
   </h3>
 
 
@@ -16898,7 +17275,7 @@ body.dark-mode .save-account-btn {
     id="acceptCallBtn"
     type="button"
   >
-    ✅ Accept
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-check"></use></svg> Accept
   </button>
 
 
@@ -16906,7 +17283,7 @@ body.dark-mode .save-account-btn {
     id="declineCallBtn"
     type="button"
   >
-    ❌ Decline
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg> Decline
   </button>
 
 </div>
@@ -16948,7 +17325,7 @@ body.dark-mode .save-account-btn {
       id="muteBtn"
       type="button"
     >
-      🎤 Mute
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-mic"></use></svg> Mute
     </button>
 
 
@@ -16956,7 +17333,7 @@ body.dark-mode .save-account-btn {
       id="speakerBtn"
       type="button"
     >
-      🔊 Speaker
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-volume"></use></svg> Speaker
     </button>
 
   </div>
@@ -16966,7 +17343,7 @@ body.dark-mode .save-account-btn {
     id="hangUpBtn"
     type="button"
   >
-    🔴 End Call
+    <svg class="fz-icon" aria-hidden="true" style="color:#E53935"><use href="#icon-dot"></use></svg> End Call
   </button>
 
 </div>
@@ -17001,7 +17378,7 @@ body.dark-mode .save-account-btn {
       class="account-close"
       type="button"
     >
-      ✕
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
     </button>
     <h2>Account                    Information
     </h2>
@@ -17021,7 +17398,7 @@ body.dark-mode .save-account-btn {
     <div class="account-info-list">
 
       <div class="account-info-row">
-        <span>👤</span>
+        <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-user"></use></svg></span>
         <div>
           <small>Name</small>
           <strong id="accountInfoName">Loading...</strong>
@@ -17029,7 +17406,7 @@ body.dark-mode .save-account-btn {
       </div>
 
       <div class="account-info-row">
-        <span>🏷️</span>
+        <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-tag"></use></svg></span>
         <div>
           <small>Username</small>
           <strong id="accountInfoUsername">Loading...</strong>
@@ -17037,7 +17414,7 @@ body.dark-mode .save-account-btn {
       </div>
 
       <div class="account-info-row">
-        <span>📧</span>
+        <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-mail"></use></svg></span>
         <div>
           <small>Email</small>
           <strong id="accountInfoEmail">Loading...</strong>
@@ -17045,7 +17422,7 @@ body.dark-mode .save-account-btn {
       </div>
 
       <div class="account-info-row">
-        <span>🎂</span>
+        <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-cake"></use></svg></span>
         <div>
           <small>Age</small>
           <strong id="accountInfoAge">Not set</strong>
@@ -17053,7 +17430,7 @@ body.dark-mode .save-account-btn {
       </div>
 
       <div class="account-info-row">
-        <span>🌍</span>
+        <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-globe"></use></svg></span>
         <div>
           <small>Nationality</small>
           <strong id="accountInfoNationality">Not set</strong>
@@ -17061,7 +17438,7 @@ body.dark-mode .save-account-btn {
       </div>
 
       <div class="account-info-row">
-        <span>❤️</span>
+        <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-heart"></use></svg></span>
         <div>
           <small>Likes</small>
           <strong id="accountInfoLikes">0</strong>
@@ -17069,7 +17446,7 @@ body.dark-mode .save-account-btn {
       </div>
 
       <div class="account-info-row">
-        <span>👥</span>
+        <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-users"></use></svg></span>
         <div>
           <small>Friends</small>
           <strong id="accountInfoFriends">0</strong>
@@ -17094,11 +17471,11 @@ body.dark-mode .save-account-btn {
     id="settingsCloseBtn"
     class="settings-close"
   >
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
   <div class="settings-icon">
-    ⚙️
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-settings"></use></svg>
   </div>
 
   <h2>Settings</h2>
@@ -17114,7 +17491,7 @@ body.dark-mode .save-account-btn {
       class="settings-option"
       id="settingsAppearanceBtn"
     >
-      <span>🎨</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-palette"></use></svg></span>
 
       <div>
         <strong>Appearance</strong>
@@ -17129,7 +17506,7 @@ body.dark-mode .save-account-btn {
       class="settings-option"
       id="settingsAccountBtn"
     >
-      <span>👤</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-user"></use></svg></span>
 
       <div>
         <strong>Account</strong>
@@ -17144,7 +17521,7 @@ body.dark-mode .save-account-btn {
       class="settings-option"
       id="settingsNotificationsBtn"
     >
-      <span>🔔</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-bell"></use></svg></span>
 
       <div>
         <strong>Notifications</strong>
@@ -17158,7 +17535,7 @@ body.dark-mode .save-account-btn {
       class="settings-option"
       id="settingsPrivacyBtn"
     >
-      <span>🛡️</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-shield"></use></svg></span>
 
       <div>
         <strong>Privacy</strong>
@@ -17178,7 +17555,7 @@ body.dark-mode .save-account-btn {
   id="lastSeenPrivacyBtn"
 >
 
-  <span>🕐</span>
+  <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-clock"></use></svg></span>
 
   <div>
     <strong>Last Seen</strong>
@@ -17199,7 +17576,7 @@ body.dark-mode .save-account-btn {
       id="messagePrivacyBtn"
     >
 
-      <span>💬</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-message"></use></svg></span>
 
       <div>
         <strong>Message Requests</strong>
@@ -17221,7 +17598,7 @@ body.dark-mode .save-account-btn {
       id="callPrivacyBtn"
     >
 
-      <span>📞</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-phone"></use></svg></span>
 
       <div>
         <strong>Call Privacy</strong>
@@ -17243,7 +17620,7 @@ body.dark-mode .save-account-btn {
       id="blockedUsersBtn"
     >
 
-      <span>🚫</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-ban"></use></svg></span>
 
       <div>
         <strong>Blocked Users</strong>
@@ -17269,12 +17646,12 @@ body.dark-mode .save-account-btn {
     id="notificationsCloseBtn"
     class="notifications-close"
   >
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
 
   <div class="notifications-icon">
-    🔔
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-bell"></use></svg>
   </div>
 
 
@@ -17291,7 +17668,7 @@ body.dark-mode .save-account-btn {
   >
 
     <div class="notification-empty">
-      🔔
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-bell"></use></svg>
       <span>No new notifications</span>
     </div>
 
@@ -17311,12 +17688,12 @@ body.dark-mode .save-account-btn {
     id="privacyCloseBtn"
     class="privacy-close"
   >
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
 
   <div class="privacy-icon">
-    🛡️
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-shield"></use></svg>
   </div>
 
 
@@ -17333,7 +17710,7 @@ body.dark-mode .save-account-btn {
       class="privacy-option"
       id="onlineStatusPrivacyBtn"
     >
-      <span>🟢</span>
+      <span><svg class="fz-icon" aria-hidden="true" style="color:#25D366"><use href="#icon-dot"></use></svg></span>
 
       <div>
         <strong>Online Status</strong>
@@ -17346,7 +17723,7 @@ body.dark-mode .save-account-btn {
       class="privacy-option"
       id="messagePrivacyBtn"
     >
-      <span>💬</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-message"></use></svg></span>
 
       <div>
         <strong>Messages</strong>
@@ -17359,7 +17736,7 @@ body.dark-mode .save-account-btn {
   </div>
 
 </div>
-  
+
   <!-- =====================================
      ACCOUNT POPOVER
 ===================================== -->
@@ -17373,12 +17750,12 @@ body.dark-mode .save-account-btn {
     id="accountCloseBtn"
     class="account-close"
   >
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
 
   <div class="account-icon">
-    👤
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-user"></use></svg>
   </div>
 
 
@@ -17396,7 +17773,7 @@ body.dark-mode .save-account-btn {
       id="accountInfoBtn"
     >
 
-      <span>📋</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-clipboard"></use></svg></span>
 
       <div>
         <strong>Account Information</strong>
@@ -17413,7 +17790,7 @@ body.dark-mode .save-account-btn {
       id="editAccountBtn"
     >
 
-      <span>✏️</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-edit"></use></svg></span>
 
       <div>
         <strong>Edit Account</strong>
@@ -17430,7 +17807,7 @@ body.dark-mode .save-account-btn {
       id="changePasswordBtn"
     >
 
-      <span>🔑</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-key"></use></svg></span>
 
       <div>
         <strong>Change Password</strong>
@@ -17451,10 +17828,10 @@ body.dark-mode .save-account-btn {
       class="account-close"
       type="button"
     >
-      ✕
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
     </button>
 
-    <div class="account-icon">🔑</div>
+    <div class="account-icon"><svg class="fz-icon" aria-hidden="true"><use href="#icon-key"></use></svg></div>
 
     <h2>Change Password</h2>
 
@@ -17483,7 +17860,7 @@ body.dark-mode .save-account-btn {
         class="save-account-btn"
         type="button"
       >
-        🔑 Change Password
+        <svg class="fz-icon" aria-hidden="true"><use href="#icon-key"></use></svg> Change Password
       </button>
 
     </div>
@@ -17496,7 +17873,7 @@ body.dark-mode .save-account-btn {
       id="profileVisibilityBtn"
     >
 
-      <span>👤</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-user"></use></svg></span>
 
       <div>
         <strong>Profile Visibility</strong>
@@ -17514,7 +17891,7 @@ body.dark-mode .save-account-btn {
       id="changeEmailBtn"
     >
 
-      <span>📧</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-mail"></use></svg></span>
 
       <div>
         <strong>Change Email</strong>
@@ -17531,7 +17908,7 @@ body.dark-mode .save-account-btn {
     title="Delete Account"
     type="button"
   >
-    🗑️Delete Account
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-trash"></use></svg>Delete Account
   </button>
   </div>
 
@@ -17549,10 +17926,10 @@ body.dark-mode .save-account-btn {
       class="account-close"
       type="button"
     >
-      ✕
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
     </button>
 
-    <div class="account-icon">📧</div>
+    <div class="account-icon"><svg class="fz-icon" aria-hidden="true"><use href="#icon-mail"></use></svg></div>
 
     <h2>Change Email</h2>
 
@@ -17575,7 +17952,7 @@ body.dark-mode .save-account-btn {
         class="save-account-btn"
         type="button"
       >
-        📧 Change Email
+        <svg class="fz-icon" aria-hidden="true"><use href="#icon-mail"></use></svg> Change Email
       </button>
 
     </div>
@@ -17596,11 +17973,11 @@ body.dark-mode .save-account-btn {
       class="account-close"
       type="button"
     >
-      ✕
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
     </button>
 
     <div class="account-icon">
-      ✏️
+      <svg class="fz-icon" aria-hidden="true"><use href="#icon-edit"></use></svg>
     </div>
 
     <h2>Edit Account</h2>
@@ -17620,7 +17997,7 @@ body.dark-mode .save-account-btn {
         for="editAccountPhotoInput"
         class="change-photo-btn"
       >
-        📷 Change Photo
+        <svg class="fz-icon" aria-hidden="true"><use href="#icon-camera"></use></svg> Change Photo
       </label>
 
       <input
@@ -17668,8 +18045,8 @@ body.dark-mode .save-account-btn {
         class="save-account-btn"
         type="button"
       >
-        
-        💾 Save Changes
+
+        <svg class="fz-icon" aria-hidden="true"><use href="#icon-save"></use></svg> Save Changes
       </button>
 
     </div>
@@ -17691,13 +18068,13 @@ body.dark-mode .save-account-btn {
     id="appearanceCloseBtn"
     class="appearance-close"
   >
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
 
   <!-- ICON -->
   <div class="appearance-icon">
-    🎨
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-palette"></use></svg>
   </div>
 
 
@@ -17719,7 +18096,7 @@ body.dark-mode .save-account-btn {
   type="button"
 >
 
-  <span>🎨</span>
+  <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-palette"></use></svg></span>
 
   <div>
 
@@ -17741,7 +18118,7 @@ body.dark-mode .save-account-btn {
       id="appearanceDarkModeBtn"
     >
 
-      <span>🌙</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-moon"></use></svg></span>
 
       <div>
         <strong>Dark Mode</strong>
@@ -17762,7 +18139,7 @@ body.dark-mode .save-account-btn {
       id="appearanceLightModeBtn"
     >
 
-      <span>☀️</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-sun"></use></svg></span>
 
       <div>
         <strong>Light Mode</strong>
@@ -17783,7 +18160,7 @@ body.dark-mode .save-account-btn {
       id="appearanceSystemBtn"
     >
 
-      <span>🌓</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-monitor"></use></svg></span>
 
       <div>
         <strong>System Default</strong>
@@ -17804,7 +18181,7 @@ body.dark-mode .save-account-btn {
       id="appearanceTextSizeBtn"
     >
 
-      <span>🔤</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-type"></use></svg></span>
 
       <div>
         <strong>Text Size</strong>
@@ -17825,7 +18202,7 @@ body.dark-mode .save-account-btn {
       id="appearanceAnimationBtn"
     >
 
-      <span>✨</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-sparkles"></use></svg></span>
 
       <div>
         <strong>Animations</strong>
@@ -17858,13 +18235,13 @@ body.dark-mode .save-account-btn {
     class="chat-customization-close"
     type="button"
   >
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
 
   <!-- ICON -->
   <div class="chat-customization-icon">
-    🎨
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-palette"></use></svg>
   </div>
 
 
@@ -17886,7 +18263,7 @@ body.dark-mode .save-account-btn {
       type="button"
     >
 
-      <span>🎨</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-palette"></use></svg></span>
 
       <div>
 
@@ -17911,7 +18288,7 @@ body.dark-mode .save-account-btn {
       type="button"
     >
 
-      <span>🔤</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-type"></use></svg></span>
 
       <div>
 
@@ -17936,7 +18313,7 @@ body.dark-mode .save-account-btn {
   type="button"
 >
 
-  <span>🎭</span>
+  <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-palette"></use></svg></span>
 
   <div>
     <strong>Bubble Colors</strong>
@@ -17959,12 +18336,12 @@ body.dark-mode .save-account-btn {
     class="bubble-colors-close"
     type="button"
   >
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
 
   <div class="bubble-colors-icon">
-    🎭
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-palette"></use></svg>
   </div>
 
 
@@ -17977,7 +18354,7 @@ body.dark-mode .save-account-btn {
 
   <div class="bubble-color-section">
 
-    <h3>📤 My Messages</h3>
+    <h3><svg class="fz-icon" aria-hidden="true"><use href="#icon-arrow-up"></use></svg> My Messages</h3>
 
     <div class="bubble-color-grid">
 
@@ -17986,7 +18363,7 @@ body.dark-mode .save-account-btn {
         data-sent-color="#25D366"
         type="button"
       >
-        🟢 Green
+        <svg class="fz-icon" aria-hidden="true" style="color:#25D366"><use href="#icon-dot"></use></svg> Green
       </button>
 
       <button
@@ -17994,7 +18371,7 @@ body.dark-mode .save-account-btn {
         data-sent-color="#2196F3"
         type="button"
       >
-        🔵 Blue
+        <svg class="fz-icon" aria-hidden="true" style="color:#2196F3"><use href="#icon-dot"></use></svg> Blue
       </button>
 
       <button
@@ -18002,7 +18379,7 @@ body.dark-mode .save-account-btn {
         data-sent-color="#9C27B0"
         type="button"
       >
-        🟣 Purple
+        <svg class="fz-icon" aria-hidden="true" style="color:#9C27B0"><use href="#icon-dot"></use></svg> Purple
       </button>
 
       <button
@@ -18010,7 +18387,7 @@ body.dark-mode .save-account-btn {
         data-sent-color="#FF9800"
         type="button"
       >
-        🟠 Orange
+        <svg class="fz-icon" aria-hidden="true" style="color:#FF9800"><use href="#icon-dot"></use></svg> Orange
       </button>
 
       <button
@@ -18018,7 +18395,7 @@ body.dark-mode .save-account-btn {
         data-sent-color="#E91E63"
         type="button"
       >
-        🌸 Pink
+        <svg class="fz-icon" aria-hidden="true" style="color:#E91E63"><use href="#icon-dot"></use></svg> Pink
       </button>
 
     </div>
@@ -18028,7 +18405,7 @@ body.dark-mode .save-account-btn {
 
   <div class="bubble-color-section">
 
-    <h3>📥 Other Messages</h3>
+    <h3><svg class="fz-icon" aria-hidden="true"><use href="#icon-arrow-down"></use></svg> Other Messages</h3>
 
     <div class="received-color-grid">
 
@@ -18037,7 +18414,7 @@ body.dark-mode .save-account-btn {
         data-received-color="#ffffff"
         type="button"
       >
-        ⚪ White
+        <svg class="fz-icon" aria-hidden="true" style="color:#bbbbbb"><use href="#icon-dot"></use></svg> White
       </button>
 
       <button
@@ -18045,7 +18422,7 @@ body.dark-mode .save-account-btn {
         data-received-color="#eeeeee"
         type="button"
       >
-        🌫️ Gray
+        <svg class="fz-icon" aria-hidden="true"><use href="#icon-water"></use></svg> Gray
       </button>
 
       <button
@@ -18053,7 +18430,7 @@ body.dark-mode .save-account-btn {
         data-received-color="#E3F2FD"
         type="button"
       >
-        🔵 Light Blue
+        <svg class="fz-icon" aria-hidden="true" style="color:#2196F3"><use href="#icon-dot"></use></svg> Light Blue
       </button>
 
       <button
@@ -18061,7 +18438,7 @@ body.dark-mode .save-account-btn {
         data-received-color="#F3E5F5"
         type="button"
       >
-        🟣 Light Purple
+        <svg class="fz-icon" aria-hidden="true" style="color:#9C27B0"><use href="#icon-dot"></use></svg> Light Purple
       </button>
 
       <button
@@ -18069,7 +18446,7 @@ body.dark-mode .save-account-btn {
         data-received-color="#FFF3E0"
         type="button"
       >
-        🟠 Light Orange
+        <svg class="fz-icon" aria-hidden="true" style="color:#FF9800"><use href="#icon-dot"></use></svg> Light Orange
       </button>
 
     </div>
@@ -18085,7 +18462,7 @@ body.dark-mode .save-account-btn {
       type="button"
     >
 
-      <span>🌈</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-rainbow"></use></svg></span>
 
       <div>
 
@@ -18110,7 +18487,7 @@ body.dark-mode .save-account-btn {
       type="button"
     >
 
-      <span>💬</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-message"></use></svg></span>
 
       <div>
 
@@ -18135,7 +18512,7 @@ body.dark-mode .save-account-btn {
       type="button"
     >
 
-      <span>🖼️</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-image"></use></svg></span>
 
       <div>
 
@@ -18160,7 +18537,7 @@ body.dark-mode .save-account-btn {
       type="button"
     >
 
-      <span>✨</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-sparkles"></use></svg></span>
 
       <div>
 
@@ -18185,7 +18562,7 @@ body.dark-mode .save-account-btn {
       type="button"
     >
 
-      <span>🔄</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-refresh"></use></svg></span>
 
       <div>
 
@@ -18219,12 +18596,12 @@ body.dark-mode .save-account-btn {
     class="chat-theme-close"
     type="button"
   >
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
 
   <div class="chat-theme-icon">
-    🎨
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-palette"></use></svg>
   </div>
 
 
@@ -18249,7 +18626,7 @@ body.dark-mode .save-account-btn {
       <span class="theme-preview theme-classic"></span>
 
       <div>
-        <strong>⚪ Classic</strong>
+        <strong><svg class="fz-icon" aria-hidden="true" style="color:#bbbbbb"><use href="#icon-dot"></use></svg> Classic</strong>
         <small>Default FriendsZone style</small>
       </div>
 
@@ -18269,7 +18646,7 @@ body.dark-mode .save-account-btn {
       <span class="theme-preview theme-ocean"></span>
 
       <div>
-        <strong>🌊 Ocean</strong>
+        <strong><svg class="fz-icon" aria-hidden="true"><use href="#icon-water"></use></svg> Ocean</strong>
         <small>Cool blue conversation</small>
       </div>
 
@@ -18289,7 +18666,7 @@ body.dark-mode .save-account-btn {
       <span class="theme-preview theme-galaxy"></span>
 
       <div>
-        <strong>🌌 Galaxy</strong>
+        <strong><svg class="fz-icon" aria-hidden="true"><use href="#icon-sparkles"></use></svg> Galaxy</strong>
         <small>Deep space style</small>
       </div>
 
@@ -18309,7 +18686,7 @@ body.dark-mode .save-account-btn {
       <span class="theme-preview theme-sunset"></span>
 
       <div>
-        <strong>🌅 Sunset</strong>
+        <strong><svg class="fz-icon" aria-hidden="true"><use href="#icon-sun"></use></svg> Sunset</strong>
         <small>Warm evening colors</small>
       </div>
 
@@ -18329,7 +18706,7 @@ body.dark-mode .save-account-btn {
       <span class="theme-preview theme-nature"></span>
 
       <div>
-        <strong>🌿 Nature</strong>
+        <strong><svg class="fz-icon" aria-hidden="true"><use href="#icon-leaf"></use></svg> Nature</strong>
         <small>Fresh natural colors</small>
       </div>
 
@@ -18349,7 +18726,7 @@ body.dark-mode .save-account-btn {
       <span class="theme-preview theme-purple"></span>
 
       <div>
-        <strong>💜 Purple</strong>
+        <strong><svg class="fz-icon" aria-hidden="true"><use href="#icon-heart"></use></svg> Purple</strong>
         <small>Modern purple style</small>
       </div>
 
@@ -18369,7 +18746,7 @@ body.dark-mode .save-account-btn {
       <span class="theme-preview theme-fire"></span>
 
       <div>
-        <strong>🔥 Fire</strong>
+        <strong><svg class="fz-icon" aria-hidden="true"><use href="#icon-flame"></use></svg> Fire</strong>
         <small>Bold energetic colors</small>
       </div>
 
@@ -18389,7 +18766,7 @@ body.dark-mode .save-account-btn {
       <span class="theme-preview theme-glass"></span>
 
       <div>
-        <strong>✨ Glass</strong>
+        <strong><svg class="fz-icon" aria-hidden="true"><use href="#icon-sparkles"></use></svg> Glass</strong>
         <small>Clean transparent style</small>
       </div>
 
@@ -18415,12 +18792,12 @@ body.dark-mode .save-account-btn {
     class="message-font-close"
     type="button"
   >
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
 
   <div class="message-font-icon">
-    🔤
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-type"></use></svg>
   </div>
 
 
@@ -18561,12 +18938,12 @@ body.dark-mode .save-account-btn {
     class="name-color-close"
     type="button"
   >
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
 
   <div class="name-color-icon">
-    🌈
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-rainbow"></use></svg>
   </div>
 
 
@@ -18780,12 +19157,12 @@ body.dark-mode .save-account-btn {
     class="bubble-style-close"
     type="button"
   >
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
 
   <div class="bubble-style-icon">
-    💬
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-message"></use></svg>
   </div>
 
 
@@ -18808,7 +19185,7 @@ body.dark-mode .save-account-btn {
     >
 
       <span class="bubble-preview bubble-classic">
-        Hello 👋
+        Hello <svg class="fz-icon" aria-hidden="true"><use href="#icon-wave"></use></svg>
       </span>
 
       <div>
@@ -18830,7 +19207,7 @@ body.dark-mode .save-account-btn {
     >
 
       <span class="bubble-preview bubble-soft">
-        Hello 👋
+        Hello <svg class="fz-icon" aria-hidden="true"><use href="#icon-wave"></use></svg>
       </span>
 
       <div>
@@ -18852,7 +19229,7 @@ body.dark-mode .save-account-btn {
     >
 
       <span class="bubble-preview bubble-square">
-        Hello 👋
+        Hello <svg class="fz-icon" aria-hidden="true"><use href="#icon-wave"></use></svg>
       </span>
 
       <div>
@@ -18874,7 +19251,7 @@ body.dark-mode .save-account-btn {
     >
 
       <span class="bubble-preview bubble-glass">
-        Hello 👋
+        Hello <svg class="fz-icon" aria-hidden="true"><use href="#icon-wave"></use></svg>
       </span>
 
       <div>
@@ -18896,7 +19273,7 @@ body.dark-mode .save-account-btn {
     >
 
       <span class="bubble-preview bubble-modern">
-        Hello 👋
+        Hello <svg class="fz-icon" aria-hidden="true"><use href="#icon-wave"></use></svg>
       </span>
 
       <div>
@@ -18926,12 +19303,12 @@ body.dark-mode .save-account-btn {
     class="message-effects-close"
     type="button"
   >
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
 
   <div class="message-effects-icon">
-    ✨
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-sparkles"></use></svg>
   </div>
 
 
@@ -18953,7 +19330,7 @@ body.dark-mode .save-account-btn {
       type="button"
     >
 
-      <span>⭕</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-circle"></use></svg></span>
 
       <div>
         <strong>None</strong>
@@ -18973,7 +19350,7 @@ body.dark-mode .save-account-btn {
       type="button"
     >
 
-      <span>💫</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-sparkles"></use></svg></span>
 
       <div>
         <strong>Fade In</strong>
@@ -18993,7 +19370,7 @@ body.dark-mode .save-account-btn {
       type="button"
     >
 
-      <span>🚀</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-rocket"></use></svg></span>
 
       <div>
         <strong>Slide Up</strong>
@@ -19013,7 +19390,7 @@ body.dark-mode .save-account-btn {
       type="button"
     >
 
-      <span>💥</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-burst"></use></svg></span>
 
       <div>
         <strong>Pop</strong>
@@ -19033,7 +19410,7 @@ body.dark-mode .save-account-btn {
       type="button"
     >
 
-      <span>🌊</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-water"></use></svg></span>
 
       <div>
         <strong>Bounce</strong>
@@ -19062,12 +19439,12 @@ body.dark-mode .save-account-btn {
     class="chat-background-close"
     type="button"
   >
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
 
   <div class="chat-background-icon">
-    🖼️
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-image"></use></svg>
   </div>
 
 
@@ -19251,11 +19628,11 @@ body.dark-mode .save-account-btn {
     id="textSizeCloseBtn"
     class="text-size-close"
   >
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
   <div class="text-size-icon">
-    🔤
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-type"></use></svg>
   </div>
 
   <h2>Text Size</h2>
@@ -19315,11 +19692,11 @@ body.dark-mode .save-account-btn {
     id="animationCloseBtn"
     class="animation-close"
   >
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
   <div class="animation-icon">
-    ✨
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-sparkles"></use></svg>
   </div>
 
   <h2>Animations</h2>
@@ -19335,7 +19712,7 @@ body.dark-mode .save-account-btn {
       id="animationsOnBtn"
     >
 
-      <span>✨</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-sparkles"></use></svg></span>
 
       <div>
         <strong>Animations On</strong>
@@ -19352,7 +19729,7 @@ body.dark-mode .save-account-btn {
       id="animationsOffBtn"
     >
 
-      <span>⏸️</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-pause"></use></svg></span>
 
       <div>
         <strong>Animations Off</strong>
@@ -19379,12 +19756,12 @@ body.dark-mode .save-account-btn {
     id="privacyCloseBtn"
     class="privacy-close"
   >
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
 
   <div class="privacy-icon">
-    🛡️
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-shield"></use></svg>
   </div>
 
 
@@ -19405,7 +19782,7 @@ body.dark-mode .save-account-btn {
       id="onlineStatusPrivacyBtn"
     >
 
-      <span>👁️</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-eye"></use></svg></span>
 
       <div>
         <strong>Online Status</strong>
@@ -19433,14 +19810,14 @@ body.dark-mode .save-account-btn {
     class="blocked-users-close"
     type="button"
   >
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
 
   <!-- ICON -->
 
   <div class="blocked-users-icon">
-    🚫
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-ban"></use></svg>
   </div>
 
 
@@ -19471,7 +19848,7 @@ body.dark-mode .save-account-btn {
     >
 
       <div class="blocked-empty-icon">
-        🛡️
+        <svg class="fz-icon" aria-hidden="true"><use href="#icon-shield"></use></svg>
       </div>
 
       <strong>
@@ -19495,7 +19872,7 @@ body.dark-mode .save-account-btn {
       id="reportedUsersBtn"
     >
 
-      <span>🚩</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-flag"></use></svg></span>
 
       <div>
         <strong>Reported Users</strong>
@@ -19526,11 +19903,11 @@ body.dark-mode .save-account-btn {
     id="onlineStatusCloseBtn"
     class="privacy-sub-close"
   >
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
   <div class="privacy-sub-icon">
-    👁️
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-eye"></use></svg>
   </div>
 
   <h2>Online Status</h2>
@@ -19546,7 +19923,7 @@ body.dark-mode .save-account-btn {
       class="privacy-choice"
       id="onlineEveryoneBtn"
     >
-      <span>🟢</span>
+      <span><svg class="fz-icon" aria-hidden="true" style="color:#25D366"><use href="#icon-dot"></use></svg></span>
 
       <div>
         <strong>Everyone</strong>
@@ -19560,7 +19937,7 @@ body.dark-mode .save-account-btn {
       class="privacy-choice"
       id="onlineFriendsBtn"
     >
-      <span>👥</span>
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-users"></use></svg></span>
 
       <div>
         <strong>Friends Only</strong>
@@ -19574,7 +19951,7 @@ body.dark-mode .save-account-btn {
       class="privacy-choice"
       id="onlineNobodyBtn"
     >
-      <span>🔴</span>
+      <span><svg class="fz-icon" aria-hidden="true" style="color:#E53935"><use href="#icon-dot"></use></svg></span>
 
       <div>
         <strong>Nobody</strong>
@@ -19601,14 +19978,14 @@ body.dark-mode .save-account-btn {
     id="profileVisibilityCloseBtn"
     class="privacy-sub-close"
   >
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
 
   <!-- ICON -->
 
   <div class="privacy-sub-icon">
-    👤
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-user"></use></svg>
   </div>
 
 
@@ -19638,7 +20015,7 @@ body.dark-mode .save-account-btn {
     >
 
       <span>
-        🌍
+        <svg class="fz-icon" aria-hidden="true"><use href="#icon-globe"></use></svg>
       </span>
 
       <div>
@@ -19665,7 +20042,7 @@ body.dark-mode .save-account-btn {
     >
 
       <span>
-        👥
+        <svg class="fz-icon" aria-hidden="true"><use href="#icon-users"></use></svg>
       </span>
 
       <div>
@@ -19692,7 +20069,7 @@ body.dark-mode .save-account-btn {
     >
 
       <span>
-        🔒
+        <svg class="fz-icon" aria-hidden="true"><use href="#icon-lock"></use></svg>
       </span>
 
       <div>
@@ -19726,12 +20103,12 @@ body.dark-mode .save-account-btn {
     id="messagePrivacyCloseBtn"
     class="privacy-sub-close"
   >
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
 
   <div class="privacy-sub-icon">
-    💬
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-message"></use></svg>
   </div>
 
 
@@ -19754,7 +20131,7 @@ body.dark-mode .save-account-btn {
     >
 
       <span>
-        🌍
+        <svg class="fz-icon" aria-hidden="true"><use href="#icon-globe"></use></svg>
       </span>
 
       <div>
@@ -19781,7 +20158,7 @@ body.dark-mode .save-account-btn {
     >
 
       <span>
-        👥
+        <svg class="fz-icon" aria-hidden="true"><use href="#icon-users"></use></svg>
       </span>
 
       <div>
@@ -19808,7 +20185,7 @@ body.dark-mode .save-account-btn {
     >
 
       <span>
-        🔒
+        <svg class="fz-icon" aria-hidden="true"><use href="#icon-lock"></use></svg>
       </span>
 
       <div>
@@ -19833,7 +20210,7 @@ body.dark-mode .save-account-btn {
 <div id="photoViewer" class="photo-viewer">
 
   <button id="closePhotoViewer" class="close-photo-viewer">
-    ✕
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
   <img id="photoViewerImage" src="" alt="Photo">
