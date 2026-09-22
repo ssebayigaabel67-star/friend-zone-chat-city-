@@ -104,9 +104,14 @@ const profileModalName = document.getElementById("profileModalName");
 const profileModalUsername = document.getElementById("profileModalUsername");
 const profileModalStatus = document.getElementById("profileModalStatus");
 const profileModalStatusText = document.getElementById("profileModalStatusText");
+const profileModalInfo = document.getElementById("profileModalInfo");
 const profileModalActions = document.getElementById("profileModalActions");
 const profileModalNote = document.getElementById("profileModalNote");
 const closeProfileModal = document.getElementById("closeProfileModal");
+
+// Change this to match how your own homepage.html opens a private
+// conversation (e.g. a different query param, or a dedicated chat.html).
+const PRIVATE_CHAT_URL = "homepage.html";
 
 
 // ==============================
@@ -525,31 +530,108 @@ onSnapshot(
 // PROFILE POPUP
 // ==========================================
 
-function openProfilePopup(user) {
-  const uid = user.uid;
-  const online = user.online !== undefined ? user.online : onlineUsersMap.has(uid);
+// profileRequestToken guards against a slow Firestore read finishing after
+// the user has already opened a different profile (or closed the popup).
+let profileRequestToken = 0;
 
+async function openProfilePopup(user) {
+  const uid = user.uid;
+  const myToken = ++profileRequestToken;
+
+  // ---- show what we already know immediately ----
   profileModalAvatar.src = user.photoURL || "https://via.placeholder.com/84";
   profileModalAvatar.alt = user.name || "User";
   profileModalName.textContent = user.name || "User";
   profileModalUsername.textContent = user.username ? "@" + user.username : "";
 
+  let online = user.online !== undefined ? user.online : onlineUsersMap.has(uid);
   profileModalStatus.classList.toggle("offline", !online);
   profileModalStatusText.textContent = online ? "Online" : "Offline";
 
+  profileModalInfo.innerHTML = `<div class="profile-modal-info-empty">Loading details…</div>`;
   profileModalActions.innerHTML = "";
   profileModalNote.style.display = "none";
 
+  profileModalOverlay.classList.add("show");
+
+  // ---- fetch the full user document for details like email/age/country ----
+  let fullUser = { ...user };
+
+  try {
+    const snap = await getDoc(doc(db, "users", uid));
+
+    // Ignore this result if the popup has since been reopened for someone else.
+    if (myToken !== profileRequestToken) return;
+
+    if (snap.exists()) {
+      const data = snap.data();
+      fullUser = {
+        uid,
+        name: data.name || data.username || user.name || "User",
+        username: data.username || user.username || "",
+        photoURL: data.photoURL || data.profilePicture || data.photo || user.photoURL || "",
+        email: data.email || "",
+        age: data.age || data.birthYear ? data.age : "",
+        country: data.country || data.location || "",
+        online: data.online !== undefined ? data.online : online
+      };
+
+      profileModalAvatar.src = fullUser.photoURL || "https://via.placeholder.com/84";
+      profileModalName.textContent = fullUser.name;
+      profileModalUsername.textContent = fullUser.username ? "@" + fullUser.username : "";
+
+      online = fullUser.online;
+      profileModalStatus.classList.toggle("offline", !online);
+      profileModalStatusText.textContent = online ? "Online" : "Offline";
+    }
+  } catch (error) {
+    console.error("Could not load full profile:", error);
+  }
+
+  if (myToken !== profileRequestToken) return;
+
+  // ---- info rows: email / age / country ----
+  const rows = [];
+  if (fullUser.email) rows.push({ label: "Email", value: fullUser.email });
+  if (fullUser.age) rows.push({ label: "Age", value: fullUser.age });
+  if (fullUser.country) rows.push({ label: "Country", value: fullUser.country });
+
+  profileModalInfo.innerHTML = rows.length
+    ? rows
+        .map(
+          (row) =>
+            `<div class="profile-modal-info-row">
+               <span class="profile-modal-info-label">${escapeHtml(row.label)}</span>
+               <span class="profile-modal-info-value">${escapeHtml(String(row.value))}</span>
+             </div>`
+        )
+        .join("")
+    : `<div class="profile-modal-info-empty">No extra profile details available.</div>`;
+
+  // ---- actions ----
   const isSelf = currentUser && uid === currentUser.uid;
 
-  if (!isSelf && user.username) {
+  if (!isSelf) {
+    const chatBtn = document.createElement("button");
+    chatBtn.type = "button";
+    chatBtn.className = "profile-action-btn chat";
+    chatBtn.textContent = "💬 Chat";
+    chatBtn.addEventListener("click", () => {
+      // Adjust PRIVATE_CHAT_URL / query params above to match your
+      // homepage.html's private-chat routing.
+      window.location.href = `${PRIVATE_CHAT_URL}?chat=${encodeURIComponent(uid)}&name=${encodeURIComponent(fullUser.name || "")}`;
+    });
+    profileModalActions.appendChild(chatBtn);
+  }
+
+  if (!isSelf && fullUser.username) {
     const mentionBtn = document.createElement("button");
     mentionBtn.type = "button";
     mentionBtn.className = "profile-action-btn primary";
     mentionBtn.textContent = "@ Mention";
     mentionBtn.addEventListener("click", () => {
       const prefix = messageInput.value && !messageInput.value.endsWith(" ") ? " " : "";
-      messageInput.value += `${prefix}@${user.username} `;
+      messageInput.value += `${prefix}@${fullUser.username} `;
       closeProfilePopup();
       messageInput.focus();
     });
@@ -581,7 +663,7 @@ function openProfilePopup(user) {
     removeBtn.className = "profile-action-btn remove";
     removeBtn.textContent = "🛡️ Remove";
     removeBtn.addEventListener("click", () => {
-      const confirmed = confirm(`Remove ${user.name || "this user"} from the room?`);
+      const confirmed = confirm(`Remove ${fullUser.name || "this user"} from the room?`);
       if (confirmed) {
         removeUser(uid);
         closeProfilePopup();
@@ -591,8 +673,6 @@ function openProfilePopup(user) {
 
     profileModalNote.style.display = "block";
   }
-
-  profileModalOverlay.classList.add("show");
 }
 
 function closeProfilePopup() {
