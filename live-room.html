@@ -3261,6 +3261,55 @@ body.dark-mode .online-user-username {
     min-width: 150px;
   }
 }
+
+/* -----------------------------------------------------
+   🌙 DARK MODE TOGGLE BUTTON
+   ----------------------------------------------------- */
+
+.theme-toggle-btn {
+  width: 42px;
+  height: 42px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: rgba(255,255,255,.9);
+  color: #6c2cff;
+
+  font-size: 19px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 3px 10px rgba(0,0,0,.15);
+
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+
+  flex-shrink: 0;
+}
+
+.theme-toggle-btn:active {
+  transform: scale(.9);
+}
+
+.theme-toggle-btn:hover {
+  box-shadow: 0 4px 14px rgba(0,0,0,.22);
+}
+
+body.dark-mode .theme-toggle-btn {
+  background: rgba(255,255,255,.12);
+  color: #ffd000;
+}
+
+@media (max-width: 600px) {
+  .theme-toggle-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 17px;
+  }
+}
 </style>
 <body>
 
@@ -3290,6 +3339,17 @@ body.dark-mode .online-user-username {
       </div>
 
     </div>
+
+    <button
+      id="themeToggleBtn"
+      class="theme-toggle-btn"
+      type="button"
+      title="Toggle dark mode"
+      aria-label="Toggle dark mode"
+      style="margin-left: auto;"
+    >
+      🌙
+    </button>
 
   </header>
 
@@ -3535,6 +3595,63 @@ body.dark-mode .online-user-username {
   <!-- FIREBASE + JAVASCRIPT -->
 
   <script type="module" src="live-room.js"></script>
+
+  <!-- DARK MODE TOGGLE -->
+  <script>
+    (function () {
+      var STORAGE_KEY = 'friendszone-theme';
+      var btn = document.getElementById('themeToggleBtn');
+      var body = document.body;
+
+      function applyTheme(theme) {
+        if (theme === 'dark') {
+          body.classList.add('dark-mode');
+          if (btn) btn.textContent = '☀️';
+        } else {
+          body.classList.remove('dark-mode');
+          if (btn) btn.textContent = '🌙';
+        }
+      }
+
+      // Resolve initial theme: saved preference > system preference > light
+      var saved = null;
+      try {
+        saved = localStorage.getItem(STORAGE_KEY);
+      } catch (e) {
+        /* localStorage unavailable — fall back silently */
+      }
+
+      var prefersDark = window.matchMedia &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+      applyTheme(saved || (prefersDark ? 'dark' : 'light'));
+
+      if (btn) {
+        btn.addEventListener('click', function () {
+          var isDark = body.classList.contains('dark-mode');
+          var next = isDark ? 'light' : 'dark';
+          applyTheme(next);
+          try {
+            localStorage.setItem(STORAGE_KEY, next);
+          } catch (e) {
+            /* ignore storage errors */
+          }
+        });
+      }
+
+      // Keep in sync with OS-level changes if the user hasn't chosen manually
+      if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)')
+          .addEventListener('change', function (e) {
+            var manual = null;
+            try {
+              manual = localStorage.getItem(STORAGE_KEY);
+            } catch (err) {}
+            if (!manual) applyTheme(e.matches ? 'dark' : 'light');
+          });
+      }
+    })();
+  </script>
 
 </body>
 

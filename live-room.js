@@ -311,7 +311,6 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-
 // ==========================================
 // ROOM META (owner/admins, mutes, bans, pin)
 // ==========================================
@@ -538,147 +537,272 @@ async function openProfilePopup(user) {
   const uid = user.uid;
   const myToken = ++profileRequestToken;
 
-  // ---- show what we already know immediately ----
-  profileModalAvatar.src = user.photoURL || "https://via.placeholder.com/84";
+  // Show basic information immediately
+  profileModalAvatar.src =
+    user.photoURL || "https://via.placeholder.com/84";
   profileModalAvatar.alt = user.name || "User";
   profileModalName.textContent = user.name || "User";
-  profileModalUsername.textContent = user.username ? "@" + user.username : "";
+  profileModalUsername.textContent =
+    user.username ? "@" + user.username : "";
 
-  let online = user.online !== undefined ? user.online : onlineUsersMap.has(uid);
+  let online =
+    user.online !== undefined
+      ? user.online
+      : onlineUsersMap.has(uid);
+
   profileModalStatus.classList.toggle("offline", !online);
-  profileModalStatusText.textContent = online ? "Online" : "Offline";
+  profileModalStatusText.textContent =
+    online ? "Online" : "Offline";
 
-  profileModalInfo.innerHTML = `<div class="profile-modal-info-empty">Loading details…</div>`;
+  profileModalInfo.innerHTML =
+    `<div class="profile-modal-info-empty">Loading details…</div>`;
+
   profileModalActions.innerHTML = "";
   profileModalNote.style.display = "none";
-
   profileModalOverlay.classList.add("show");
 
-  // ---- fetch the full user document for details like email/age/country ----
+  // Get complete profile from Firestore
   let fullUser = { ...user };
 
   try {
     const snap = await getDoc(doc(db, "users", uid));
 
-    // Ignore this result if the popup has since been reopened for someone else.
     if (myToken !== profileRequestToken) return;
 
     if (snap.exists()) {
       const data = snap.data();
+
       fullUser = {
         uid,
         name: data.name || data.username || user.name || "User",
         username: data.username || user.username || "",
-        photoURL: data.photoURL || data.profilePicture || data.photo || user.photoURL || "",
+        photoURL:
+          data.photoURL ||
+          data.profilePicture ||
+          data.photo ||
+          user.photoURL ||
+          "",
         email: data.email || "",
-        age: data.age || data.birthYear ? data.age : "",
+        age: data.age || "",
         country: data.country || data.location || "",
-        online: data.online !== undefined ? data.online : online
+        online:
+          data.online !== undefined
+            ? data.online
+            : online
       };
 
-      profileModalAvatar.src = fullUser.photoURL || "https://via.placeholder.com/84";
+      profileModalAvatar.src =
+        fullUser.photoURL ||
+        "https://via.placeholder.com/84";
+
       profileModalName.textContent = fullUser.name;
-      profileModalUsername.textContent = fullUser.username ? "@" + fullUser.username : "";
+
+      profileModalUsername.textContent =
+        fullUser.username
+          ? "@" + fullUser.username
+          : "";
 
       online = fullUser.online;
-      profileModalStatus.classList.toggle("offline", !online);
-      profileModalStatusText.textContent = online ? "Online" : "Offline";
+
+      profileModalStatus.classList.toggle(
+        "offline",
+        !online
+      );
+
+      profileModalStatusText.textContent =
+        online ? "Online" : "Offline";
     }
   } catch (error) {
-    console.error("Could not load full profile:", error);
+    console.error(
+      "Could not load full profile:",
+      error
+    );
   }
 
   if (myToken !== profileRequestToken) return;
 
-  // ---- info rows: email / age / country ----
-  const rows = [];
-  if (fullUser.email) rows.push({ label: "Email", value: fullUser.email });
-  if (fullUser.age) rows.push({ label: "Age", value: fullUser.age });
-  if (fullUser.country) rows.push({ label: "Country", value: fullUser.country });
+  // ==========================================
+  // PROFILE INFORMATION
+  // ==========================================
 
-  profileModalInfo.innerHTML = rows.length
-    ? rows
-        .map(
-          (row) =>
-            `<div class="profile-modal-info-row">
-               <span class="profile-modal-info-label">${escapeHtml(row.label)}</span>
-               <span class="profile-modal-info-value">${escapeHtml(String(row.value))}</span>
-             </div>`
-        )
-        .join("")
-    : `<div class="profile-modal-info-empty">No extra profile details available.</div>`;
+  const rows = [
+    {
+      label: "Email",
+      value: fullUser.email || "Not provided"
+    },
+    {
+      label: "Age",
+      value: fullUser.age || "Not provided"
+    },
+    {
+      label: "Country",
+      value: fullUser.country || "Not provided"
+    }
+  ];
 
-  // ---- actions ----
-  const isSelf = currentUser && uid === currentUser.uid;
+  profileModalInfo.innerHTML = rows
+    .map(
+      (row) => `
+        <div class="profile-modal-info-row">
+          <span class="profile-modal-info-label">
+            ${escapeHtml(row.label)}
+          </span>
+
+          <span class="profile-modal-info-value">
+            ${escapeHtml(String(row.value))}
+          </span>
+        </div>
+      `
+    )
+    .join("");
+
+  // ==========================================
+  // ACTIONS
+  // ==========================================
+
+  const isSelf =
+    currentUser && uid === currentUser.uid;
 
   if (!isSelf) {
     const chatBtn = document.createElement("button");
+
     chatBtn.type = "button";
-    chatBtn.className = "profile-action-btn chat";
+    chatBtn.className =
+      "profile-action-btn chat";
     chatBtn.textContent = "💬 Chat";
+
     chatBtn.addEventListener("click", () => {
-      // Adjust PRIVATE_CHAT_URL / query params above to match your
-      // homepage.html's private-chat routing.
-      window.location.href = `${PRIVATE_CHAT_URL}?chat=${encodeURIComponent(uid)}&name=${encodeURIComponent(fullUser.name || "")}`;
+      window.location.href =
+        `${PRIVATE_CHAT_URL}?chat=${encodeURIComponent(uid)}&name=${encodeURIComponent(fullUser.name || "")}`;
     });
+
     profileModalActions.appendChild(chatBtn);
   }
 
   if (!isSelf && fullUser.username) {
-    const mentionBtn = document.createElement("button");
+    const mentionBtn =
+      document.createElement("button");
+
     mentionBtn.type = "button";
-    mentionBtn.className = "profile-action-btn primary";
+    mentionBtn.className =
+      "profile-action-btn primary";
+
     mentionBtn.textContent = "@ Mention";
+
     mentionBtn.addEventListener("click", () => {
-      const prefix = messageInput.value && !messageInput.value.endsWith(" ") ? " " : "";
-      messageInput.value += `${prefix}@${fullUser.username} `;
+      const prefix =
+        messageInput.value &&
+        !messageInput.value.endsWith(" ")
+          ? " "
+          : "";
+
+      messageInput.value +=
+        `${prefix}@${fullUser.username} `;
+
       closeProfilePopup();
       messageInput.focus();
     });
-    profileModalActions.appendChild(mentionBtn);
+
+    profileModalActions.appendChild(
+      mentionBtn
+    );
   }
 
-  const currentUid = currentUser ? currentUser.uid : null;
-  const canModerate = isModerator(currentUid) && !isSelf && !isOwner(uid);
+  // ==========================================
+  // MODERATOR ACTIONS
+  // ==========================================
+
+  const currentUid =
+    currentUser ? currentUser.uid : null;
+
+  const canModerate =
+    isModerator(currentUid) &&
+    !isSelf &&
+    !isOwner(uid);
 
   if (canModerate) {
     const muted = isMuted(uid);
 
-    const muteBtn = document.createElement("button");
+    const muteBtn =
+      document.createElement("button");
+
     muteBtn.type = "button";
-    muteBtn.className = "profile-action-btn mute";
-    muteBtn.textContent = muted ? "🔊 Unmute" : "🔇 Mute (15m)";
+    muteBtn.className =
+      "profile-action-btn mute";
+
+    muteBtn.textContent =
+      muted
+        ? "🔊 Unmute"
+        : "🔇 Mute (15m)";
+
     muteBtn.addEventListener("click", () => {
       if (muted) {
         unmuteUser(uid);
       } else {
         muteUser(uid, 15);
       }
+
       closeProfilePopup();
     });
-    profileModalActions.appendChild(muteBtn);
 
-    const removeBtn = document.createElement("button");
+    profileModalActions.appendChild(
+      muteBtn
+    );
+
+    const removeBtn =
+      document.createElement("button");
+
     removeBtn.type = "button";
-    removeBtn.className = "profile-action-btn remove";
-    removeBtn.textContent = "🛡️ Remove";
+    removeBtn.className =
+      "profile-action-btn remove";
+
+    removeBtn.textContent =
+      "🛡️ Remove";
+
     removeBtn.addEventListener("click", () => {
-      const confirmed = confirm(`Remove ${fullUser.name || "this user"} from the room?`);
+      const confirmed = confirm(
+        `Remove ${fullUser.name || "this user"} from the room?`
+      );
+
       if (confirmed) {
         removeUser(uid);
         closeProfilePopup();
       }
     });
-    profileModalActions.appendChild(removeBtn);
 
-    profileModalNote.style.display = "block";
+    profileModalActions.appendChild(
+      removeBtn
+    );
+
+    profileModalNote.style.display =
+      "block";
   }
 }
+// ==========================================
+// CLOSE PROFILE POPUP
+// ==========================================
 
 function closeProfilePopup() {
   profileModalOverlay.classList.remove("show");
 }
 
+if (closeProfileModal) {
+  closeProfileModal.addEventListener(
+    "click",
+    closeProfilePopup
+  );
+}
+
+if (profileModalOverlay) {
+  profileModalOverlay.addEventListener(
+    "click",
+    (event) => {
+      if (event.target === profileModalOverlay) {
+        closeProfilePopup();
+      }
+    }
+  );
+}
 closeProfileModal.addEventListener("click", closeProfilePopup);
 
 profileModalOverlay.addEventListener("click", (event) => {
@@ -1087,6 +1211,12 @@ async function sendVoiceMessage(blob, durationSeconds) {
   try {
     const path = `liveRoomAudio/${currentUser.uid}/${Date.now()}.webm`;
     const audioRef = storageRef(storage, path);
+const fullUser = {
+  ...user,
+  email: data.email || "",
+  age: data.age || "",
+  country: data.country || data.location || ""
+};
 
     await uploadBytes(audioRef, blob);
     const audioURL = await getDownloadURL(audioRef);
