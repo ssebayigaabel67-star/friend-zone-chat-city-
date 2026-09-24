@@ -1426,8 +1426,9 @@ async function toggleReaction(messageId, emoji) {
     await updateDoc(msgRef, {
       [`reactions.${emoji}`]: alreadyReacted ? arrayRemove(currentUser.uid) : arrayUnion(currentUser.uid)
     });
-  } catch (error) {
-    console.error("Reaction error:", error);
+      } catch (error) {
+    console.error("🔥 REACTION ERROR:", error);
+    alert("Reaction failed: " + error.message);
   }
 }
 
