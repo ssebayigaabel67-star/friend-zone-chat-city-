@@ -25,9 +25,12 @@ import {
   where,
   deleteDoc,
   getDoc,
+  getDocs,
   arrayUnion,
   arrayRemove,
-  deleteField
+  deleteField,
+  increment,
+  limit
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 import {
@@ -109,6 +112,68 @@ const profileModalActions = document.getElementById("profileModalActions");
 const profileModalNote = document.getElementById("profileModalNote");
 const closeProfileModal = document.getElementById("closeProfileModal");
 
+// ---- upgrade pack 2 elements ----
+const onlineCountHeader = document.getElementById("onlineCountHeader");
+const roomTopicLine = document.getElementById("roomTopicLine");
+
+const searchBtn = document.getElementById("searchBtn");
+const friendRequestsBtn = document.getElementById("friendRequestsBtn");
+const friendRequestsBadge = document.getElementById("friendRequestsBadge");
+const roomInfoBtn = document.getElementById("roomInfoBtn");
+
+const memberSearchInput = document.getElementById("memberSearchInput");
+const recentlyJoinedEl = document.getElementById("recentlyJoined");
+const topContributorsEl = document.getElementById("topContributors");
+
+const announcementBanner = document.getElementById("announcementBanner");
+const announcementBannerText = document.getElementById("announcementBannerText");
+const announcementDismissBtn = document.getElementById("announcementDismissBtn");
+
+const chatLockedNotice = document.getElementById("chatLockedNotice");
+
+const toastContainer = document.getElementById("toastContainer");
+
+const roomInfoModalOverlay = document.getElementById("roomInfoModalOverlay");
+const closeRoomInfoModal = document.getElementById("closeRoomInfoModal");
+const roomInfoTopicView = document.getElementById("roomInfoTopicView");
+const roomInfoTopicInput = document.getElementById("roomInfoTopicInput");
+const roomInfoDescView = document.getElementById("roomInfoDescView");
+const roomInfoDescInput = document.getElementById("roomInfoDescInput");
+const roomInfoRulesView = document.getElementById("roomInfoRulesView");
+const roomInfoRulesInput = document.getElementById("roomInfoRulesInput");
+const roomInfoAnnouncementField = document.getElementById("roomInfoAnnouncementField");
+const roomInfoAnnouncementInput = document.getElementById("roomInfoAnnouncementInput");
+const saveRoomInfoBtn = document.getElementById("saveRoomInfoBtn");
+const roomInfoModTools = document.getElementById("roomInfoModTools");
+const slowModeToggle = document.getElementById("slowModeToggle");
+const slowModeSecondsField = document.getElementById("slowModeSecondsField");
+const slowModeSecondsInput = document.getElementById("slowModeSecondsInput");
+const lockChatToggle = document.getElementById("lockChatToggle");
+const bannedUsersList = document.getElementById("bannedUsersList");
+const clearMessagesBtn = document.getElementById("clearMessagesBtn");
+
+const searchModalOverlay = document.getElementById("searchModalOverlay");
+const closeSearchModal = document.getElementById("closeSearchModal");
+const searchInput = document.getElementById("searchInput");
+const searchUsersResults = document.getElementById("searchUsersResults");
+const searchMessagesResults = document.getElementById("searchMessagesResults");
+
+const friendRequestsModalOverlay = document.getElementById("friendRequestsModalOverlay");
+const closeFriendRequestsModal = document.getElementById("closeFriendRequestsModal");
+const friendRequestsList = document.getElementById("friendRequestsList");
+
+const imagePreviewOverlay = document.getElementById("imagePreviewOverlay");
+const imagePreviewImg = document.getElementById("imagePreviewImg");
+const imageCaptionInput = document.getElementById("imageCaptionInput");
+const cancelImagePreview = document.getElementById("cancelImagePreview");
+const confirmImagePreview = document.getElementById("confirmImagePreview");
+const closeImagePreview = document.getElementById("closeImagePreview");
+
+const imageLightboxOverlay = document.getElementById("imageLightboxOverlay");
+const imageLightboxImg = document.getElementById("imageLightboxImg");
+const imageLightboxCaption = document.getElementById("imageLightboxCaption");
+const closeImageLightbox = document.getElementById("closeImageLightbox");
+
 // Change this to match how your own homepage.html opens a private
 // conversation (e.g. a different query param, or a dedicated chat.html).
 const PRIVATE_CHAT_URL = "homepage.html";
@@ -174,7 +239,15 @@ let roomMeta = {
   admins: [],
   mutedUsers: {},
   bannedUsers: [],
-  pinnedMessage: null
+  pinnedMessage: null,
+  topic: "",
+  description: "",
+  rules: "",
+  announcement: "",
+  slowModeOn: false,
+  slowModeSeconds: 10,
+  locked: false,
+  clearedAt: 0
 };
 
 const metaRef = doc(db, "liveRoom", "meta");
@@ -188,6 +261,35 @@ let recordingTimerHandle = null;
 
 // currently playing voice message <audio>, so only one plays at a time
 let activeAudioEl = null;
+
+// Own Firestore profile doc (friends / requests / likes / message count),
+// kept live via a dedicated listener once we're signed in.
+let myUserDoc = {
+  friends: [],
+  incomingRequests: [],
+  outgoingRequests: [],
+  likedBy: [],
+  messageCount: 0
+};
+
+// uid set of the top 5 contributors by message count, for the 🏆 badge
+let topContributorUids = new Set();
+
+// Client-side slow-mode tracking (own last send time)
+let lastSentAt = 0;
+
+// Pending image (selected but not yet sent — user is adding a caption)
+let pendingImageDataUrl = null;
+
+// Messages currently rendered, keyed by id — used by search & by the
+// "someone reacted to your message" / "new message" detectors.
+const loadedMessages = new Map();
+
+// Guards so we don't toast for the entire history / member list on first load.
+let messagesInitialLoadDone = false;
+let onlineUsersInitialLoadDone = false;
+let previousOnlineUids = new Set();
+const recentlyJoinedCache = []; // [{uid,name,photoURL}], newest first, max 8
 
 
 // ==========================================
@@ -220,6 +322,48 @@ function isMuted(uid) {
 
 function isBanned(uid) {
   return Array.isArray(roomMeta.bannedUsers) && roomMeta.bannedUsers.includes(uid);
+}
+
+function remainingSlowModeMs() {
+  if (!roomMeta.slowModeOn || !roomMeta.slowModeSeconds) return 0;
+  const elapsed = Date.now() - lastSentAt;
+  const needed = roomMeta.slowModeSeconds * 1000;
+  return elapsed >= needed ? 0 : needed - elapsed;
+}
+
+
+// ==========================================
+// TOASTS (live notifications)
+// ==========================================
+
+function showToast(message, options) {
+  if (!toastContainer) return;
+
+  const opts = options || {};
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.textContent = message;
+
+  if (opts.onClick) {
+    toast.style.cursor = "pointer";
+    toast.addEventListener("click", () => {
+      opts.onClick();
+      dismissToast(toast);
+    });
+  }
+
+  toastContainer.appendChild(toast);
+
+  const life = opts.duration || 4500;
+  const timer = setTimeout(() => dismissToast(toast), life);
+  toast.dataset.timer = String(timer);
+}
+
+function dismissToast(toast) {
+  if (!toast || !toast.isConnected) return;
+  clearTimeout(Number(toast.dataset.timer));
+  toast.classList.add("fade-out");
+  setTimeout(() => toast.remove(), 260);
 }
 
 
@@ -309,6 +453,35 @@ onAuthStateChanged(auth, async (user) => {
   } catch (error) {
     console.error("Could not load profile/update online status:", error);
   }
+
+  // Live-track friends / friend requests / likes / message count on our
+  // own profile doc so the header badge and profile popup stay current.
+  onSnapshot(
+    userRef,
+    (snap) => {
+      if (!snap.exists()) return;
+      const data = snap.data();
+
+      myUserDoc = {
+        friends: data.friends || [],
+        incomingRequests: data.incomingRequests || [],
+        outgoingRequests: data.outgoingRequests || [],
+        likedBy: data.likedBy || [],
+        messageCount: data.messageCount || 0
+      };
+
+      if (friendRequestsBadge) {
+        const count = myUserDoc.incomingRequests.length;
+        friendRequestsBadge.textContent = String(count);
+        friendRequestsBadge.style.display = count > 0 ? "flex" : "none";
+      }
+
+      if (friendRequestsModalOverlay && friendRequestsModalOverlay.classList.contains("show")) {
+        renderFriendRequests();
+      }
+    },
+    (error) => console.error("Own profile listener error:", error)
+  );
 });
 
 // ==========================================
@@ -325,10 +498,21 @@ onSnapshot(
       admins: data.admins || [],
       mutedUsers: data.mutedUsers || {},
       bannedUsers: data.bannedUsers || [],
-      pinnedMessage: data.pinnedMessage || null
+      pinnedMessage: data.pinnedMessage || null,
+      topic: data.topic || "",
+      description: data.description || "",
+      rules: data.rules || "",
+      announcement: data.announcement || "",
+      slowModeOn: !!data.slowModeOn,
+      slowModeSeconds: data.slowModeSeconds || 10,
+      locked: !!data.locked,
+      clearedAt: data.clearedAt || 0
     };
 
     renderPinnedBanner();
+    renderAnnouncementBanner();
+    updateRoomTopicLine();
+    updateChatLockedNotice();
 
     // If the signed-in user has been banned, boot them out.
     if (currentUser && isBanned(currentUser.uid)) {
@@ -351,6 +535,48 @@ function renderPinnedBanner() {
   const label = pin.text || (pin.imageURL ? "📸 Image" : pin.audioURL ? "🎤 Voice message" : "Message");
   pinnedBannerText.textContent = `${pin.senderName || "Someone"}: ${label}`;
   pinnedBanner.classList.add("show");
+}
+
+function renderAnnouncementBanner() {
+  if (!announcementBanner) return;
+
+  if (!roomMeta.announcement) {
+    announcementBanner.classList.remove("show");
+    return;
+  }
+
+  announcementBannerText.textContent = roomMeta.announcement;
+  announcementBanner.classList.add("show");
+}
+
+if (announcementDismissBtn) {
+  announcementDismissBtn.addEventListener("click", () => {
+    // Dismiss is per-viewer only — it doesn't clear the banner for everyone.
+    announcementBanner.classList.remove("show");
+  });
+}
+
+function updateRoomTopicLine() {
+  if (!roomTopicLine) return;
+  roomTopicLine.textContent = roomMeta.topic ? `🔴 Topic: ${roomMeta.topic}` : "";
+  roomTopicLine.style.display = roomMeta.topic ? "block" : "none";
+}
+
+function updateChatLockedNotice() {
+  if (!chatLockedNotice) return;
+
+  const uid = currentUser ? currentUser.uid : null;
+  const moderator = isModerator(uid);
+
+  if (roomMeta.locked && !moderator) {
+    chatLockedNotice.textContent = "🔒 This room is locked — only the owner/admins can send messages right now.";
+    chatLockedNotice.classList.add("show");
+  } else if (roomMeta.slowModeOn && !moderator) {
+    chatLockedNotice.textContent = `🐢 Slow mode is on — wait ${roomMeta.slowModeSeconds}s between messages.`;
+    chatLockedNotice.classList.add("show");
+  } else {
+    chatLockedNotice.classList.remove("show");
+  }
 }
 
 pinnedBanner.addEventListener("click", (event) => {
@@ -399,7 +625,197 @@ async function pinMessage(messageId, data) {
 
 
 // ==========================================
+// ROOM INFO MODAL (topic / description / rules /
+// announcement / slow mode / lock / clear / bans)
+// ==========================================
+
+function openRoomInfoModal() {
+  const uid = currentUser ? currentUser.uid : null;
+  const moderator = isModerator(uid);
+
+  roomInfoTopicView.textContent = roomMeta.topic || "No topic set.";
+  roomInfoDescView.textContent = roomMeta.description || "No description yet.";
+  roomInfoRulesView.textContent = roomMeta.rules || "No rules have been set.";
+
+  roomInfoTopicInput.value = roomMeta.topic || "";
+  roomInfoDescInput.value = roomMeta.description || "";
+  roomInfoRulesInput.value = roomMeta.rules || "";
+  roomInfoAnnouncementInput.value = roomMeta.announcement || "";
+
+  [roomInfoTopicView, roomInfoDescView, roomInfoRulesView].forEach((el) => {
+    el.style.display = moderator ? "none" : "block";
+  });
+  [roomInfoTopicInput, roomInfoDescInput, roomInfoRulesInput].forEach((el) => {
+    el.style.display = moderator ? "block" : "none";
+  });
+
+  roomInfoAnnouncementField.style.display = moderator ? "block" : "none";
+  saveRoomInfoBtn.style.display = moderator ? "block" : "none";
+  roomInfoModTools.style.display = moderator ? "block" : "none";
+
+  if (moderator) {
+    slowModeToggle.classList.toggle("on", roomMeta.slowModeOn);
+    slowModeSecondsField.style.display = roomMeta.slowModeOn ? "block" : "none";
+    slowModeSecondsInput.value = roomMeta.slowModeSeconds || 10;
+
+    lockChatToggle.classList.toggle("on", roomMeta.locked);
+
+    renderBannedUsersList();
+  }
+
+  roomInfoModalOverlay.classList.add("show");
+}
+
+async function renderBannedUsersList() {
+  if (!bannedUsersList) return;
+
+  if (!roomMeta.bannedUsers || roomMeta.bannedUsers.length === 0) {
+    bannedUsersList.innerHTML = `<div class="search-empty">No banned users.</div>`;
+    return;
+  }
+
+  bannedUsersList.innerHTML = `<div class="search-empty">Loading…</div>`;
+
+  const rows = await Promise.all(
+    roomMeta.bannedUsers.map(async (uid) => {
+      let name = uid;
+      let photoURL = "https://via.placeholder.com/28";
+
+      try {
+        const snap = await getDoc(doc(db, "users", uid));
+        if (snap.exists()) {
+          const d = snap.data();
+          name = d.name || d.username || uid;
+          photoURL = d.photoURL || d.profilePicture || d.photo || photoURL;
+        }
+      } catch (error) {
+        console.warn("Could not load banned user info:", error);
+      }
+
+      return { uid, name, photoURL };
+    })
+  );
+
+  bannedUsersList.innerHTML = "";
+
+  rows.forEach((row) => {
+    const el = document.createElement("div");
+    el.className = "search-result-row";
+    el.innerHTML = `
+      <img src="${row.photoURL}" alt="">
+      <div class="name" style="flex:1;">${escapeHtml(row.name)}</div>
+    `;
+
+    const unbanBtn = document.createElement("button");
+    unbanBtn.type = "button";
+    unbanBtn.className = "profile-action-btn mute";
+    unbanBtn.textContent = "Unban";
+    unbanBtn.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      await unbanUser(row.uid);
+    });
+
+    el.appendChild(unbanBtn);
+    bannedUsersList.appendChild(el);
+  });
+}
+
+async function unbanUser(uid) {
+  try {
+    await updateDoc(metaRef, { bannedUsers: arrayRemove(uid) });
+    renderBannedUsersList();
+    showToast("User unbanned.");
+  } catch (error) {
+    console.error("Unban error:", error);
+    alert("Could not unban this user.");
+  }
+}
+
+if (roomInfoBtn) {
+  roomInfoBtn.addEventListener("click", openRoomInfoModal);
+}
+
+if (roomTopicLine) {
+  roomTopicLine.addEventListener("click", openRoomInfoModal);
+}
+
+if (closeRoomInfoModal) {
+  closeRoomInfoModal.addEventListener("click", () => roomInfoModalOverlay.classList.remove("show"));
+}
+
+if (roomInfoModalOverlay) {
+  roomInfoModalOverlay.addEventListener("click", (e) => {
+    if (e.target === roomInfoModalOverlay) roomInfoModalOverlay.classList.remove("show");
+  });
+}
+
+if (slowModeToggle) {
+  slowModeToggle.addEventListener("click", async () => {
+    const next = !roomMeta.slowModeOn;
+    slowModeToggle.classList.toggle("on", next);
+    slowModeSecondsField.style.display = next ? "block" : "none";
+    try {
+      await setDoc(metaRef, { slowModeOn: next }, { merge: true });
+    } catch (error) {
+      console.error("Slow mode toggle error:", error);
+    }
+  });
+}
+
+if (lockChatToggle) {
+  lockChatToggle.addEventListener("click", async () => {
+    const next = !roomMeta.locked;
+    lockChatToggle.classList.toggle("on", next);
+    try {
+      await setDoc(metaRef, { locked: next }, { merge: true });
+    } catch (error) {
+      console.error("Lock chat toggle error:", error);
+    }
+  });
+}
+
+if (saveRoomInfoBtn) {
+  saveRoomInfoBtn.addEventListener("click", async () => {
+    try {
+      await setDoc(
+        metaRef,
+        {
+          topic: roomInfoTopicInput.value.trim(),
+          description: roomInfoDescInput.value.trim(),
+          rules: roomInfoRulesInput.value.trim(),
+          announcement: roomInfoAnnouncementInput.value.trim(),
+          slowModeSeconds: Math.max(1, Number(slowModeSecondsInput.value) || 10)
+        },
+        { merge: true }
+      );
+      showToast("Room settings saved.");
+      roomInfoModalOverlay.classList.remove("show");
+    } catch (error) {
+      console.error("Save room info error:", error);
+      alert("Could not save room settings.");
+    }
+  });
+}
+
+if (clearMessagesBtn) {
+  clearMessagesBtn.addEventListener("click", async () => {
+    const confirmed = confirm("Clear all messages for everyone in this room? This can't be undone.");
+    if (!confirmed) return;
+
+    try {
+      await setDoc(metaRef, { clearedAt: Date.now() }, { merge: true });
+      showToast("Messages cleared.");
+    } catch (error) {
+      console.error("Clear messages error:", error);
+      alert("Could not clear messages.");
+    }
+  });
+}
+
+
+// ==========================================
 // ONLINE POPOVER
+
 // ==========================================
 
 if (onlineCount) {
@@ -442,85 +858,234 @@ const onlineUsersQuery = query(
 onSnapshot(
   onlineUsersQuery,
   (snapshot) => {
-    onlineUsersEl.innerHTML = "";
     onlineCountText.textContent = `${snapshot.size} online`;
+    if (onlineCountHeader) onlineCountHeader.textContent = `👥 ${snapshot.size} online`;
 
     onlineUsersMap.clear();
+    const currentUids = new Set();
+
+    snapshot.forEach((userDoc) => {
+      onlineUsersMap.set(userDoc.id, userDoc.data());
+      currentUids.add(userDoc.id);
+      if (userDoc.data().username) {
+        usernameToUid.set(userDoc.data().username.toLowerCase(), userDoc.id);
+      }
+    });
+
+    // ---- join / leave detection (skipped on the very first snapshot) ----
+    if (onlineUsersInitialLoadDone) {
+      currentUids.forEach((uid) => {
+        if (previousOnlineUids.has(uid)) return;
+        if (currentUser && uid === currentUser.uid) return;
+
+        const user = onlineUsersMap.get(uid);
+        const name = user.name || user.username || "Someone";
+
+        showToast(`👋 ${name} joined FriendsZone Live`);
+
+        recentlyJoinedCache.unshift({
+          uid,
+          name,
+          photoURL: user.photoURL || user.profilePicture || user.photo || "https://via.placeholder.com/24"
+        });
+        if (recentlyJoinedCache.length > 8) recentlyJoinedCache.length = 8;
+        renderRecentlyJoined();
+      });
+
+      previousOnlineUids.forEach((uid) => {
+        if (currentUids.has(uid)) return;
+        if (currentUser && uid === currentUser.uid) return;
+        showToast(`🚪 Someone left FriendsZone Live`);
+      });
+    }
+
+    previousOnlineUids = currentUids;
+    onlineUsersInitialLoadDone = true;
+
+    renderOnlineUsersList(memberSearchInput ? memberSearchInput.value.trim() : "");
+  },
+  (error) => {
+    console.error("Online users error:", error);
+  }
+);
+
+function renderOnlineUsersList(filterTerm) {
+  onlineUsersEl.innerHTML = "";
+
+  const term = (filterTerm || "").toLowerCase();
+  const entries = Array.from(onlineUsersMap.entries()).filter(([uid, user]) => {
+    if (!term) return true;
+    const name = (user.name || "").toLowerCase();
+    const username = (user.username || "").toLowerCase();
+    return name.includes(term) || username.includes(term);
+  });
+
+  if (entries.length === 0) {
+    onlineUsersEl.innerHTML = `<p class="empty-text">${term ? "No members match your search." : "No one is online yet."}</p>`;
+    return;
+  }
+
+  entries.forEach(([uid, user]) => {
+    const userElement = document.createElement("div");
+    userElement.className = "online-user";
+
+    const photo = document.createElement("img");
+    photo.className = "online-user-photo";
+    photo.src = user.photoURL || user.profilePicture || user.photo || "https://via.placeholder.com/48";
+    photo.alt = user.name || user.username || "User";
+
+    const info = document.createElement("div");
+    info.className = "online-user-info";
+
+    const name = document.createElement("span");
+    name.className = "online-user-name";
+    name.textContent = user.name || user.username || "User";
+    info.appendChild(name);
+
+    if (user.username) {
+      const uname = document.createElement("span");
+      uname.className = "online-user-username";
+      uname.textContent = "@" + user.username;
+      info.appendChild(uname);
+    }
+
+    const status = document.createElement("span");
+    status.className = "online-user-status";
+    status.innerHTML = `<span class="online-status-dot"></span> Online`;
+    info.appendChild(status);
+
+    const badges = document.createElement("div");
+    badges.className = "online-user-badges";
+
+    if (isOwner(uid)) {
+      badges.innerHTML += `<span class="role-badge owner">Owner</span>`;
+    } else if (isAdmin(uid)) {
+      badges.innerHTML += `<span class="role-badge admin">Admin</span>`;
+    }
+
+    if (topContributorUids.has(uid)) {
+      badges.innerHTML += `<span class="role-badge admin" title="Top contributor">🏆</span>`;
+    }
+
+    if (isMuted(uid)) {
+      badges.innerHTML += `<span class="muted-badge">Muted</span>`;
+    }
+
+    userElement.appendChild(photo);
+    userElement.appendChild(info);
+    userElement.appendChild(badges);
+
+    userElement.addEventListener("click", () => {
+      openProfilePopup({
+        uid,
+        name: user.name || user.username || "User",
+        username: user.username || "",
+        photoURL: photo.src,
+        online: true
+      });
+    });
+
+    onlineUsersEl.appendChild(userElement);
+  });
+}
+
+if (memberSearchInput) {
+  memberSearchInput.addEventListener("input", () => {
+    renderOnlineUsersList(memberSearchInput.value.trim());
+  });
+}
+
+function renderRecentlyJoined() {
+  if (!recentlyJoinedEl) return;
+
+  if (recentlyJoinedCache.length === 0) {
+    recentlyJoinedEl.innerHTML = "";
+    return;
+  }
+
+  recentlyJoinedEl.innerHTML = `<div class="modal-section-title" style="margin:0 0 6px;">Recently joined</div>`;
+
+  const list = document.createElement("div");
+  list.style.display = "flex";
+  list.style.flexWrap = "wrap";
+  list.style.gap = "6px";
+  list.style.marginBottom = "8px";
+
+  recentlyJoinedCache.forEach((entry) => {
+    const chip = document.createElement("div");
+    chip.className = "recently-joined-chip";
+    chip.innerHTML = `<img src="${entry.photoURL}" alt=""> ${escapeHtml(entry.name)}`;
+    chip.addEventListener("click", () => {
+      const user = onlineUsersMap.get(entry.uid);
+      openProfilePopup({
+        uid: entry.uid,
+        name: entry.name,
+        username: user ? user.username || "" : "",
+        photoURL: entry.photoURL,
+        online: onlineUsersMap.has(entry.uid)
+      });
+    });
+    list.appendChild(chip);
+  });
+
+  recentlyJoinedEl.appendChild(list);
+}
+
+
+// ==========================================
+// TOP CONTRIBUTORS (by message count)
+// ==========================================
+
+const topContributorsQuery = query(
+  collection(db, "users"),
+  orderBy("messageCount", "desc"),
+  limit(5)
+);
+
+onSnapshot(
+  topContributorsQuery,
+  (snapshot) => {
+    topContributorUids = new Set();
+
+    if (!topContributorsEl) return;
 
     if (snapshot.empty) {
-      onlineUsersEl.innerHTML = `<p class="empty-text">No one is online yet.</p>`;
+      topContributorsEl.innerHTML = "";
       return;
     }
 
-    snapshot.forEach((userDoc) => {
+    const medals = ["🥇", "🥈", "🥉", "🏅", "🏅"];
+    topContributorsEl.innerHTML = `<div class="modal-section-title" style="margin:0 0 6px;">🏆 Top contributors</div>`;
+
+    snapshot.forEach((userDoc, index) => {
       const user = userDoc.data();
       const uid = userDoc.id;
+      if (!user.messageCount) return;
 
-      onlineUsersMap.set(uid, user);
-      if (user.username) {
-        usernameToUid.set(user.username.toLowerCase(), uid);
-      }
+      topContributorUids.add(uid);
 
-      const userElement = document.createElement("div");
-      userElement.className = "online-user";
-
-      const photo = document.createElement("img");
-      photo.className = "online-user-photo";
-      photo.src = user.photoURL || user.profilePicture || user.photo || "https://via.placeholder.com/48";
-      photo.alt = user.name || user.username || "User";
-
-      const info = document.createElement("div");
-      info.className = "online-user-info";
-
-      const name = document.createElement("span");
-      name.className = "online-user-name";
-      name.textContent = user.name || user.username || "User";
-      info.appendChild(name);
-
-      if (user.username) {
-        const uname = document.createElement("span");
-        uname.className = "online-user-username";
-        uname.textContent = "@" + user.username;
-        info.appendChild(uname);
-      }
-
-      const status = document.createElement("span");
-      status.className = "online-user-status";
-      status.innerHTML = `<span class="online-status-dot"></span> Online`;
-      info.appendChild(status);
-
-      const badges = document.createElement("div");
-      badges.className = "online-user-badges";
-
-      if (isOwner(uid)) {
-        badges.innerHTML += `<span class="role-badge owner">Owner</span>`;
-      } else if (isAdmin(uid)) {
-        badges.innerHTML += `<span class="role-badge admin">Admin</span>`;
-      }
-
-      if (isMuted(uid)) {
-        badges.innerHTML += `<span class="muted-badge">Muted</span>`;
-      }
-
-      userElement.appendChild(photo);
-      userElement.appendChild(info);
-      userElement.appendChild(badges);
-
-      userElement.addEventListener("click", () => {
+      const row = document.createElement("div");
+      row.className = "top-contributors-row";
+      row.innerHTML = `
+        <span class="medal">${medals[index] || "🏅"}</span>
+        <img src="${user.photoURL || user.profilePicture || user.photo || "https://via.placeholder.com/24"}" alt="">
+        <span class="name">${escapeHtml(user.name || user.username || "User")}</span>
+        <span class="count">${user.messageCount} msgs</span>
+      `;
+      row.addEventListener("click", () => {
         openProfilePopup({
           uid,
           name: user.name || user.username || "User",
           username: user.username || "",
-          photoURL: photo.src,
-          online: true
+          photoURL: user.photoURL || user.profilePicture || user.photo || "",
+          online: onlineUsersMap.has(uid)
         });
       });
-
-      onlineUsersEl.appendChild(userElement);
+      topContributorsEl.appendChild(row);
     });
   },
   (error) => {
-    console.error("Online users error:", error);
+    console.error("Top contributors error:", error);
   }
 );
 
@@ -538,27 +1103,22 @@ async function openProfilePopup(user) {
   const myToken = ++profileRequestToken;
 
   // Show basic information immediately
-  profileModalAvatar.src =
-    user.photoURL || "https://via.placeholder.com/84";
+  profileModalAvatar.src = user.photoURL || "https://via.placeholder.com/84";
   profileModalAvatar.alt = user.name || "User";
   profileModalName.textContent = user.name || "User";
-  profileModalUsername.textContent =
-    user.username ? "@" + user.username : "";
+  profileModalUsername.textContent = user.username ? "@" + user.username : "";
 
-  let online =
-    user.online !== undefined
-      ? user.online
-      : onlineUsersMap.has(uid);
+  let online = user.online !== undefined ? user.online : onlineUsersMap.has(uid);
 
   profileModalStatus.classList.toggle("offline", !online);
-  profileModalStatusText.textContent =
-    online ? "Online" : "Offline";
+  profileModalStatusText.textContent = online ? "Online" : "Offline";
 
-  profileModalInfo.innerHTML =
-    `<div class="profile-modal-info-empty">Loading details…</div>`;
+  profileModalInfo.innerHTML = `<div class="profile-modal-info-empty">Loading details…</div>`;
 
   profileModalActions.innerHTML = "";
   profileModalNote.style.display = "none";
+  if (profileModalBadges) profileModalBadges.innerHTML = "";
+  if (profileModalStats) profileModalStats.innerHTML = "";
   profileModalOverlay.classList.add("show");
 
   // Get complete profile from Firestore
@@ -576,81 +1136,70 @@ async function openProfilePopup(user) {
         uid,
         name: data.name || data.username || user.name || "User",
         username: data.username || user.username || "",
-        photoURL:
-          data.photoURL ||
-          data.profilePicture ||
-          data.photo ||
-          user.photoURL ||
-          "",
+        photoURL: data.photoURL || data.profilePicture || data.photo || user.photoURL || "",
         email: data.email || "",
         age: data.age || "",
         country: data.country || data.location || "",
-        online:
-          data.online !== undefined
-            ? data.online
-            : online
+        online: data.online !== undefined ? data.online : online,
+        likedBy: data.likedBy || [],
+        friends: data.friends || [],
+        messageCount: data.messageCount || 0
       };
 
-      profileModalAvatar.src =
-        fullUser.photoURL ||
-        "https://via.placeholder.com/84";
-
+      profileModalAvatar.src = fullUser.photoURL || "https://via.placeholder.com/84";
       profileModalName.textContent = fullUser.name;
-
-      profileModalUsername.textContent =
-        fullUser.username
-          ? "@" + fullUser.username
-          : "";
+      profileModalUsername.textContent = fullUser.username ? "@" + fullUser.username : "";
 
       online = fullUser.online;
-
-      profileModalStatus.classList.toggle(
-        "offline",
-        !online
-      );
-
-      profileModalStatusText.textContent =
-        online ? "Online" : "Offline";
+      profileModalStatus.classList.toggle("offline", !online);
+      profileModalStatusText.textContent = online ? "Online" : "Offline";
     }
   } catch (error) {
-    console.error(
-      "Could not load full profile:",
-      error
-    );
+    console.error("Could not load full profile:", error);
   }
 
   if (myToken !== profileRequestToken) return;
+
+  // ==========================================
+  // BADGES
+  // ==========================================
+
+  if (profileModalBadges) {
+    let badgesHtml = "";
+    if (isOwner(uid)) badgesHtml += `<span class="role-badge owner">👑 Owner</span>`;
+    else if (isAdmin(uid)) badgesHtml += `<span class="role-badge admin">🛡️ Admin</span>`;
+    if (topContributorUids.has(uid)) badgesHtml += `<span class="role-badge admin">🏆 Top contributor</span>`;
+    profileModalBadges.innerHTML = badgesHtml;
+  }
+
+  // ==========================================
+  // STATS
+  // ==========================================
+
+  if (profileModalStats) {
+    profileModalStats.innerHTML = `
+      <div class="profile-modal-stat"><span class="num">${fullUser.messageCount || 0}</span><span class="lbl">Messages</span></div>
+      <div class="profile-modal-stat"><span class="num">${(fullUser.likedBy || []).length}</span><span class="lbl">Likes</span></div>
+      <div class="profile-modal-stat"><span class="num">${(fullUser.friends || []).length}</span><span class="lbl">Friends</span></div>
+    `;
+  }
 
   // ==========================================
   // PROFILE INFORMATION
   // ==========================================
 
   const rows = [
-    {
-      label: "Email",
-      value: fullUser.email || "Not provided"
-    },
-    {
-      label: "Age",
-      value: fullUser.age || "Not provided"
-    },
-    {
-      label: "Country",
-      value: fullUser.country || "Not provided"
-    }
+    { label: "Email", value: fullUser.email || "Not provided" },
+    { label: "Age", value: fullUser.age || "Not provided" },
+    { label: "Country", value: fullUser.country || "Not provided" }
   ];
 
   profileModalInfo.innerHTML = rows
     .map(
       (row) => `
         <div class="profile-modal-info-row">
-          <span class="profile-modal-info-label">
-            ${escapeHtml(row.label)}
-          </span>
-
-          <span class="profile-modal-info-value">
-            ${escapeHtml(String(row.value))}
-          </span>
+          <span class="profile-modal-info-label">${escapeHtml(row.label)}</span>
+          <span class="profile-modal-info-value">${escapeHtml(String(row.value))}</span>
         </div>
       `
     )
@@ -660,124 +1209,128 @@ async function openProfilePopup(user) {
   // ACTIONS
   // ==========================================
 
-  const isSelf =
-    currentUser && uid === currentUser.uid;
+  const isSelf = currentUser && uid === currentUser.uid;
 
   if (!isSelf) {
     const chatBtn = document.createElement("button");
-
     chatBtn.type = "button";
-    chatBtn.className =
-      "profile-action-btn chat";
+    chatBtn.className = "profile-action-btn chat";
     chatBtn.textContent = "💬 Chat";
-
     chatBtn.addEventListener("click", () => {
-      window.location.href =
-        `${PRIVATE_CHAT_URL}?chat=${encodeURIComponent(uid)}&name=${encodeURIComponent(fullUser.name || "")}`;
+      window.location.href = `${PRIVATE_CHAT_URL}?chat=${encodeURIComponent(uid)}&name=${encodeURIComponent(fullUser.name || "")}`;
     });
-
     profileModalActions.appendChild(chatBtn);
   }
 
   if (!isSelf && fullUser.username) {
-    const mentionBtn =
-      document.createElement("button");
-
+    const mentionBtn = document.createElement("button");
     mentionBtn.type = "button";
-    mentionBtn.className =
-      "profile-action-btn primary";
-
+    mentionBtn.className = "profile-action-btn primary";
     mentionBtn.textContent = "@ Mention";
-
     mentionBtn.addEventListener("click", () => {
-      const prefix =
-        messageInput.value &&
-        !messageInput.value.endsWith(" ")
-          ? " "
-          : "";
-
-      messageInput.value +=
-        `${prefix}@${fullUser.username} `;
-
+      const prefix = messageInput.value && !messageInput.value.endsWith(" ") ? " " : "";
+      messageInput.value += `${prefix}@${fullUser.username} `;
       closeProfilePopup();
       messageInput.focus();
     });
+    profileModalActions.appendChild(mentionBtn);
+  }
 
-    profileModalActions.appendChild(
-      mentionBtn
-    );
+  // ---- like ----
+  if (!isSelf) {
+    const liked = (fullUser.likedBy || []).includes(currentUser ? currentUser.uid : "");
+    const likeBtn = document.createElement("button");
+    likeBtn.type = "button";
+    likeBtn.className = "profile-action-btn like" + (liked ? " liked" : "");
+    likeBtn.textContent = liked ? `♥ Liked (${fullUser.likedBy.length})` : `🤍 Like (${(fullUser.likedBy || []).length})`;
+    likeBtn.addEventListener("click", () => toggleLike(uid, fullUser.name));
+    profileModalActions.appendChild(likeBtn);
+  }
+
+  // ---- friend / add friend / accept ----
+  if (!isSelf) {
+    const friendBtn = document.createElement("button");
+    friendBtn.type = "button";
+    friendBtn.className = "profile-action-btn friend";
+
+    const alreadyFriends = myUserDoc.friends.includes(uid);
+    const requestSent = myUserDoc.outgoingRequests.includes(uid);
+    const incoming = myUserDoc.incomingRequests.find((r) => r.uid === uid);
+
+    if (alreadyFriends) {
+      friendBtn.textContent = "✅ Friends";
+      friendBtn.disabled = true;
+    } else if (incoming) {
+      friendBtn.textContent = "🤝 Accept request";
+      friendBtn.addEventListener("click", () => {
+        acceptFriendRequest(incoming);
+        closeProfilePopup();
+      });
+    } else if (requestSent) {
+      friendBtn.textContent = "⏳ Request sent";
+      friendBtn.disabled = true;
+    } else {
+      friendBtn.textContent = "➕ Add Friend";
+      friendBtn.addEventListener("click", () => {
+        sendFriendRequest(uid, fullUser.name, fullUser.username, fullUser.photoURL);
+        closeProfilePopup();
+      });
+    }
+
+    profileModalActions.appendChild(friendBtn);
   }
 
   // ==========================================
   // MODERATOR ACTIONS
   // ==========================================
 
-  const currentUid =
-    currentUser ? currentUser.uid : null;
-
-  const canModerate =
-    isModerator(currentUid) &&
-    !isSelf &&
-    !isOwner(uid);
+  const currentUid = currentUser ? currentUser.uid : null;
+  const canModerate = isModerator(currentUid) && !isSelf && !isOwner(uid);
 
   if (canModerate) {
     const muted = isMuted(uid);
 
-    const muteBtn =
-      document.createElement("button");
-
+    const muteBtn = document.createElement("button");
     muteBtn.type = "button";
-    muteBtn.className =
-      "profile-action-btn mute";
-
-    muteBtn.textContent =
-      muted
-        ? "🔊 Unmute"
-        : "🔇 Mute (15m)";
-
+    muteBtn.className = "profile-action-btn mute";
+    muteBtn.textContent = muted ? "🔊 Unmute" : "🔇 Mute (15m)";
     muteBtn.addEventListener("click", () => {
-      if (muted) {
-        unmuteUser(uid);
-      } else {
-        muteUser(uid, 15);
-      }
-
+      if (muted) unmuteUser(uid);
+      else muteUser(uid, 15);
       closeProfilePopup();
     });
+    profileModalActions.appendChild(muteBtn);
 
-    profileModalActions.appendChild(
-      muteBtn
-    );
-
-    const removeBtn =
-      document.createElement("button");
-
+    const removeBtn = document.createElement("button");
     removeBtn.type = "button";
-    removeBtn.className =
-      "profile-action-btn remove";
-
-    removeBtn.textContent =
-      "🛡️ Remove";
-
+    removeBtn.className = "profile-action-btn remove";
+    removeBtn.textContent = "🛡️ Remove";
     removeBtn.addEventListener("click", () => {
-      const confirmed = confirm(
-        `Remove ${fullUser.name || "this user"} from the room?`
-      );
-
+      const confirmed = confirm(`Remove ${fullUser.name || "this user"} from the room?`);
       if (confirmed) {
         removeUser(uid);
         closeProfilePopup();
       }
     });
+    profileModalActions.appendChild(removeBtn);
 
-    profileModalActions.appendChild(
-      removeBtn
-    );
+    const banBtn = document.createElement("button");
+    banBtn.type = "button";
+    banBtn.className = "profile-action-btn remove";
+    banBtn.textContent = "⛔ Ban";
+    banBtn.addEventListener("click", () => {
+      const confirmed = confirm(`Ban ${fullUser.name || "this user"}? They won't be able to rejoin until unbanned.`);
+      if (confirmed) {
+        banUser(uid);
+        closeProfilePopup();
+      }
+    });
+    profileModalActions.appendChild(banBtn);
 
-    profileModalNote.style.display =
-      "block";
+    profileModalNote.style.display = "block";
   }
 }
+
 // ==========================================
 // CLOSE PROFILE POPUP
 // ==========================================
@@ -786,23 +1339,6 @@ function closeProfilePopup() {
   profileModalOverlay.classList.remove("show");
 }
 
-if (closeProfileModal) {
-  closeProfileModal.addEventListener(
-    "click",
-    closeProfilePopup
-  );
-}
-
-if (profileModalOverlay) {
-  profileModalOverlay.addEventListener(
-    "click",
-    (event) => {
-      if (event.target === profileModalOverlay) {
-        closeProfilePopup();
-      }
-    }
-  );
-}
 closeProfileModal.addEventListener("click", closeProfilePopup);
 
 profileModalOverlay.addEventListener("click", (event) => {
@@ -1211,12 +1747,6 @@ async function sendVoiceMessage(blob, durationSeconds) {
   try {
     const path = `liveRoomAudio/${currentUser.uid}/${Date.now()}.webm`;
     const audioRef = storageRef(storage, path);
-const fullUser = {
-  ...user,
-  email: data.email || "",
-  age: data.age || "",
-  country: data.country || data.location || ""
-};
 
     await uploadBytes(audioRef, blob);
     const audioURL = await getDownloadURL(audioRef);

@@ -14531,56 +14531,7 @@ if (resetChatCustomization) {
   );
 
 }
-// ==================================================
-// NEWS ROOM
-// ==================================================
 
-const rightNewsBtn =
-  document.getElementById("rightNewsBtn");
-
-const newsRoomPopover =
-  document.getElementById("newsRoomPopover");
-
-const closeNewsRoomPopover =
-  document.getElementById("closeNewsRoomPopover");
-
-
-if (
-  rightNewsBtn &&
-  newsRoomPopover
-) {
-
-  rightNewsBtn.addEventListener(
-    "click",
-    () => {
-
-      newsRoomPopover.classList.add(
-        "show"
-      );
-
-    }
-  );
-
-}
-
-
-if (
-  closeNewsRoomPopover &&
-  newsRoomPopover
-) {
-
-  closeNewsRoomPopover.addEventListener(
-    "click",
-    () => {
-
-      newsRoomPopover.classList.remove(
-        "show"
-      );
-
-    }
-  );
-
-}
 // ==================================================
 // ANNOUNCEMENT ROOM
 // ==================================================
@@ -15431,13 +15382,63 @@ ${
 
 }
 // ==================================================
+// NEWS ROOM
+// ==================================================
+
+const rightNewsBtn =
+  document.getElementById("rightNewsBtn");
+
+const newsRoomPopover =
+  document.getElementById("newsRoomPopover");
+
+const closeNewsRoomPopover =
+  document.getElementById("closeNewsRoomPopover");
+
+
+if (
+  rightNewsBtn &&
+  newsRoomPopover
+) {
+
+  rightNewsBtn.addEventListener(
+    "click",
+    () => {
+
+      newsRoomPopover.classList.add(
+        "show"
+      );
+
+    }
+  );
+
+}
+
+
+if (
+  closeNewsRoomPopover &&
+  newsRoomPopover
+) {
+
+  closeNewsRoomPopover.addEventListener(
+    "click",
+    () => {
+
+      newsRoomPopover.classList.remove(
+        "show"
+      );
+
+    }
+  );
+
+}
+// ==================================================
 // SHARE BREAKING NEWS POPOVER
 // ==================================================
 
 const createBreakingNewsBtn =
   document.getElementById(
-0  );
-
+    "createBreakingNewsBtn"
+  );
 const breakingNewsPopover =
   document.getElementById(
     "breakingNewsPopover"

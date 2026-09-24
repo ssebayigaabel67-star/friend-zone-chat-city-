@@ -3310,6 +3310,467 @@ body.dark-mode .theme-toggle-btn {
     font-size: 17px;
   }
 }
+/* =====================================================
+   🚀 UPGRADE PACK 2
+   Edit/Copy · Toasts · Room Info (topic/rules/slow mode/
+   lock/clear/unban) · Announcement banner · Image preview
+   + caption + lightbox · Member search · Recently joined ·
+   Join/leave system lines · Friends · Profile likes ·
+   Top contributors
+   ===================================================== */
+
+/* ---- small text-only action buttons on messages ---- */
+.msg-action-btn {
+  border: none;
+  background: transparent;
+  font-size: 10px;
+  padding: 3px 8px 3px 0;
+  cursor: pointer;
+}
+
+.msg-action-btn.reply { color: #555; }
+.msg-action-btn.edit { color: #006e94; }
+.msg-action-btn.copy { color: #6c2cff; }
+.msg-action-btn.delete { color: #d32f2f; }
+.msg-action-btn.pin { color: #a15c00; background: rgba(255,208,0,.14); border-radius: 10px; padding: 3px 8px; margin-right: 4px; }
+
+.edit-message-box {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.edit-message-box input {
+  flex: 1;
+  border-radius: 10px;
+  border: 1px solid rgba(138,92,255,.4);
+  padding: 6px 9px;
+  font-size: 13px;
+}
+
+.edit-message-box button {
+  border: none;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 0 10px;
+  cursor: pointer;
+}
+
+.edit-message-box .save-edit { background: linear-gradient(90deg,#ff2d8b,#8a5cff); color: #fff; }
+.edit-message-box .cancel-edit { background: rgba(0,0,0,.08); color: #444; }
+
+.edited-tag {
+  font-size: 9px;
+  color: #999;
+  margin-left: 4px;
+}
+
+/* ---- system lines: "X joined / left" ---- */
+.system-line {
+  text-align: center;
+  font-size: 11px;
+  color: #888;
+  margin: 6px auto;
+  padding: 4px 12px;
+  border-radius: 12px;
+  background: rgba(0,0,0,.04);
+  max-width: 260px;
+}
+
+body.dark-mode .system-line {
+  background: rgba(255,255,255,.06);
+  color: #bbb;
+}
+
+/* ---- toasts ---- */
+#toastContainer {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 12px);
+  right: 12px;
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: min(300px, calc(100vw - 24px));
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: rgba(30,30,42,.92);
+  color: #fff;
+  font-size: 12px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.3);
+  cursor: pointer;
+  animation: toastIn .2s ease-out;
+}
+
+@keyframes toastIn {
+  from { transform: translateY(-10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.toast.mention { background: linear-gradient(90deg, #ff2d8b, #8a5cff); }
+.toast.reaction { background: linear-gradient(90deg, #ff8a00, #ffd000); color: #3a2600; }
+.toast.friend { background: linear-gradient(90deg, #00bfff, #35d07f); }
+
+/* ---- announcement banner ---- */
+.announcement-banner {
+  display: none;
+  align-items: center;
+  gap: 9px;
+  margin: 8px 10px 0;
+  padding: 8px 12px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, rgba(0,191,255,.18), rgba(53,208,127,.14));
+  border: 1px solid rgba(0,191,255,.35);
+}
+
+.announcement-banner.show { display: flex; }
+
+.announcement-banner-text {
+  flex: 1;
+  font-size: 12px;
+  color: #005a76;
+}
+
+body.dark-mode .announcement-banner-text { color: #cdeeff; }
+
+.announcement-dismiss {
+  border: none;
+  background: rgba(0,0,0,.08);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-size: 11px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ---- topic line under room title ---- */
+.room-topic {
+  font-size: 11px;
+  color: #ff2d8b;
+  font-weight: 700;
+  display: block;
+  cursor: pointer;
+}
+
+/* ---- generic modal shell (reused for room info / search / friend requests / image preview / lightbox) ---- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10,10,20,.55);
+  backdrop-filter: blur(5px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2500;
+  padding: 20px;
+}
+
+.modal-overlay.show { display: flex; }
+
+.modal-box {
+  width: min(380px, 100%);
+  max-height: 82vh;
+  overflow-y: auto;
+  background: rgba(255,255,255,.94);
+  backdrop-filter: blur(24px) saturate(180%);
+  border-radius: 22px;
+  padding: 20px;
+  position: relative;
+}
+
+body.dark-mode .modal-box { background: rgba(26,26,38,.95); color: #eee; }
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0,0,0,.08);
+  cursor: pointer;
+}
+
+.modal-title {
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 14px;
+  padding-right: 24px;
+}
+
+.modal-field { margin-bottom: 12px; }
+
+.modal-field label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #888;
+  margin-bottom: 4px;
+}
+
+.modal-field input,
+.modal-field textarea {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,.12);
+  padding: 8px 10px;
+  font-size: 13px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.modal-field.readonly-text {
+  font-size: 13px;
+  color: #333;
+  white-space: pre-wrap;
+}
+
+body.dark-mode .modal-field.readonly-text { color: #eee; }
+
+.modal-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 0;
+  border-top: 1px solid rgba(0,0,0,.06);
+  font-size: 12px;
+}
+
+body.dark-mode .modal-row { border-top-color: rgba(255,255,255,.08); }
+
+.modal-toggle {
+  width: 40px;
+  height: 22px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.15);
+  border: none;
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.modal-toggle::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: left .15s ease;
+}
+
+.modal-toggle.on { background: linear-gradient(90deg,#ff2d8b,#8a5cff); }
+.modal-toggle.on::after { left: 20px; }
+
+.modal-btn {
+  border: none;
+  border-radius: 14px;
+  padding: 9px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+.modal-btn.primary { background: linear-gradient(90deg,#ff2d8b,#8a5cff); color: #fff; }
+.modal-btn.danger { background: rgba(255,45,80,.15); color: #c40033; }
+.modal-btn.ghost { background: rgba(0,0,0,.06); color: #444; }
+
+.modal-section-title {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  color: #999;
+  margin: 16px 0 6px;
+}
+
+.banned-user-row,
+.request-row,
+.search-result-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: 12px;
+}
+
+.banned-user-row img,
+.request-row img,
+.search-result-row img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.banned-user-row span,
+.request-row span,
+.search-result-row .name {
+  flex: 1;
+}
+
+.search-result-row .snippet {
+  display: block;
+  font-size: 10px;
+  color: #999;
+}
+
+/* ---- member search input inside popover ---- */
+.member-search-input {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,.1);
+  padding: 7px 10px;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+/* ---- recently joined chips ---- */
+.recently-joined {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  margin-bottom: 10px;
+  padding-bottom: 2px;
+}
+
+.recently-joined-chip {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px 4px 4px;
+  border-radius: 999px;
+  background: rgba(53,208,127,.12);
+  font-size: 10px;
+  font-weight: 700;
+  color: #1c8a55;
+  white-space: nowrap;
+}
+
+.recently-joined-chip img {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* ---- top contributors ---- */
+.top-contributors-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  font-size: 12px;
+}
+
+.top-contributors-row img {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.top-contributors-row .medal { font-size: 13px; }
+.top-contributors-row .name { flex: 1; }
+.top-contributors-row .count { font-size: 10px; color: #999; }
+
+.top-badge {
+  font-size: 9px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 8px;
+  background: linear-gradient(90deg,#ffd000,#ff8a00);
+  color: #4a2c00;
+}
+
+/* ---- header search / info buttons ---- */
+.header-icon-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,.5);
+  font-size: 14px;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-left: 6px;
+}
+
+body.dark-mode .header-icon-btn { background: rgba(255,255,255,.1); }
+
+/* ---- image preview / lightbox ---- */
+.image-preview-box img {
+  width: 100%;
+  border-radius: 14px;
+  max-height: 320px;
+  object-fit: contain;
+  background: #000;
+}
+
+#imageLightboxOverlay {
+  z-index: 3500;
+}
+
+#imageLightboxOverlay .modal-box {
+  background: transparent;
+  backdrop-filter: none;
+  box-shadow: none;
+  max-width: 94vw;
+  text-align: center;
+}
+
+#imageLightboxOverlay img {
+  max-width: 100%;
+  max-height: 78vh;
+  border-radius: 12px;
+}
+
+#imageLightboxCaption {
+  color: #fff;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.image-caption-text {
+  font-size: 11px;
+  color: #444;
+  padding: 4px 8px 0;
+}
+
+body.dark-mode .image-caption-text { color: #ccc; }
+
+/* ---- lock/slow mode notice in message bar ---- */
+.chat-locked-notice {
+  display: none;
+  text-align: center;
+  font-size: 11px;
+  color: #c40033;
+  padding: 6px;
+  background: rgba(255,45,80,.08);
+  border-radius: 10px;
+  margin: 0 7px 6px;
+}
+
+.chat-locked-notice.show { display: block; }
+
+/* ---- profile modal extras: friend / like buttons ---- */
+.profile-action-btn.friend { background: rgba(53,208,127,.16); color: #1c8a55; }
+.profile-action-btn.like { background: rgba(255,45,139,.14); color: #c4005e; }
 </style>
 <body>
 
@@ -3333,23 +3794,61 @@ body.dark-mode .theme-toggle-btn {
       <div>
         <h1>FriendsZone Live</h1>
 
-        <span id="onlineCount">
+        <span id="onlineCountHeader">
           0 online
         </span>
+
+        <span
+          id="roomTopicLine"
+          class="room-topic"
+          title="View room info"
+        ></span>
       </div>
 
     </div>
 
-    <button
-      id="themeToggleBtn"
-      class="theme-toggle-btn"
-      type="button"
-      title="Toggle dark mode"
-      aria-label="Toggle dark mode"
-      style="margin-left: auto;"
-    >
-      🌙
-    </button>
+    <div style="margin-left: auto; display: flex; align-items: center;">
+
+      <button
+        id="searchBtn"
+        class="header-icon-btn"
+        type="button"
+        title="Search"
+      >🔎</button>
+
+      <button
+        id="friendRequestsBtn"
+        class="header-icon-btn"
+        type="button"
+        title="Friend requests"
+        style="position: relative;"
+      >
+        🔔
+        <span
+          id="friendRequestsBadge"
+          style="display:none; position:absolute; top:-2px; right:-2px; background:#ff2d55; color:#fff; font-size:9px; font-weight:800; border-radius:999px; padding:1px 5px;"
+        >0</span>
+      </button>
+
+      <button
+        id="roomInfoBtn"
+        class="header-icon-btn"
+        type="button"
+        title="Room info"
+      >ℹ️</button>
+
+      <button
+        id="themeToggleBtn"
+        class="theme-toggle-btn"
+        type="button"
+        title="Toggle dark mode"
+        aria-label="Toggle dark mode"
+        style="margin-left: 6px;"
+      >
+        🌙
+      </button>
+
+    </div>
 
   </header>
 
@@ -3407,6 +3906,17 @@ body.dark-mode .theme-toggle-btn {
 
     </div>
 
+    <input
+      id="memberSearchInput"
+      type="text"
+      class="member-search-input"
+      placeholder="Search members..."
+      autocomplete="off"
+    >
+
+    <div id="recentlyJoined" class="recently-joined"></div>
+
+    <div id="topContributors"></div>
 
     <div
       id="onlineUsers"
@@ -3436,6 +3946,13 @@ body.dark-mode .theme-toggle-btn {
           class="unpin-btn"
           title="Unpin"
         >✕</button>
+      </div>
+
+      <!-- ADMIN ANNOUNCEMENT BANNER -->
+      <div id="announcementBanner" class="announcement-banner">
+        <span>📣</span>
+        <div id="announcementBannerText" class="announcement-banner-text"></div>
+        <button id="announcementDismissBtn" type="button" class="announcement-dismiss">✕</button>
       </div>
 
       <div
@@ -3493,7 +4010,9 @@ body.dark-mode .theme-toggle-btn {
       >
         <span class="recording-dot"></span>
         <span id="recordingTimer" class="recording-timer">0:00</span>
-        <span class="recording-hint">Recording voice message…</span>
+        <div class="voice-wave playing" id="recordingWave">
+          <span style="height:8px"></span><span style="height:16px"></span><span style="height:10px"></span><span style="height:20px"></span><span style="height:12px"></span><span style="height:18px"></span>
+        </div>
         <button
           id="cancelRecordingBtn"
           type="button"
@@ -3505,6 +4024,9 @@ body.dark-mode .theme-toggle-btn {
           class="recording-send-btn"
         >Send</button>
       </div>
+
+      <!-- CHAT LOCKED / SLOW MODE NOTICE -->
+      <div id="chatLockedNotice" class="chat-locked-notice"></div>
 
       <!-- MESSAGE INPUT -->
       <div class="message-bar">
@@ -3589,6 +4111,109 @@ body.dark-mode .theme-toggle-btn {
       <div id="profileModalNote" class="profile-modal-note" style="display:none;">
         Moderation actions are enforced by your Firestore security rules — this UI only reflects them.
       </div>
+    </div>
+  </div>
+
+  <!-- TOASTS -->
+  <div id="toastContainer"></div>
+
+  <!-- ROOM INFO MODAL -->
+  <div id="roomInfoModalOverlay" class="modal-overlay">
+    <div class="modal-box">
+      <button id="closeRoomInfoModal" type="button" class="modal-close">✕</button>
+      <div class="modal-title">🌍 Room Info</div>
+
+      <div class="modal-field" id="roomInfoTopicField">
+        <label>Topic</label>
+        <div class="modal-field readonly-text" id="roomInfoTopicView"></div>
+        <input id="roomInfoTopicInput" type="text" placeholder="e.g. Weekend Hangout" style="display:none;">
+      </div>
+
+      <div class="modal-field" id="roomInfoDescField">
+        <label>Description</label>
+        <div class="modal-field readonly-text" id="roomInfoDescView"></div>
+        <textarea id="roomInfoDescInput" rows="2" placeholder="What's this room about?" style="display:none;"></textarea>
+      </div>
+
+      <div class="modal-field" id="roomInfoRulesField">
+        <label>Rules</label>
+        <div class="modal-field readonly-text" id="roomInfoRulesView"></div>
+        <textarea id="roomInfoRulesInput" rows="3" placeholder="Be kind, no spam..." style="display:none;"></textarea>
+      </div>
+
+      <div class="modal-field" id="roomInfoAnnouncementField" style="display:none;">
+        <label>Announcement banner</label>
+        <textarea id="roomInfoAnnouncementInput" rows="2" placeholder="Leave blank to clear"></textarea>
+      </div>
+
+      <button id="saveRoomInfoBtn" type="button" class="modal-btn primary" style="display:none;">Save</button>
+
+      <div id="roomInfoModTools" style="display:none;">
+
+        <div class="modal-row">
+          <span>🐢 Slow mode</span>
+          <button id="slowModeToggle" type="button" class="modal-toggle"></button>
+        </div>
+        <div class="modal-field" id="slowModeSecondsField" style="display:none;">
+          <label>Seconds between messages</label>
+          <input id="slowModeSecondsInput" type="number" min="1" max="600" value="10">
+        </div>
+
+        <div class="modal-row">
+          <span>🔒 Lock chat</span>
+          <button id="lockChatToggle" type="button" class="modal-toggle"></button>
+        </div>
+
+        <div class="modal-section-title">Banned users</div>
+        <div id="bannedUsersList"></div>
+
+        <button id="clearMessagesBtn" type="button" class="modal-btn danger">🗑️ Clear all messages</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEARCH MODAL -->
+  <div id="searchModalOverlay" class="modal-overlay">
+    <div class="modal-box">
+      <button id="closeSearchModal" type="button" class="modal-close">✕</button>
+      <div class="modal-title">🔎 Search</div>
+      <input id="searchInput" type="text" placeholder="Search messages or @username..." style="width:100%; border-radius:12px; border:1px solid rgba(0,0,0,.12); padding:8px 10px; font-size:13px;">
+      <div class="modal-section-title">Users</div>
+      <div id="searchUsersResults"></div>
+      <div class="modal-section-title">Messages</div>
+      <div id="searchMessagesResults"></div>
+    </div>
+  </div>
+
+  <!-- FRIEND REQUESTS MODAL -->
+  <div id="friendRequestsModalOverlay" class="modal-overlay">
+    <div class="modal-box">
+      <button id="closeFriendRequestsModal" type="button" class="modal-close">✕</button>
+      <div class="modal-title">🔔 Friend Requests</div>
+      <div id="friendRequestsList"></div>
+    </div>
+  </div>
+
+  <!-- IMAGE PREVIEW BEFORE SENDING -->
+  <div id="imagePreviewOverlay" class="modal-overlay">
+    <div class="modal-box image-preview-box">
+      <button id="closeImagePreview" type="button" class="modal-close">✕</button>
+      <div class="modal-title">📸 Send image</div>
+      <img id="imagePreviewImg" alt="Preview">
+      <input id="imageCaptionInput" type="text" placeholder="Add a caption (optional)" style="width:100%; margin-top:10px; border-radius:12px; border:1px solid rgba(0,0,0,.12); padding:8px 10px; font-size:13px;">
+      <div style="display:flex; gap:8px; margin-top:12px;">
+        <button id="cancelImagePreview" type="button" class="modal-btn ghost">Cancel</button>
+        <button id="confirmImagePreview" type="button" class="modal-btn primary">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FULLSCREEN IMAGE LIGHTBOX -->
+  <div id="imageLightboxOverlay" class="modal-overlay">
+    <div class="modal-box">
+      <button id="closeImageLightbox" type="button" class="modal-close" style="background:rgba(255,255,255,.2); color:#fff;">✕</button>
+      <img id="imageLightboxImg" alt="">
+      <div id="imageLightboxCaption"></div>
     </div>
   </div>
 
