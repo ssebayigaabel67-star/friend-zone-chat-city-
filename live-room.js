@@ -1511,7 +1511,233 @@ function compressImage(file) {
 // SEND MESSAGE
 // ==========================================
 
+async function sendMessage() {
+  if (!currentUser) {
+    alert("Please wait for your account to load.");
+    return;
+  }
 
+  if (isMuted(currentUser.uid)) {
+    alert("You've been muted in this room and can't send messages right now.");
+    return;
+  }
+
+  const text = messageInput.value.trim();
+  if (!text) return;
+
+  try {
+
+    // ==========================================
+    // GET MENTIONS
+    // ==========================================
+
+    const { mentionedUids } =
+      renderTextWithMentions(text);
+
+
+    // ==========================================
+    // SEND USER MESSAGE
+    // ==========================================
+
+    await addDoc(
+      collection(
+        db,
+        "liveRoom",
+        "messages",
+        "messages"
+      ),
+      {
+        senderId:
+          currentUser.uid,
+
+        senderName:
+          currentUserProfile.name,
+
+        username:
+          currentUserProfile.username,
+
+        photoURL:
+          currentUserProfile.photoURL,
+
+        text:
+          text,
+
+        mentions:
+          mentionedUids,
+
+        reactions:
+          {},
+
+        timestamp:
+          serverTimestamp(),
+
+        replyTo:
+          replyingTo
+            ? {
+                id:
+                  replyingTo.id,
+
+                senderName:
+                  replyingTo.senderName,
+
+                text:
+                  replyingTo.text
+              }
+            : null
+      }
+    );
+
+
+    // ==========================================
+    // FRIENDSZONE AI
+    // ==========================================
+
+    if (isCallingAI(text)) {
+
+      // ========================================
+      // REMOVE AI TRIGGER
+      // ========================================
+
+      const aiQuestion =
+        text
+          .replace(
+            /^@ai[\s,:!?-]*/i,
+            ""
+          )
+          .replace(
+            /^hi ai[\s,:!?-]*/i,
+            ""
+          )
+          .replace(
+            /^hey ai[\s,:!?-]*/i,
+            ""
+          )
+          .replace(
+            /^ai[\s,:!?-]*/i,
+            ""
+          )
+          .trim();
+
+
+      // ========================================
+      // DEFAULT QUESTION
+      // ========================================
+
+      const finalQuestion =
+        aiQuestion ||
+        "Say hello to the user and ask how you can help.";
+
+
+      // ========================================
+      // CALL FRIENDSZONE AI
+      // ========================================
+
+      const response =
+        await fetch(
+          "/api/ask-ai",
+          {
+            method:
+              "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+
+              "Authorization":
+                `Bearer ${await currentUser.getIdToken()}`
+            },
+
+            body:
+              JSON.stringify({
+                question:
+                  finalQuestion
+              })
+          }
+        );
+
+
+      // ========================================
+      // READ RESPONSE
+      // ========================================
+
+      const data =
+        await response.json();
+
+
+      // ========================================
+      // CHECK RESPONSE
+      // ========================================
+
+      if (
+        !response.ok ||
+        !data.success
+      ) {
+
+        console.error(
+          "FriendsZone AI error:",
+          data
+        );
+
+        throw new Error(
+          data.error ||
+          "FriendsZone AI could not respond."
+        );
+      }
+
+
+      // ========================================
+      // IMPORTANT
+      // ========================================
+      //
+      // The /api/ask-ai endpoint already saves
+      // the FriendsZone AI response to Firestore.
+      //
+      // DO NOT use addDoc() here for the AI.
+      //
+      // Otherwise the AI response will appear twice.
+      // ========================================
+
+      console.log(
+        "🤖 FriendsZone AI replied:",
+        data.answer
+      );
+    }
+
+
+    // ==========================================
+    // CLEAR INPUT
+    // ==========================================
+
+    messageInput.value = "";
+
+
+    // ==========================================
+    // CANCEL REPLY
+    // ==========================================
+
+    cancelReply();
+
+
+    // ==========================================
+    // FOCUS INPUT
+    // ==========================================
+
+    messageInput.focus();
+
+
+  } catch (error) {
+
+    console.error(
+      "Send message error:",
+      error
+    );
+
+    alert(
+      error?.message ||
+      "Could not send the message."
+    );
+  }
+}
 
 // ==========================================
 // SEND IMAGE
