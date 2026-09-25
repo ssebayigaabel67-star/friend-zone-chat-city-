@@ -1528,6 +1528,10 @@ async function sendMessage() {
   try {
     const { mentionedUids } = renderTextWithMentions(text);
 
+    // ==========================================
+    // SEND USER MESSAGE
+    // ==========================================
+
     await addDoc(
       collection(db, "liveRoom", "messages", "messages"),
       {
@@ -1540,12 +1544,21 @@ async function sendMessage() {
         reactions: {},
         timestamp: serverTimestamp(),
         replyTo: replyingTo
-          ? { id: replyingTo.id, senderName: replyingTo.senderName, text: replyingTo.text }
+          ? {
+              id: replyingTo.id,
+              senderName: replyingTo.senderName,
+              text: replyingTo.text
+            }
           : null
       }
     );
 
+    // ==========================================
+    // FRIENDSZONE AI
+    // ==========================================
+
     if (isCallingAI(text)) {
+
       const aiQuestion = text
         .replace(/^@ai[\s,:!?-]*/i, "")
         .replace(/^hi ai[\s,:!?-]*/i, "")
@@ -1553,34 +1566,137 @@ async function sendMessage() {
         .replace(/^ai[\s,:!?-]*/i, "")
         .trim();
 
-      const finalQuestion = aiQuestion || "Say hello to the user and ask how you can help.";
+      const finalQuestion =
+        aiQuestion ||
+        "Say hello to the user and ask how you can help.";
 
-      const response = await fetch("/api/ask-ai", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${await currentUser.getIdToken()}`
-        },
-        body: JSON.stringify({ question: finalQuestion })
-      });
+      try {
 
-      const data = await response.json();
+        const response = await fetch("/api/ask-ai", {
+          method: "POST",
 
-      if (!response.ok || !data.success) {
-        console.error("FriendsZone AI error:", data);
-        throw new Error(data.error || "FriendsZone AI could not respond.");
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${await currentUser.getIdToken()}`
+          },
+
+          body: JSON.stringify({
+            question: finalQuestion
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          console.error("FriendsZone AI error:", data);
+
+          throw new Error(
+            data.error ||
+            "FriendsZone AI could not respond."
+          );
+        }
+
+        // ==========================================
+        // SAVE AI RESPONSE TO LIVE ROOM
+        // ==========================================
+
+        const aiAnswer =
+          data.answer ||
+          data.response ||
+          data.message;
+
+        if (!aiAnswer) {
+          throw new Error(
+            "FriendsZone AI returned an empty response."
+          );
+        }
+
+        await addDoc(
+          collection(
+            db,
+            "liveRoom",
+            "messages",
+            "messages"
+          ),
+          {
+            senderId: FRIENDSZONE_AI.id,
+            senderName: FRIENDSZONE_AI.name,
+            username: FRIENDSZONE_AI.username,
+            photoURL: FRIENDSZONE_AI.photoURL,
+
+            text: aiAnswer,
+
+            mentions: [],
+            reactions: {},
+
+            timestamp: serverTimestamp(),
+
+            replyTo: {
+              id: "",
+              senderName: currentUserProfile.name,
+              text: text
+            }
+          }
+        );
+
+      } catch (aiError) {
+
+        console.error(
+          "FriendsZone AI request failed:",
+          aiError
+        );
+
+        // Show AI error inside the Live Room
+        await addDoc(
+          collection(
+            db,
+            "liveRoom",
+            "messages",
+            "messages"
+          ),
+          {
+            senderId: FRIENDSZONE_AI.id,
+            senderName: FRIENDSZONE_AI.name,
+            username: FRIENDSZONE_AI.username,
+            photoURL: FRIENDSZONE_AI.photoURL,
+
+            text:
+              "Sorry, I couldn't respond right now. Please try again.",
+
+            mentions: [],
+            reactions: {},
+
+            timestamp: serverTimestamp(),
+
+            replyTo: null
+          }
+        );
       }
     }
 
+    // ==========================================
+    // CLEAR INPUT
+    // ==========================================
+
     messageInput.value = "";
+
     cancelReply();
+
     messageInput.focus();
+
   } catch (error) {
-    console.error("Send message error:", error);
-    alert(error?.message || "Could not send the message.");
+
+    console.error(
+      "Send message error:",
+      error
+    );
+
+    alert(
+      error?.message ||
+      "Could not send the message."
+    );
   }
 }
-
 
 // ==========================================
 // SEND IMAGE
