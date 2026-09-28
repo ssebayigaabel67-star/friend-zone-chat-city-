@@ -1368,17 +1368,25 @@ if (profileModalOverlay) {
 
 async function muteUser(uid, minutes) {
   const expiry = Date.now() + minutes * 60 * 1000;
+
   try {
-    await setDoc(metaRef, { mutedUsers: { [uid]: expiry } }, { merge: true });
+    await updateDoc(metaRef, {
+      [`mutedUsers.${uid}`]: expiry
+    });
+
+    showToast(`User muted for ${minutes} minutes.`);
   } catch (error) {
     console.error("Mute error:", error);
     alert("Could not mute this user.");
   }
 }
-
 async function unmuteUser(uid) {
   try {
-    await updateDoc(metaRef, { [`mutedUsers.${uid}`]: deleteField() });
+    await updateDoc(metaRef, {
+      [`mutedUsers.${uid}`]: deleteField()
+    });
+
+    showToast("User unmuted.");
   } catch (error) {
     console.error("Unmute error:", error);
     alert("Could not unmute this user.");
