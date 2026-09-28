@@ -107,11 +107,18 @@ const profileModalName = document.getElementById("profileModalName");
 const profileModalUsername = document.getElementById("profileModalUsername");
 const profileModalStatus = document.getElementById("profileModalStatus");
 const profileModalStatusText = document.getElementById("profileModalStatusText");
-const profileModalInfo = document.getElementById("profileModalInfo");
-const profileModalActions = document.getElementById("profileModalActions");
-const profileModalNote = document.getElementById("profileModalNote");
-const closeProfileModal = document.getElementById("closeProfileModal");
-
+const profileModalInfo =
+  document.getElementById("profileModalInfo");
+const profileModalActions =
+  document.getElementById("profileModalActions");
+const profileModalNote =
+  document.getElementById("profileModalNote");
+const profileModalBadges =
+  document.getElementById("profileModalBadges");
+const profileModalStats =
+  document.getElementById("profileModalStats");
+const closeProfileModal =
+  document.getElementById("closeProfileModal");
 // ---- upgrade pack 2 elements ----
 const onlineCountHeader = document.getElementById("onlineCountHeader");
 const roomTopicLine = document.getElementById("roomTopicLine");
@@ -296,10 +303,15 @@ const recentlyJoinedCache = []; // [{uid,name,photoURL}], newest first, max 8
 // ROLE / MODERATION HELPERS
 // ==========================================
 
-function isOwner(uid) {
-  return !!uid && roomMeta.ownerId === uid;
-}
+const FRIENDSZONE_OWNER_UID =
+  "Ur72jn1ON4Z7zVdJAvgM2orOpnl2";
 
+function isOwner(uid) {
+  return !!uid && (
+    uid === FRIENDSZONE_OWNER_UID ||
+    uid === roomMeta.ownerId
+  );
+}
 function isAdmin(uid) {
   return !!uid && Array.isArray(roomMeta.admins) && roomMeta.admins.includes(uid);
 }
@@ -1334,18 +1346,22 @@ async function openProfilePopup(user) {
 // ==========================================
 // CLOSE PROFILE POPUP
 // ==========================================
-
 function closeProfilePopup() {
-  profileModalOverlay.classList.remove("show");
+  if (profileModalOverlay) {
+    profileModalOverlay.classList.remove("show");
+  }
 }
-
-closeProfileModal.addEventListener("click", closeProfilePopup);
-
-profileModalOverlay.addEventListener("click", (event) => {
-  if (event.target === profileModalOverlay) closeProfilePopup();
-});
-
-
+if (closeProfileModal) {
+  closeProfileModal.addEventListener(
+    "click",
+    closeProfilePopup);}
+if (profileModalOverlay) {
+  profileModalOverlay.addEventListener(
+    "click",
+    (event) => {
+      if (event.target === profileModalOverlay) {
+        closeProfilePopup();
+ }});}
 // ==========================================
 // MODERATION ACTIONS
 // ==========================================
