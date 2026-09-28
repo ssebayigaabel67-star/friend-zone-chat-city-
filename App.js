@@ -337,11 +337,6 @@ if (testNewsButton) {
         "📰 NEWS BUTTON CLICKED"
       );
 
-
-      alert(
-        "News Room button is connected!"
-      );
-
     }
   );
 
