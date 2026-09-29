@@ -979,9 +979,13 @@ function renderOnlineUsersList(filterTerm) {
       badges.innerHTML += `<span class="role-badge admin" title="Top contributor">🏆</span>`;
     }
 
-    if (isMuted(uid)) {
-      badges.innerHTML += `<span class="muted-badge">Muted</span>`;
-    }
+     if (isMuted(uid)) {
+  badges.innerHTML += `
+    <span class="muted-badge">
+      🔇 Muted
+    </span>
+  `;
+}   
 
     userElement.appendChild(photo);
     userElement.appendChild(info);
