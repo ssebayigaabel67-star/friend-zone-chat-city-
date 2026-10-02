@@ -2265,90 +2265,17 @@ currentUserName =
     "User";
 
 }
+
 // ======================
-// SAVE FCM TOKEN
+// FCM RUNS IN BACKGROUND
 // ======================
 
-try {
-
-  if ("serviceWorker" in navigator) {
-
-    const registration =
-      await navigator.serviceWorker.ready;
-
-    // Ask for notification permission
-    let permission =
-      Notification.permission;
-
-    if (permission !== "granted") {
-
-      permission =
-        await Notification.requestPermission();
-
-    }
-
-    if (permission !== "granted") {
-
-      console.log(
-        "Notification permission denied."
-      );
-
-    } else {
-
-      const token =
-        await getToken(
-          messaging,
-          {
-            vapidKey:
-              "BH6XiMfNNPSfvcnvFFtQNawwu1IcW1g25KUnMzvd9WDnB7UgalJoIkCkA4Kz2g_6BvOhCdUP1iY4LTD11xeW2e8",
-
-            serviceWorkerRegistration:
-              registration
-          }
-        );
-
-      if (token) {
-
-        console.log(
-          "FCM Token:",
-          token
-        );
-
-        await setDoc(
-          userRef,
-          {
-            fcmToken:
-              token
-          },
-          {
-            merge: true
-          }
-        );
-
-        console.log(
-          "✅ FCM token saved successfully."
-        );
-
-      } else {
-
-        console.log(
-          "⚠️ No FCM token was generated."
-        );
-
-      }
-
-    }
-
-  }
-
-} catch (error) {
-
+registerFCMToken(user).catch(error => {
   console.error(
-    "❌ FCM token error:",
+    "FCM background error:",
     error
   );
-
-}
+});
       // ======================
       // DISPLAY USERNAME
       // ======================
