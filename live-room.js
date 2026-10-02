@@ -183,7 +183,7 @@ const closeImageLightbox = document.getElementById("closeImageLightbox");
 
 // Change this to match how your own homepage.html opens a private
 // conversation (e.g. a different query param, or a dedicated chat.html).
-const PRIVATE_CHAT_URL = "homepage.html";
+const PRIVATE_CHAT_URL = "Homepage.html";
 
 
 // ==============================
