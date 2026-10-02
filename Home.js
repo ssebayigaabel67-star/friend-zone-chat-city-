@@ -2221,8 +2221,10 @@ onAuthStateChanged(
           "users",
           user.uid
         );
-
-await registerFCMToken(user);
+      await
+registerFCMToken(user).catch(error => {
+  console.error("FCM registration failed:", error);
+});
       const userSnap =
         await getDoc(
           userRef
