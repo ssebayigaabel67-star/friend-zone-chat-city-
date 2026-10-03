@@ -2223,21 +2223,16 @@ onAuthStateChanged(
       // ======================
 
       const userRef =
-        doc(
-          db,
-          "users",
-          user.uid
-        );
-      await
-registerFCMToken(user).catch(error => {
-  console.error("FCM registration failed:", error);
-});
-      const userSnap =
-        await getDoc(
-          userRef
-        );
+  doc(
+    db,
+    "users",
+    user.uid
+  );
 
-
+const userSnap =
+  await getDoc(
+    userRef
+  );
       // ======================
       // SET ONLINE
       // ======================
