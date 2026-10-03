@@ -282,13 +282,20 @@ async function loadFriends() {
 
   try {
 
-    const snapshot =
-      await getDocs(
-        collection(
-          db,
-          "users"
-        )
-      );
+    console.log("FRIENDS TEST: starting users read");
+
+const snapshot =
+  await getDocs(
+    collection(
+      db,
+      "users"
+    )
+  );
+
+console.log(
+  "FRIENDS TEST: users read successfully:",
+  snapshot.size
+);
 
 
     snapshot.forEach(
