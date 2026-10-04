@@ -2053,11 +2053,30 @@ onSnapshot(
       content.className = "public-message-content";
 
       // ---- name ----
-      const name = document.createElement("div");
-      name.className = "public-message-name";
-      name.textContent = data.senderName || data.username || "User";
-      name.addEventListener("click", () => avatar.dispatchEvent(new Event("click")));
-      content.appendChild(name);
+   const nameRow = document.createElement("div");
+nameRow.style.display = "flex";
+nameRow.style.alignItems = "center";
+nameRow.style.gap = "6px";
+nameRow.style.flexWrap = "wrap";
+
+const name = document.createElement("div");
+name.className = "public-message-name";
+name.textContent = data.senderName || data.username || "User";
+name.addEventListener("click", () => {
+  avatar.dispatchEvent(new Event("click"));
+});
+
+nameRow.appendChild(name);
+
+// Show muted status beside the sender's name
+if (isMuted(data.senderId)) {
+  const mutedStatus = document.createElement("span");
+  mutedStatus.className = "message-muted-status";
+  mutedStatus.textContent = "🔇 Muted";
+  nameRow.appendChild(mutedStatus);
+}
+
+content.appendChild(nameRow);
 
       // ---- username ----
       if (data.username && data.username !== data.senderName) {
