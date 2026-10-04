@@ -407,7 +407,23 @@ body {
 
   scroll-behavior: smooth;
 }
+.message-muted-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(255, 179, 0, 0.14);
+  color: #b06a00;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+}
 
+body.dark-mode .message-muted-status {
+  background: rgba(255, 179, 0, 0.16);
+  color: #ffc45c;
+}
 
 /* =====================================================
    WELCOME
