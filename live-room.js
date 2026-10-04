@@ -1331,18 +1331,24 @@ async function openProfilePopup(user) {
     profileModalActions.appendChild(removeBtn);
 
     const banBtn = document.createElement("button");
-    banBtn.type = "button";
-    banBtn.className = "profile-action-btn remove";
-    banBtn.textContent = "⛔ Ban";
-    banBtn.addEventListener("click", () => {
-      const confirmed = confirm(`Ban ${fullUser.name || "this user"}? They won't be able to rejoin until unbanned.`);
-      if (confirmed) {
-        banUser(uid);
-        closeProfilePopup();
-      }
-    });
-    profileModalActions.appendChild(banBtn);
+banBtn.type = "button";
+banBtn.className = "profile-action-btn remove";
+banBtn.textContent = "⛔ Ban";
 
+banBtn.addEventListener("click", async () => {
+
+  const confirmed = confirm(
+    `Ban ${fullUser.name || "this user"}?\n\nThey will be removed from the Live Room and won't be able to rejoin until an admin unbans them.`
+  );
+
+  if (!confirmed) return;
+
+  await banUser(uid);
+
+  closeProfilePopup();
+});
+
+profileModalActions.appendChild(banBtn);
     profileModalNote.style.display = "block";
   }
 }
@@ -1413,7 +1419,45 @@ async function removeUser(uid) {
     alert("Could not remove this user.");
   }
 }
+// ==========================================
+// BAN USER
+// ==========================================
 
+async function banUser(uid) {
+  if (!uid) return;
+
+  try {
+
+    await updateDoc(metaRef, {
+      bannedUsers: arrayUnion(uid)
+    });
+
+    // Try to mark the banned user offline.
+    try {
+      await updateDoc(
+        doc(db, "users", uid),
+        {
+          online: false
+        }
+      );
+    } catch (innerError) {
+      console.warn(
+        "Could not force-offline banned user:",
+        innerError
+      );
+    }
+
+    showToast("⛔ User has been banned.");
+
+  } catch (error) {
+
+    console.error("Ban error:", error);
+
+    alert(
+      "Could not ban this user."
+    );
+  }
+}
 
 // ==========================================
 // REACTIONS
