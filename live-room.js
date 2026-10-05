@@ -217,7 +217,8 @@ function isCallingAI(text) {
 // ==========================================
 
 let currentUser = null;
-
+// Time this user entered the current Live Room session
+const liveRoomSessionStartedAt = Date.now();
 let currentUserProfile = {
   name: "User",
   username: "",
@@ -250,6 +251,7 @@ let roomMeta = {
   topic: "",
   description: "",
   rules: "",
+  removedUsers: {},
   announcement: "",
   slowModeOn: false,
   slowModeSeconds: 10,
@@ -508,6 +510,7 @@ onSnapshot(
     roomMeta = {
       ownerId: data.ownerId || null,
       admins: data.admins || [],
+      removedUsers: data.removedUsers || {},
       mutedUsers: data.mutedUsers || {},
       bannedUsers: data.bannedUsers || [],
       pinnedMessage: data.pinnedMessage || null,
@@ -525,7 +528,17 @@ onSnapshot(
     renderAnnouncementBanner();
     updateRoomTopicLine();
     updateChatLockedNotice();
-
+// If the signed-in user was removed after entering this room,
+// kick them out — but allow them to join again later.
+if (
+  currentUser &&
+  roomMeta.removedUsers &&
+  roomMeta.removedUsers[currentUser.uid] &&
+  roomMeta.removedUsers[currentUser.uid] > liveRoomSessionStartedAt
+) {
+  alert("👋 You have been removed from FriendsZone Live.");
+  window.location.href = "index.html";
+}
     // If the signed-in user has been banned, boot them out.
     if (currentUser && isBanned(currentUser.uid)) {
       alert("You have been removed from this room.");
@@ -1262,7 +1275,63 @@ async function openProfilePopup(user) {
     likeBtn.addEventListener("click", () => toggleLike(uid, fullUser.name));
     profileModalActions.appendChild(likeBtn);
   }
+// ==========================================
+// PROFILE LIKE
+// ==========================================
 
+async function toggleLike(uid, name) {
+  if (!currentUser || !uid) return;
+
+  // Don't allow liking your own profile
+  if (uid === currentUser.uid) {
+    showToast("You can't like your own profile.");
+    return;
+  }
+
+  try {
+    const userRef = doc(db, "users", uid);
+    const snap = await getDoc(userRef);
+
+    if (!snap.exists()) {
+      showToast("User profile not found.");
+      return;
+    }
+
+    const data = snap.data();
+
+    const likedBy = Array.isArray(data.likedBy)
+      ? data.likedBy
+      : [];
+
+    const alreadyLiked =
+      likedBy.includes(currentUser.uid);
+
+    if (alreadyLiked) {
+
+      await updateDoc(userRef, {
+        likedBy: arrayRemove(currentUser.uid)
+      });
+
+      showToast("💔 Like removed.");
+
+    } else {
+
+      await updateDoc(userRef, {
+        likedBy: arrayUnion(currentUser.uid)
+      });
+
+      showToast(`❤️ You liked ${name || "this profile"}!`);
+    }
+
+  } catch (error) {
+
+    console.error("Toggle like error:", error);
+
+    alert(
+      "Could not update the like. Check your Firestore rules."
+    );
+  }
+}
   // ---- friend / add friend / accept ----
   if (!isSelf) {
     const friendBtn = document.createElement("button");
@@ -1404,19 +1473,58 @@ async function unmuteUser(uid) {
 }
 
 async function removeUser(uid) {
-  try {
-    await setDoc(metaRef, { bannedUsers: arrayUnion(uid) }, { merge: true });
+  if (!uid) return;
 
-    // Best-effort — only works if your Firestore rules let moderators
-    // update other users' "online" field.
+  if (!isModerator(currentUser.uid)) return;
+
+  if (isOwner(uid)) {
+    alert("You cannot remove the room owner.");
+    return;
+  }
+
+  const confirmed = confirm(
+    "Remove this user from FriendsZone Live?\n\nThey will be kicked out, but they can join again."
+  );
+
+  if (!confirmed) return;
+
+  try {
+
+    // Create a temporary removal timestamp.
+    await updateDoc(metaRef, {
+      [`removedUsers.${uid}`]: Date.now()
+    });
+
+    // Try to mark the user offline.
     try {
-      await updateDoc(doc(db, "users", uid), { online: false });
+      await updateDoc(
+        doc(db, "users", uid),
+        {
+          online: false,
+          lastSeen: serverTimestamp()
+        }
+      );
     } catch (innerError) {
-      console.warn("Could not force-offline the removed user (rules may block this):", innerError);
+      console.warn(
+        "Could not force-offline removed user:",
+        innerError
+      );
     }
+
+    showToast("👋 User removed from Live Room.");
+
+    closeProfilePopup();
+
   } catch (error) {
-    console.error("Remove user error:", error);
-    alert("Could not remove this user.");
+
+    console.error(
+      "Remove user error:",
+      error
+    );
+
+    alert(
+      "Could not remove this user. Check Firestore rules."
+    );
   }
 }
 // ==========================================

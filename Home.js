@@ -2094,6 +2094,133 @@ async function registerFCMToken(user) {
 
 }
 // ==================================================
+// OPEN CHAT FROM LIVE ROOM
+// ==================================================
+
+async function openChatFromURL() {
+
+  const params = new URLSearchParams(
+    window.location.search
+  );
+
+  const chatUid = params.get("chat");
+
+  if (!chatUid || !auth.currentUser) {
+    return;
+  }
+
+  // Don't chat with yourself
+  if (chatUid === auth.currentUser.uid) {
+    return;
+  }
+
+  try {
+
+    const userRef = doc(
+      db,
+      "users",
+      chatUid
+    );
+
+    const userSnap =
+      await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      alert("User not found.");
+      return;
+    }
+
+    const friend = userSnap.data();
+
+    // ======================
+    // SELECT USER
+    // ======================
+
+    selectedFriendId =
+      chatUid;
+
+    window.selectedFriendId =
+      chatUid;
+
+    selectedGroupId = "";
+
+    isGroupChat = false;
+
+    // ======================
+    // UPDATE CHAT TITLE
+    // ======================
+
+    const title =
+      document.querySelector(
+        ".header h3"
+      );
+
+    if (title) {
+
+      title.textContent =
+        friend.name ||
+        friend.username ||
+        friend.email ||
+        "Friend";
+
+    }
+
+    // ======================
+    // MARK MESSAGES READ
+    // ======================
+
+    await markPrivateMessagesAsRead(
+      chatUid
+    );
+
+    // ======================
+    // LOAD CHAT
+    // ======================
+
+    loadMessages();
+
+    // ======================
+    // HIGHLIGHT FRIEND
+    // ======================
+
+    const friendRow =
+      document.querySelector(
+        `.friend[data-friend-id="${chatUid}"]`
+      );
+
+    if (friendRow) {
+
+      document
+        .querySelectorAll(".friend")
+        .forEach(item => {
+          item.classList.remove("active");
+        });
+
+      friendRow.classList.add("active");
+
+    }
+
+    // ======================
+    // REMOVE URL PARAMETERS
+    // ======================
+
+    window.history.replaceState(
+      {},
+      document.title,
+      window.location.pathname
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Open chat from URL error:",
+      error
+    );
+
+  }
+
+}
+// ==================================================
 // LOGIN CHECK
 // ==================================================
 
@@ -2300,10 +2427,12 @@ registerFCMToken(user).catch(error => {
       // LOAD FRIENDS
       // ======================
 
+
       await loadFriends();
 
-      startUnreadMessageListeners();
+await openChatFromURL();
 
+startUnreadMessageListeners();
 
       // ======================
       // LOAD FRIEND REQUESTS
