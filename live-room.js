@@ -1333,38 +1333,572 @@ async function toggleLike(uid, name) {
   }
 }
   // ---- friend / add friend / accept ----
-  if (!isSelf) {
-    const friendBtn = document.createElement("button");
-    friendBtn.type = "button";
-    friendBtn.className = "profile-action-btn friend";
+if (!isSelf) {
 
-    const alreadyFriends = myUserDoc.friends.includes(uid);
-    const requestSent = myUserDoc.outgoingRequests.includes(uid);
-    const incoming = myUserDoc.incomingRequests.find((r) => r.uid === uid);
+  const friendBtn =
+    document.createElement("button");
 
-    if (alreadyFriends) {
-      friendBtn.textContent = "✅ Friends";
-      friendBtn.disabled = true;
-    } else if (incoming) {
-      friendBtn.textContent = "🤝 Accept request";
-      friendBtn.addEventListener("click", () => {
-        acceptFriendRequest(incoming);
-        closeProfilePopup();
-      });
-    } else if (requestSent) {
-      friendBtn.textContent = "⏳ Request sent";
-      friendBtn.disabled = true;
-    } else {
-      friendBtn.textContent = "➕ Add Friend";
-      friendBtn.addEventListener("click", () => {
-        sendFriendRequest(uid, fullUser.name, fullUser.username, fullUser.photoURL);
-        closeProfilePopup();
-      });
-    }
+  friendBtn.type = "button";
 
-    profileModalActions.appendChild(friendBtn);
+  friendBtn.className =
+    "profile-action-btn friend";
+
+  friendBtn.textContent =
+    "Checking...";
+
+  friendBtn.disabled = true;
+
+  profileModalActions.appendChild(
+    friendBtn
+  );
+
+
+  // ==============================
+  // READ HOMEPAGE FRIEND SYSTEM
+  // ==============================
+
+  const status =
+    await getLiveRoomFriendStatus(uid);
+
+
+  if (myToken !== profileRequestToken) {
+    return;
   }
 
+
+  // ==============================
+  // ALREADY FRIENDS
+  // ==============================
+
+  if (status.friends) {
+
+    friendBtn.textContent =
+      "✅ Friends";
+
+    friendBtn.disabled = true;
+
+  }
+
+
+  // ==============================
+  // INCOMING REQUEST
+  // ==============================
+
+  else if (status.incoming) {
+
+    friendBtn.textContent =
+      "🤝 Accept request";
+
+    friendBtn.disabled = false;
+
+    friendBtn.addEventListener(
+      "click",
+      async () => {
+
+        friendBtn.disabled = true;
+
+        await acceptLiveRoomFriendRequest(
+          status.request.id,
+          status.request
+        );
+
+        closeProfilePopup();
+
+      }
+    );
+
+  }
+
+
+  // ==============================
+  // OUTGOING REQUEST
+  // ==============================
+
+  else if (status.outgoing) {
+
+    friendBtn.textContent =
+      "⏳ Request sent";
+
+    friendBtn.disabled = true;
+
+  }
+
+
+  // ==============================
+  // ADD FRIEND
+  // ==============================
+
+  else {
+
+    friendBtn.textContent =
+      "➕ Add Friend";
+
+    friendBtn.disabled = false;
+
+    friendBtn.addEventListener(
+      "click",
+      async () => {
+
+        friendBtn.disabled = true;
+
+        friendBtn.textContent =
+          "⏳ Sending...";
+
+        await sendLiveRoomFriendRequest(
+          uid,
+          fullUser.name
+        );
+
+        closeProfilePopup();
+
+      }
+    );
+
+  }
+
+}
+// ==========================================
+// FRIEND SYSTEM — SAME AS HOMEPAGE
+// ==========================================
+
+async function getLiveRoomFriendStatus(uid) {
+
+  if (!currentUser || !uid) {
+    return {
+      friends: false,
+      outgoing: false,
+      incoming: false,
+      request: null
+    };
+  }
+
+  const myUid = currentUser.uid;
+
+  try {
+
+    // ==============================
+    // CHECK REAL FRIENDSHIP
+    // ==============================
+
+    const friendRef = doc(
+      db,
+      "users",
+      myUid,
+      "friends",
+      uid
+    );
+
+    const friendSnap = await getDoc(friendRef);
+
+    if (friendSnap.exists()) {
+      return {
+        friends: true,
+        outgoing: false,
+        incoming: false,
+        request: null
+      };
+    }
+
+
+    // ==============================
+    // CHECK OUTGOING REQUEST
+    // ==============================
+
+    const outgoingRef = doc(
+      db,
+      "friendRequests",
+      `${myUid}_${uid}`
+    );
+
+    const outgoingSnap =
+      await getDoc(outgoingRef);
+
+    if (
+      outgoingSnap.exists() &&
+      outgoingSnap.data().status === "pending"
+    ) {
+
+      return {
+        friends: false,
+        outgoing: true,
+        incoming: false,
+        request: {
+          id: outgoingSnap.id,
+          ...outgoingSnap.data()
+        }
+      };
+
+    }
+
+
+    // ==============================
+    // CHECK INCOMING REQUEST
+    // ==============================
+
+    const incomingRef = doc(
+      db,
+      "friendRequests",
+      `${uid}_${myUid}`
+    );
+
+    const incomingSnap =
+      await getDoc(incomingRef);
+
+    if (
+      incomingSnap.exists() &&
+      incomingSnap.data().status === "pending"
+    ) {
+
+      return {
+        friends: false,
+        outgoing: false,
+        incoming: true,
+        request: {
+          id: incomingSnap.id,
+          ...incomingSnap.data()
+        }
+      };
+
+    }
+
+
+    return {
+      friends: false,
+      outgoing: false,
+      incoming: false,
+      request: null
+    };
+
+  } catch (error) {
+
+    console.error(
+      "Friend status error:",
+      error
+    );
+
+    return {
+      friends: false,
+      outgoing: false,
+      incoming: false,
+      request: null
+    };
+
+  }
+}
+
+
+// ==========================================
+// SEND FRIEND REQUEST
+// ==========================================
+
+async function sendLiveRoomFriendRequest(
+  uid,
+  name
+) {
+
+  if (!currentUser || !uid) {
+    return;
+  }
+
+  if (uid === currentUser.uid) {
+    showToast("You cannot add yourself.");
+    return;
+  }
+
+  try {
+
+    // ==============================
+    // CHECK IF ALREADY FRIENDS
+    // ==============================
+
+    const friendRef = doc(
+      db,
+      "users",
+      currentUser.uid,
+      "friends",
+      uid
+    );
+
+    const friendSnap =
+      await getDoc(friendRef);
+
+    if (friendSnap.exists()) {
+
+      showToast("You are already friends.");
+      return;
+
+    }
+
+
+    // ==============================
+    // HOMEPAGE REQUEST ID
+    // ==============================
+
+    const requestId =
+      currentUser.uid + "_" + uid;
+
+    const requestRef = doc(
+      db,
+      "friendRequests",
+      requestId
+    );
+
+
+    // ==============================
+    // CHECK EXISTING REQUEST
+    // ==============================
+
+    const requestSnap =
+      await getDoc(requestRef);
+
+    if (requestSnap.exists()) {
+
+      const existing =
+        requestSnap.data();
+
+      if (existing.status === "pending") {
+        showToast("⏳ Friend request already sent.");
+        return;
+      }
+
+    }
+
+
+    // ==============================
+    // CREATE REQUEST
+    // ==============================
+
+    await setDoc(
+      requestRef,
+      {
+        senderId:
+          currentUser.uid,
+
+        receiverId:
+          uid,
+
+        status:
+          "pending",
+
+        timestamp:
+          serverTimestamp()
+      }
+    );
+
+
+    showToast(
+      `🤝 Friend request sent to ${name || "this user"}!`
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Live Room friend request error:",
+      error
+    );
+
+    alert(
+      "Could not send friend request."
+    );
+
+  }
+}
+
+
+// ==========================================
+// ACCEPT FRIEND REQUEST
+// ==========================================
+
+async function acceptLiveRoomFriendRequest(
+  requestId,
+  request
+) {
+
+  if (!currentUser) {
+    return;
+  }
+
+  try {
+
+    const currentUserId =
+      currentUser.uid;
+
+    const senderId =
+      request.senderId;
+
+
+    if (!senderId || !requestId) {
+      return;
+    }
+
+
+    // ==============================
+    // SECURITY CHECK
+    // ==============================
+
+    if (
+      request.receiverId !==
+      currentUserId
+    ) {
+
+      alert(
+        "This friend request is not for you."
+      );
+
+      return;
+
+    }
+
+
+    if (
+      request.status !==
+      "pending"
+    ) {
+
+      showToast(
+        "This request is no longer pending."
+      );
+
+      return;
+
+    }
+
+
+    // ==============================
+    // CHECK IF ALREADY FRIENDS
+    // ==============================
+
+    const existingFriendRef =
+      doc(
+        db,
+        "users",
+        currentUserId,
+        "friends",
+        senderId
+      );
+
+    const existingFriendSnap =
+      await getDoc(existingFriendRef);
+
+    if (existingFriendSnap.exists()) {
+
+      showToast(
+        "You are already friends."
+      );
+
+      return;
+
+    }
+
+
+    // ==============================
+    // CREATE FRIEND LINK — ME
+    // ==============================
+
+    await setDoc(
+      doc(
+        db,
+        "users",
+        currentUserId,
+        "friends",
+        senderId
+      ),
+      {
+        userId:
+          senderId,
+
+        since:
+          serverTimestamp()
+      }
+    );
+
+
+    // ==============================
+    // CREATE FRIEND LINK — OTHER USER
+    // ==============================
+
+    await setDoc(
+      doc(
+        db,
+        "users",
+        senderId,
+        "friends",
+        currentUserId
+      ),
+      {
+        userId:
+          currentUserId,
+
+        since:
+          serverTimestamp()
+      }
+    );
+
+
+    // ==============================
+    // UPDATE FRIEND COUNTS
+    // ==============================
+
+    await updateDoc(
+      doc(
+        db,
+        "users",
+        currentUserId
+      ),
+      {
+        friendsCount:
+          increment(1)
+      }
+    );
+
+
+    await updateDoc(
+      doc(
+        db,
+        "users",
+        senderId
+      ),
+      {
+        friendsCount:
+          increment(1)
+      }
+    );
+
+
+    // ==============================
+    // MARK REQUEST ACCEPTED
+    // ==============================
+
+    await updateDoc(
+      doc(
+        db,
+        "friendRequests",
+        requestId
+      ),
+      {
+        status:
+          "accepted"
+      }
+    );
+
+
+    showToast(
+      "🎉 Friend request accepted!"
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Live Room accept friend request error:",
+      error
+    );
+
+    alert(
+      "Could not accept friend request."
+    );
+
+  }
+}
   // ==========================================
   // MODERATOR ACTIONS
   // ==========================================
