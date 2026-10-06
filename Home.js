@@ -139,28 +139,6 @@ async function markPrivateMessagesAsRead(friendId) {
         chatId,
         "messages"
       );
-const responseText =
-  await response.text();
-
-let result = {};
-
-try {
-
-  result =
-    JSON.parse(responseText);
-
-} catch (parseError) {
-
-  console.error(
-    "SERVER RESPONSE:",
-    responseText
-  );
-
-  throw new Error(
-    "Server returned an invalid response. Check the Vercel deployment."
-  );
-
-}
 
     // ======================
     // FIND UNREAD MESSAGES
@@ -189,12 +167,7 @@ try {
         unreadQuery
       );
 
-const imageInput =
-  document.getElementById("imageInput");
-
-const imageBtn =
-  document.getElementById("imageBtn");
-    // ======================
+// ======================
     // MARK EACH MESSAGE READ
     // ======================
 
@@ -211,21 +184,7 @@ const imageBtn =
       );
 
     }
-const liveRoomBtn =
-  document.getElementById("liveRoomBtn");
-
-if (liveRoomBtn) {
-
-  liveRoomBtn.onclick = function (event) {
-
-    event.preventDefault();
-
-    window.location.assign("./live-room.html");
-
-  };
-
-}
-    // ======================
+// ======================
     // CLEAR LOCAL COUNT
     // ======================
 
@@ -2034,6 +1993,16 @@ async function registerFCMToken(user) {
     // ======================
     // GET FCM TOKEN
     // ======================
+
+    const {
+      getMessaging,
+      getToken
+    } = await import(
+      "https://www.gstatic.com/firebasejs/12.0.0/firebase-messaging.js"
+    );
+
+    const messaging =
+      getMessaging(app);
 
     const token =
       await getToken(
@@ -10794,33 +10763,6 @@ if (rightDeleteAccountBtn) {
 
 }
 // =====================================
-// DELETE ACCOUNT POPOVER
-// =====================================
-
-if (rightDeleteAccountBtn) {
-
-  rightDeleteAccountBtn.addEventListener(
-    "click",
-    () => {
-
-      const deletePopover =
-        document.getElementById(
-          "deleteAccountPopover"
-        );
-
-      if (deletePopover) {
-
-        deletePopover.classList.add(
-          "show"
-        );
-
-      }
-
-    }
-  );
-
-}
-// =====================================
 // CLOSE DELETE ACCOUNT POPOVER
 // =====================================
 
@@ -13102,6 +13044,9 @@ if (animationsOffBtn) {
   const blockedBtn =
     document.getElementById(
       "blockedUsersPrivacyBtn"
+    ) ||
+    document.getElementById(
+      "blockedUsersBtn"
     );
 
   const blockedPopover =
@@ -14435,6 +14380,147 @@ if (
   );
 
 }
+// =====================================
+// BUBBLE COLORS — APPLY + SAVE
+// =====================================
+
+function applySentBubbleColor(color) {
+
+  if (!color) {
+    return;
+  }
+
+  document
+    .querySelectorAll(".message.sent")
+    .forEach((bubble) => {
+
+      bubble.style.setProperty(
+        "background",
+        color,
+        "important"
+      );
+
+    });
+
+}
+
+function applyReceivedBubbleColor(color) {
+
+  if (!color) {
+    return;
+  }
+
+  document
+    .querySelectorAll(".message.received")
+    .forEach((bubble) => {
+
+      bubble.style.setProperty(
+        "background",
+        color,
+        "important"
+      );
+
+    });
+
+}
+
+function markSelectedBubbleColor(
+  selector,
+  attribute,
+  color
+) {
+
+  document
+    .querySelectorAll(selector)
+    .forEach((button) => {
+
+      button.classList.toggle(
+        "selected",
+        button.getAttribute(attribute) === color
+      );
+
+    });
+
+}
+
+document
+  .querySelectorAll("[data-sent-color]")
+  .forEach((button) => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        const color =
+          button.getAttribute(
+            "data-sent-color"
+          );
+
+        localStorage.setItem(
+          "friendszoneSentBubbleColor",
+          color
+        );
+
+        applySentBubbleColor(color);
+
+        markSelectedBubbleColor(
+          "[data-sent-color]",
+          "data-sent-color",
+          color
+        );
+
+      }
+    );
+
+  });
+
+document
+  .querySelectorAll("[data-received-color]")
+  .forEach((button) => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        const color =
+          button.getAttribute(
+            "data-received-color"
+          );
+
+        localStorage.setItem(
+          "friendszoneReceivedBubbleColor",
+          color
+        );
+
+        applyReceivedBubbleColor(color);
+
+        markSelectedBubbleColor(
+          "[data-received-color]",
+          "data-received-color",
+          color
+        );
+
+      }
+    );
+
+  });
+
+markSelectedBubbleColor(
+  "[data-sent-color]",
+  "data-sent-color",
+  localStorage.getItem(
+    "friendszoneSentBubbleColor"
+  ) || "#25D366"
+);
+
+markSelectedBubbleColor(
+  "[data-received-color]",
+  "data-received-color",
+  localStorage.getItem(
+    "friendszoneReceivedBubbleColor"
+  ) || "#ffffff"
+);
+
 // =====================================
 // RESET CHAT CUSTOMIZATION
 // =====================================
@@ -17332,7 +17418,7 @@ const accountSubPopovers = [
   document.getElementById("accountInfoModal"),
   document.getElementById("editAccountModal"),
   document.getElementById("changePasswordModal"),
-  document.getElementById("profileVisibilityModal"),
+  document.getElementById("profileVisibilityPopover"),
   document.getElementById("changeEmailModal")
 ];
 
@@ -17347,3 +17433,30 @@ function closeAllAccountSubPopovers(exceptModal = null) {
   });
 
 }
+
+// Wire it up: opening one account sub-popover closes the others
+[
+  ["accountInfoBtn", "accountInfoModal"],
+  ["editAccountBtn", "editAccountModal"],
+  ["changePasswordBtn", "changePasswordModal"],
+  ["changeEmailBtn", "changeEmailModal"]
+].forEach(([buttonId, modalId]) => {
+
+  const button =
+    document.getElementById(buttonId);
+
+  const modal =
+    document.getElementById(modalId);
+
+  if (button && modal) {
+
+    button.addEventListener(
+      "click",
+      () => {
+        closeAllAccountSubPopovers(modal);
+      }
+    );
+
+  }
+
+});

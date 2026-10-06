@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>  
-  <link rel="icon" type="image/png" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
-<link rel="manifest" href="manifest.json">
-<meta charset="UTF-8">  
+<head>
+<meta charset="UTF-8">
 <meta
   name="viewport"
   content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content"
 >
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="manifest" href="manifest.json">
 <title>Friend Zone Chat
 </title>
 <style>
@@ -15303,6 +15303,31 @@ body.dark-mode .save-account-btn {
 .fz-icon:has(use[href="#icon-check"])      { color: #43A047; }
 .fz-icon:has(use[href="#icon-rainbow"])    { color: #BA68C8; }
 .fz-icon:has(use[href="#icon-lock"])       { color: #78909C; }
+
+/* ==================================================
+   FIXES
+================================================== */
+
+/* Account modals must open ABOVE the Account popover (z-index 999999) */
+.account-info-modal {
+  z-index: 1000000;
+}
+
+/* Delete Account row inside the Account popover */
+.account-option.account-delete-option strong {
+  color: #d32f2f;
+}
+
+body.dark-mode .account-option.account-delete-option strong {
+  color: #ff6b6b;
+}
+
+/* Selected bubble colour */
+.bubble-color-choice.selected,
+.received-color-choice.selected {
+  outline: 3px solid #2196F3;
+  outline-offset: 2px;
+}
 </style>
  </head>
 <body>
@@ -17353,18 +17378,7 @@ body.dark-mode .save-account-btn {
      JAVASCRIPT
 ================================================== -->
 
-<script
-  type="module"
-  src="Home.js"
-></script>
-<script
-  type="module"
-  src="App.js"
-></script>
-<script
-  type="module"
-  src="Calls.js"
-></script>
+
     <!-- ==================================================
      ACCOUNT INFORMATION
 ================================================== -->
@@ -17548,92 +17562,7 @@ body.dark-mode .save-account-btn {
   </div>
 
 </div>
-<!-- LAST SEEN -->
-
-<button
-  class="privacy-option"
-  id="lastSeenPrivacyBtn"
->
-
-  <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-clock"></use></svg></span>
-
-  <div>
-    <strong>Last Seen</strong>
-
-    <small>
-      Control your last activity visibility
-    </small>
-  </div>
-
-  <b>›</b>
-
-</button>
-
-    <!-- MESSAGE REQUESTS -->
-
-    <button
-      class="privacy-option"
-      id="messagePrivacyBtn"
-    >
-
-      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-message"></use></svg></span>
-
-      <div>
-        <strong>Message Requests</strong>
-
-        <small>
-          Control who can message you
-        </small>
-      </div>
-
-      <b>›</b>
-
-    </button>
-
-
-    <!-- CALL PRIVACY -->
-
-    <button
-      class="privacy-option"
-      id="callPrivacyBtn"
-    >
-
-      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-phone"></use></svg></span>
-
-      <div>
-        <strong>Call Privacy</strong>
-
-        <small>
-          Control who can call you
-        </small>
-      </div>
-
-      <b>›</b>
-
-    </button>
-
-
-    <!-- BLOCKED USERS -->
-
-    <button
-      class="privacy-option"
-      id="blockedUsersBtn"
-    >
-
-      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-ban"></use></svg></span>
-
-      <div>
-        <strong>Blocked Users</strong>
-
-        <small>
-          Manage people you have blocked
-        </small>
-      </div>
-
-      <b>›</b>
-
-    </button>
-      <!-- =====================================
+<!-- =====================================
      NOTIFICATIONS POPOVER
 ===================================== -->
 
@@ -17687,15 +17616,14 @@ body.dark-mode .save-account-btn {
   <button
     id="privacyCloseBtn"
     class="privacy-close"
+    type="button"
   >
     <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
   </button>
 
-
   <div class="privacy-icon">
     <svg class="fz-icon" aria-hidden="true"><use href="#icon-shield"></use></svg>
   </div>
-
 
   <h2>Privacy</h2>
 
@@ -17703,33 +17631,65 @@ body.dark-mode .save-account-btn {
     Control your FriendsZone privacy
   </p>
 
-
   <div class="privacy-options">
 
-    <button
-      class="privacy-option"
-      id="onlineStatusPrivacyBtn"
-    >
+    <!-- ONLINE STATUS -->
+    <button class="privacy-option" id="onlineStatusPrivacyBtn" type="button">
       <span><svg class="fz-icon" aria-hidden="true" style="color:#25D366"><use href="#icon-dot"></use></svg></span>
-
       <div>
         <strong>Online Status</strong>
         <small>Control who can see you online</small>
       </div>
-
       <b>›</b>
     </button>
-    <button
-      class="privacy-option"
-      id="messagePrivacyBtn"
-    >
-      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-message"></use></svg></span>
 
+    <!-- LAST SEEN -->
+    <button class="privacy-option" id="lastSeenPrivacyBtn" type="button">
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-clock"></use></svg></span>
       <div>
-        <strong>Messages</strong>
-        <small>Control who can contact you</small>
+        <strong>Last Seen</strong>
+        <small>Control your last activity visibility</small>
       </div>
+      <b>›</b>
+    </button>
 
+    <!-- MESSAGE REQUESTS -->
+    <button class="privacy-option" id="messagePrivacyBtn" type="button">
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-message"></use></svg></span>
+      <div>
+        <strong>Message Requests</strong>
+        <small>Control who can message you</small>
+      </div>
+      <b>›</b>
+    </button>
+
+    <!-- CALL PRIVACY -->
+    <button class="privacy-option" id="callPrivacyBtn" type="button">
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-phone"></use></svg></span>
+      <div>
+        <strong>Call Privacy</strong>
+        <small>Control who can call you</small>
+      </div>
+      <b>›</b>
+    </button>
+
+    <!-- BLOCKED USERS -->
+    <button class="privacy-option" id="blockedUsersPrivacyBtn" type="button">
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-ban"></use></svg></span>
+      <div>
+        <strong>Blocked Users</strong>
+        <small>Manage people you have blocked</small>
+      </div>
+      <b>›</b>
+    </button>
+
+    <!-- REPORTED USERS -->
+    <button class="privacy-option" id="reportedUsersBtn" type="button">
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-flag"></use></svg></span>
+      <div>
+        <strong>Reported Users</strong>
+        <small>View users you have reported</small>
+      </div>
       <b>›</b>
     </button>
 
@@ -17737,7 +17697,7 @@ body.dark-mode .save-account-btn {
 
 </div>
 
-  <!-- =====================================
+<!-- =====================================
      ACCOUNT POPOVER
 ===================================== -->
 
@@ -17817,7 +17777,61 @@ body.dark-mode .save-account-btn {
       <b>›</b>
 
     </button>
-    <!-- CHANGE PASSWORD MODAL -->
+    <button
+      class="account-option"
+      id="profileVisibilityBtn"
+      type="button"
+    >
+
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-user"></use></svg></span>
+
+      <div>
+        <strong>Profile Visibility</strong>
+
+        <small>
+          Choose who can view your profile
+        </small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+    <button
+      class="account-option"
+      id="changeEmailBtn"
+    >
+
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-mail"></use></svg></span>
+
+      <div>
+        <strong>Change Email</strong>
+        <small>Update your email address</small>
+      </div>
+
+    </button>
+
+  <!-- DELETE ACCOUNT -->
+    <button
+      class="account-option account-delete-option"
+      id="rightDeleteAccountBtn"
+      title="Delete Account"
+      type="button"
+    >
+
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-trash"></use></svg></span>
+
+      <div>
+        <strong>Delete Account</strong>
+        <small>Permanently remove your account</small>
+      </div>
+
+      <b>›</b>
+
+    </button>
+  </div>
+
+</div>
+  <!-- CHANGE PASSWORD MODAL -->
 
 <div id="changePasswordModal" class="account-info-modal">
 
@@ -17868,52 +17882,8 @@ body.dark-mode .save-account-btn {
   </div>
 
 </div>
-    <button
-      class="privacy-option"
-      id="profileVisibilityBtn"
-    >
 
-      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-user"></use></svg></span>
-
-      <div>
-        <strong>Profile Visibility</strong>
-
-        <small>
-          Choose who can view your profile
-        </small>
-      </div>
-
-      <b>›</b>
-
-    </button>
-    <button
-      class="account-option"
-      id="changeEmailBtn"
-    >
-
-      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-mail"></use></svg></span>
-
-      <div>
-        <strong>Change Email</strong>
-        <small>Update your email address</small>
-      </div>
-
-    </button>
-
-  <!-- DELETE ACCOUNT -->
-
-  <button
-    class="right-feature-btn delete-feature-btn"
-    id="rightDeleteAccountBtn"
-    title="Delete Account"
-    type="button"
-  >
-    <svg class="fz-icon" aria-hidden="true"><use href="#icon-trash"></use></svg>Delete Account
-  </button>
-  </div>
-
-</div>
-  <!-- ==================================================
+<!-- ==================================================
      CHANGE EMAIL MODAL
 ================================================== -->
 
@@ -19744,57 +19714,6 @@ body.dark-mode .save-account-btn {
 
 </div>
   <!-- =====================================
-     PRIVACY POPOVER
-===================================== -->
-
-<div
-  id="privacyPopover"
-  class="privacy-popover"
->
-
-  <button
-    id="privacyCloseBtn"
-    class="privacy-close"
-  >
-    <svg class="fz-icon" aria-hidden="true"><use href="#icon-x"></use></svg>
-  </button>
-
-
-  <div class="privacy-icon">
-    <svg class="fz-icon" aria-hidden="true"><use href="#icon-shield"></use></svg>
-  </div>
-
-
-  <h2>Privacy</h2>
-
-  <p class="privacy-subtitle">
-    Control your FriendsZone privacy
-  </p>
-
-
-  <div class="privacy-options">
-
-
-    <!-- ONLINE STATUS -->
-
-    <
-      class="privacy-option"
-      id="onlineStatusPrivacyBtn"
-    >
-
-      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-eye"></use></svg></span>
-
-      <div>
-        <strong>Online Status</strong>
-
-        <small>
-          Control who can see you online
-        </small>
-      </div>
-
-      <b>›</b>
-
-<!-- =====================================
      BLOCKED USERS POPOVER
 ===================================== -->
 
@@ -19865,32 +19784,7 @@ body.dark-mode .save-account-btn {
 
 </div>
 
-    <!-- REPORTED USERS -->
-
-    <button
-      class="privacy-option"
-      id="reportedUsersBtn"
-    >
-
-      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-flag"></use></svg></span>
-
-      <div>
-        <strong>Reported Users</strong>
-
-        <small>
-          View users you have reported
-        </small>
-      </div>
-
-      <b>›</b>
-
-    </button>
-
-
-  </div>
-
-</div>
-  <!-- =====================================
+<!-- =====================================
      ONLINE STATUS POPOVER
 ===================================== -->
 
@@ -20245,5 +20139,9 @@ body.dark-mode .save-account-btn {
 
   </div>
 </div>
+
+<script type="module" src="Home.js"></script>
+<script type="module" src="App.js"></script>
+<script type="module" src="Calls.js"></script>
 </body>
 </html>
