@@ -344,7 +344,56 @@ function remainingSlowModeMs() {
   const needed = roomMeta.slowModeSeconds * 1000;
   return elapsed >= needed ? 0 : needed - elapsed;
 }
+// ==========================================
+// CLEAR LIVE ROOM CHAT
+// ==========================================
 
+async function clearLiveRoomChat() {
+
+  if (!currentUser) {
+    return;
+  }
+
+  // Only Owner/Admin can clear the room
+  if (!isModerator(currentUser.uid)) {
+    alert("Only the owner or admins can clear the chat.");
+    return;
+  }
+
+  const confirmed = confirm(
+    "🗑️ Clear the entire Live Room chat?\n\n" +
+    "This will permanently delete all messages for everyone.\n\n" +
+    "This action cannot be undone."
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+
+    // Mark when the room was cleared.
+    // The Firestore listener can use this timestamp
+    // to ignore older messages if necessary.
+    await updateDoc(metaRef, {
+      clearedAt: Date.now()
+    });
+
+    showToast("🧹 Live Room chat cleared.");
+
+  } catch (error) {
+
+    console.error(
+      "Clear Live Room error:",
+      error
+    );
+
+    alert(
+      "Could not clear the Live Room chat. " +
+      "Check your Firestore rules."
+    );
+  }
+}
 
 // ==========================================
 // TOASTS (live notifications)
@@ -821,22 +870,126 @@ if (saveRoomInfoBtn) {
     }
   });
 }
-
 if (clearMessagesBtn) {
   clearMessagesBtn.addEventListener("click", async () => {
-    const confirmed = confirm("Clear all messages for everyone in this room? This can't be undone.");
-    if (!confirmed) return;
+
+    // ==========================================
+    // OWNER / ADMIN CHECK
+    // ==========================================
+
+    if (!currentUser) {
+      return;
+    }
+
+    if (!isModerator(currentUser.uid)) {
+      alert("Only the owner or admins can clear the chat.");
+      return;
+    }
+
+    // ==========================================
+    // CONFIRMATION
+    // ==========================================
+
+    const confirmed = confirm(
+      "🗑️ Clear the entire Live Room chat?\n\n" +
+      "All messages will be permanently deleted for everyone.\n\n" +
+      "This action cannot be undone."
+    );
+
+    if (!confirmed) {
+      return;
+    }
 
     try {
-      await setDoc(metaRef, { clearedAt: Date.now() }, { merge: true });
-      showToast("Messages cleared.");
+
+      // ==========================================
+      // GET ALL LIVE ROOM MESSAGES
+      // ==========================================
+
+      const messagesRef = collection(
+        db,
+        "liveRoom",
+        "messages",
+        "messages"
+      );
+
+      const snapshot = await getDocs(messagesRef);
+
+      // ==========================================
+      // NOTHING TO DELETE
+      // ==========================================
+
+      if (snapshot.empty) {
+        await setDoc(
+          metaRef,
+          {
+            clearedAt: Date.now()
+          },
+          { merge: true }
+        );
+
+        showToast("🧹 The Live Room is already empty.");
+        return;
+      }
+
+      // ==========================================
+      // DELETE IN BATCHES
+      // Firestore allows max 500 writes per batch.
+      // We use 450 for extra safety.
+      // ==========================================
+
+      const messageDocs = snapshot.docs;
+
+      for (
+        let start = 0;
+        start < messageDocs.length;
+        start += 450
+      ) {
+
+        const batch = writeBatch(db);
+
+        const batchDocs = messageDocs.slice(
+          start,
+          start + 450
+        );
+
+        batchDocs.forEach((messageDoc) => {
+          batch.delete(messageDoc.ref);
+        });
+
+        await batch.commit();
+      }
+
+      // ==========================================
+      // RECORD CLEAR TIME
+      // ==========================================
+
+      await setDoc(
+        metaRef,
+        {
+          clearedAt: Date.now()
+        },
+        { merge: true }
+      );
+
+      showToast(
+        `🧹 ${messageDocs.length} message(s) cleared for everyone.`
+      );
+
     } catch (error) {
-      console.error("Clear messages error:", error);
-      alert("Could not clear messages.");
+
+      console.error(
+        "Clear Live Room error:",
+        error
+      );
+
+      alert(
+        "Could not clear the Live Room.\n\n" +
+        "Check your Firestore rules."
+      );
     }
   });
 }
-
 
 // ==========================================
 // ONLINE POPOVER
