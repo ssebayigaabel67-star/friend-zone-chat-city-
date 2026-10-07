@@ -26,6 +26,7 @@ import {
   deleteDoc,
   getDoc,
   getDocs,
+writeBatch,
   arrayUnion,
   arrayRemove,
   deleteField,
