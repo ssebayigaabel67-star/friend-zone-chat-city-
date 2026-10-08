@@ -212,7 +212,113 @@ function isCallingAI(text) {
   );
 }
 
+// ==========================================
+// FRIEND REQUESTS BUTTON
+// ==========================================
 
+if (friendRequestsBtn) {
+  friendRequestsBtn.addEventListener("click", async () => {
+
+    if (!currentUser) {
+      alert("Please sign in first.");
+      return;
+    }
+
+    if (friendRequestsModalOverlay) {
+      friendRequestsModalOverlay.classList.add("show");
+    }
+
+    await loadLiveRoomFriendRequests();
+  });
+}
+
+
+// ==========================================
+// CLOSE FRIEND REQUESTS MODAL
+// ==========================================
+
+if (closeFriendRequestsModal) {
+  closeFriendRequestsModal.addEventListener("click", () => {
+
+    if (friendRequestsModalOverlay) {
+      friendRequestsModalOverlay.classList.remove("show");
+    }
+
+  });
+}
+
+
+if (friendRequestsModalOverlay) {
+  friendRequestsModalOverlay.addEventListener("click", (event) => {
+
+    if (event.target === friendRequestsModalOverlay) {
+      friendRequestsModalOverlay.classList.remove("show");
+    }
+
+  });
+}
+// ==========================================
+// LIVE FRIEND REQUEST BADGE
+// ==========================================
+
+let stopFriendRequestsListener = null;
+
+function startLiveRoomFriendRequestsListener() {
+
+  if (!currentUser) return;
+
+  // Stop old listener if one exists
+  if (stopFriendRequestsListener) {
+    stopFriendRequestsListener();
+    stopFriendRequestsListener = null;
+  }
+
+  const requestsQuery = query(
+    collection(db, "friendRequests"),
+    where("receiverId", "==", currentUser.uid)
+  );
+
+  stopFriendRequestsListener = onSnapshot(
+    requestsQuery,
+    (snapshot) => {
+
+      const pendingRequests = snapshot.docs.filter(
+        (requestDoc) =>
+          requestDoc.data().status === "pending"
+      );
+
+      const count = pendingRequests.length;
+
+      if (friendRequestsBadge) {
+
+        if (count > 0) {
+
+          friendRequestsBadge.textContent =
+            count > 99 ? "99+" : String(count);
+
+          friendRequestsBadge.style.display =
+            "block";
+
+        } else {
+
+          friendRequestsBadge.textContent = "0";
+
+          friendRequestsBadge.style.display =
+            "none";
+        }
+      }
+
+    },
+    (error) => {
+
+      console.error(
+        "Friend request listener error:",
+        error
+      );
+
+    }
+  );
+}
 // ==========================================
 // STATE
 // ==========================================
@@ -483,6 +589,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   currentUser = user;
+startLiveRoomFriendRequestsListener();
   console.log("Live Room user:", user.uid);
 
   const userRef = doc(db, "users", user.uid);
