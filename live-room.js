@@ -289,25 +289,8 @@ function startLiveRoomFriendRequestsListener() {
 
       const count = pendingRequests.length;
 
-      if (friendRequestsBadge) {
-
-        if (count > 0) {
-
-          friendRequestsBadge.textContent =
-            count > 99 ? "99+" : String(count);
-
-          friendRequestsBadge.style.display =
-            "block";
-
-        } else {
-
-          friendRequestsBadge.textContent = "0";
-
-          friendRequestsBadge.style.display =
-            "none";
-        }
-      }
-
+      // Friend request badge is now handled by
+// startLiveRoomFriendRequestsListener()
     },
     (error) => {
 
@@ -318,6 +301,259 @@ function startLiveRoomFriendRequestsListener() {
 
     }
   );
+}
+// ==========================================
+// LOAD LIVE ROOM FRIEND REQUESTS
+// ==========================================
+
+async function loadLiveRoomFriendRequests() {
+
+  if (!currentUser || !friendRequestsList) {
+    return;
+  }
+
+  friendRequestsList.innerHTML = `
+    <div style="padding:20px;text-align:center;">
+      Loading friend requests...
+    </div>
+  `;
+
+  try {
+
+    const requestsQuery = query(
+      collection(db, "friendRequests"),
+      where("receiverId", "==", currentUser.uid)
+    );
+
+    const snapshot = await getDocs(requestsQuery);
+
+    const requests = snapshot.docs.filter(
+      (requestDoc) =>
+        requestDoc.data().status === "pending"
+    );
+
+    if (requests.length === 0) {
+
+      friendRequestsList.innerHTML = `
+        <div style="padding:25px;text-align:center;opacity:.7;">
+          🤝 No pending friend requests
+        </div>
+      `;
+
+      return;
+    }
+
+    friendRequestsList.innerHTML = "";
+
+    for (const requestDoc of requests) {
+
+      const request = requestDoc.data();
+      const senderId = request.senderId;
+
+      if (!senderId) continue;
+
+      const userSnap = await getDoc(
+        doc(db, "users", senderId)
+      );
+
+      if (!userSnap.exists()) continue;
+
+      const user = userSnap.data();
+
+      const name =
+        user.name ||
+        user.username ||
+        "User";
+
+      const username =
+        user.username ||
+        "";
+
+      const photo =
+        user.photoURL ||
+        user.profilePicture ||
+        user.photo ||
+        "https://via.placeholder.com/50";
+
+      const requestDiv =
+        document.createElement("div");
+
+      requestDiv.style.cssText = `
+        display:flex;
+        align-items:center;
+        gap:10px;
+        padding:12px;
+        margin-bottom:10px;
+        border-radius:12px;
+        background:rgba(255,255,255,.06);
+      `;
+
+      requestDiv.innerHTML = `
+        <img
+          src="${escapeHtml(photo)}"
+          alt=""
+          style="
+            width:48px;
+            height:48px;
+            border-radius:50%;
+            object-fit:cover;
+            flex-shrink:0;
+          "
+        >
+
+        <div style="flex:1;min-width:0;">
+
+          <div style="
+            font-weight:700;
+            overflow:hidden;
+            text-overflow:ellipsis;
+            white-space:nowrap;
+          ">
+            ${escapeHtml(name)}
+          </div>
+
+          <div style="
+            opacity:.65;
+            font-size:13px;
+            margin-top:2px;
+          ">
+            ${username ? "@" + escapeHtml(username) : ""}
+          </div>
+
+          <div style="
+            font-size:12px;
+            opacity:.55;
+            margin-top:3px;
+          ">
+            wants to be your friend
+          </div>
+
+        </div>
+
+        <div style="
+          display:flex;
+          gap:6px;
+          flex-shrink:0;
+        ">
+
+          <button
+            type="button"
+            class="live-accept-request"
+            style="
+              border:0;
+              border-radius:9px;
+              padding:8px 10px;
+              background:#20c997;
+              color:white;
+              font-weight:700;
+              cursor:pointer;
+            "
+          >
+            ✓
+          </button>
+
+          <button
+            type="button"
+            class="live-decline-request"
+            style="
+              border:0;
+              border-radius:9px;
+              padding:8px 10px;
+              background:#ff3b30;
+              color:white;
+              font-weight:700;
+              cursor:pointer;
+            "
+          >
+            ✕
+          </button>
+
+        </div>
+      `;
+
+      // ACCEPT
+      requestDiv
+        .querySelector(".live-accept-request")
+        .addEventListener("click", async () => {
+
+          await acceptLiveRoomFriendRequest(
+            requestDoc.id,
+            request
+          );
+
+          await loadLiveRoomFriendRequests();
+
+        });
+
+      // DECLINE
+      requestDiv
+        .querySelector(".live-decline-request")
+        .addEventListener("click", async () => {
+
+          await declineLiveRoomFriendRequest(
+            requestDoc.id
+          );
+
+          await loadLiveRoomFriendRequests();
+
+        });
+
+      friendRequestsList.appendChild(
+        requestDiv
+      );
+    }
+
+  } catch (error) {
+
+    console.error(
+      "Load Live Room friend requests error:",
+      error
+    );
+
+    friendRequestsList.innerHTML = `
+      <div style="
+        padding:20px;
+        text-align:center;
+        color:#ff6b6b;
+      ">
+        Could not load friend requests.
+      </div>
+    `;
+  }
+}
+// ==========================================
+// DECLINE LIVE ROOM FRIEND REQUEST
+// ==========================================
+
+async function declineLiveRoomFriendRequest(requestId) {
+
+  if (!currentUser || !requestId) {
+    return;
+  }
+
+  try {
+
+    await deleteDoc(
+      doc(
+        db,
+        "friendRequests",
+        requestId
+      )
+    );
+
+    showToast("❌ Friend request declined.");
+
+  } catch (error) {
+
+    console.error(
+      "Decline Live Room friend request error:",
+      error
+    );
+
+    alert(
+      "Could not decline friend request."
+    );
+  }
 }
 // ==========================================
 // STATE
