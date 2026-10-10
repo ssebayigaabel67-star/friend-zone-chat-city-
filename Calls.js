@@ -651,6 +651,7 @@ async function startCall(type) {
     );
 
 
+  
   } catch (error) {
 
     console.error(
@@ -663,12 +664,16 @@ async function startCall(type) {
     closePeerConnection();
 
     alert(
-      "Could not start the call. Check microphone/camera permissions."
+      "Call failed: " +
+      (error.name || "Error") +
+      "\n" +
+      (error.message || "Unknown error")
     );
 
     setCallStatus("");
 
   }
+
 
 }
 
