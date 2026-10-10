@@ -4,7 +4,12 @@
 // Voice + Video Calls using WebRTC
 // ==============================
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+
+import {
+  initializeApp,
+  getApp,
+  getApps
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 
 import {
   getAuth,
@@ -42,12 +47,14 @@ const firebaseConfig = {
 // FIREBASE
 // ==============================
 
-const app = initializeApp(firebaseConfig);
+
+const app = getApps().length
+  ? getApp()
+  : initializeApp(firebaseConfig);
 
 const auth = getAuth(app);
 
 const db = getFirestore(app);
-
 
 // ==============================
 // WEBRTC CONFIG
