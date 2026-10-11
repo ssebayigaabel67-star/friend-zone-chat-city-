@@ -8965,24 +8965,137 @@ body.dark-mode .unblock-user-btn {
 #incomingCallBox,
 #callScreen {
   display: none;
+  position: fixed;
+  z-index: 2147483000;
+  box-sizing: border-box;
+  color: #fff;
+  font-family: inherit;
+  text-align: center;
 }
 
-
-/* ==================================================
-   ACTIVE INCOMING CALL
-================================================== */
+/* INCOMING CALL POPOVER (top of the screen) */
+#incomingCallBox {
+  top: calc(env(safe-area-inset-top, 0px) + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(92vw, 380px);
+  padding: 18px 16px;
+  border-radius: 18px;
+  background: rgba(8, 12, 24, .97);
+  border: 1px solid #00eaff;
+  box-shadow: 0 0 24px rgba(0, 234, 255, .35);
+}
 
 #incomingCallBox.show {
   display: block;
 }
 
+#incomingCallBox h3 {
+  margin: 0 0 6px;
+}
 
-/* ==================================================
-   ACTIVE CALL SCREEN
-================================================== */
+#incomingCallBox p {
+  margin: 0 0 14px;
+}
+
+#incomingCallBox button {
+  min-width: 120px;
+  margin: 4px;
+  padding: 12px 16px;
+  border: 0;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+}
+
+#acceptCallBtn {
+  background: #1faa59;
+}
+
+#declineCallBtn {
+  background: #e53935;
+}
+
+/* ACTIVE CALL SCREEN (full screen) */
+#callScreen {
+  inset: 0;
+  padding:
+    calc(env(safe-area-inset-top, 0px) + 24px)
+    16px
+    calc(env(safe-area-inset-bottom, 0px) + 24px);
+  background: radial-gradient(circle at 50% 20%, #0b1c33, #05070f 70%);
+  overflow: hidden;
+}
 
 #callScreen.show {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+#callProfilePic {
+  position: relative;
+  z-index: 2;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #00eaff;
+  box-shadow: 0 0 22px rgba(0, 234, 255, .4);
+}
+
+#callScreen h1,
+#callScreen h2,
+#callScreen p {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+}
+
+#callScreen button {
+  position: relative;
+  z-index: 2;
+  margin: 6px;
+  padding: 12px 18px;
+  border: 1px solid rgba(0, 234, 255, .5);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .08);
+  color: #fff;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+#callScreen #hangUpBtn {
+  background: #e53935;
+  border-color: #e53935;
+}
+
+#remoteVideo {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+}
+
+#localVideo {
+  position: absolute;
+  z-index: 3;
+  right: 12px;
+  top: calc(env(safe-area-inset-top, 0px) + 12px);
+  width: 96px;
+  height: 128px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, .4);
+  background: #000;
+  display: none;
 }
   /* ==================================================
    CHROME MOBILE KEYBOARD FIX
@@ -17275,6 +17388,7 @@ body.dark-mode .account-option.account-delete-option strong {
 <audio
   id="remoteAudio"
   autoplay
+  playsinline
 ></audio>
 
 
@@ -17321,6 +17435,9 @@ body.dark-mode .account-option.account-delete-option strong {
 <div
   id="callScreen"
 >
+
+  <video id="remoteVideo" autoplay playsinline></video>
+  <video id="localVideo" autoplay playsinline muted></video>
 
   <img
     id="callProfilePic"
