@@ -1,21 +1,10 @@
-// ==========================================
-// FRIEND ZONE CHAT CITY
-// FIREBASE CLOUD MESSAGING SERVICE WORKER
-// ==========================================
+// FRIEND ZONE CHAT CITY - FCM SERVICE WORKER
+// Must live at the site root: https://yoursite.com/firebase-messaging-sw.js
 
-importScripts(
-  "https://www.gstatic.com/firebasejs/12.0.0/firebase-app-compat.js"
-);
+importScripts("https://www.gstatic.com/firebasejs/12.0.0/firebase-app-compat.js");
+importScripts("https://www.gstatic.com/firebasejs/12.0.0/firebase-messaging-compat.js");
 
-importScripts(
-  "https://www.gstatic.com/firebasejs/12.0.0/firebase-messaging-compat.js"
-);
-
-
-// ==========================================
-// FIREBASE CONFIG
-// ==========================================
-
+// IMPORTANT: apiKey must be IDENTICAL to the one in Home.js
 firebase.initializeApp({
   apiKey: "AIzaSyAxSyuHiNb-NEeXLfMfaq0RS9ERfahORt4",
   authDomain: "friend-zone-chat-city.firebaseapp.com",
@@ -25,99 +14,48 @@ firebase.initializeApp({
   appId: "1:1077723243409:web:f030fdcd210f0326d93030"
 });
 
-
-// ==========================================
-// FIREBASE MESSAGING
-// ==========================================
-
 const messaging = firebase.messaging();
 
-
-// ==========================================
-// BACKGROUND NOTIFICATIONS
-// ==========================================
-
+// The server sends DATA-ONLY messages, so this is the only place a
+// popup is created (no duplicates).
 messaging.onBackgroundMessage((payload) => {
+  const d = payload.data || {};
 
-  console.log(
-    "[firebase-messaging-sw.js] Background message:",
-    payload
+  return self.registration.showNotification(
+    d.title || "Friend Zone Chat City",
+    {
+      body: d.body || "You have a new message.",
+      icon: "/icon-192.png",
+      badge: "/icon-192.png",
+      tag: d.chatId || "fz-chat",   // groups messages from one chat
+      renotify: true,
+      data: d
+    }
   );
-
-  const notificationTitle =
-    payload.notification?.title ||
-    "Friend Zone Chat City";
-
-  const notificationOptions = {
-
-    body:
-      payload.notification?.body ||
-      "You have a new message.",
-
-    icon:
-      payload.notification?.icon ||
-      "/icon.png",
-
-    badge:
-      payload.notification?.icon ||
-      "/icon.png",
-
-    data: payload.data || {}
-
-  };
-
-
-  self.registration.showNotification(
-    notificationTitle,
-    notificationOptions
-  );
-
 });
 
-
-// ==========================================
-// WHEN USER TAPS NOTIFICATION
-// ==========================================
-
 self.addEventListener("notificationclick", (event) => {
-
   event.notification.close();
 
-  const chatUrl =
-    event.notification.data?.chatUrl ||
-    "/Homepage.html";
+  const target = new URL(
+    event.notification.data?.chatUrl || "/Homepage.html",
+    self.location.origin
+  ).href;
 
-
-  event.waitUntil(
-
-    clients.matchAll({
+  event.waitUntil((async () => {
+    const list = await clients.matchAll({
       type: "window",
       includeUncontrolled: true
-    })
+    });
 
-    .then((clientList) => {
+    for (const client of list) {
+      try {
+        await client.focus();
+        if ("navigate" in client) await client.navigate(target);
+        return;
+      } catch (e) { /* try next / open new window */ }
+    }
 
-      for (const client of clientList) {
-
-        if ("focus" in client) {
-
-          client.focus();
-
-          if ("navigate" in client) {
-            client.navigate(chatUrl);
-          }
-
-          return;
-        }
-
-      }
-
-      if (clients.openWindow) {
-        return clients.openWindow(chatUrl);
-      }
-
-    })
-
-  );
-
+    if (clients.openWindow) return clients.openWindow(target);
+  })());
 });

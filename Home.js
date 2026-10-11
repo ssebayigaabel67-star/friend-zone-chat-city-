@@ -1963,9 +1963,14 @@ async function registerFCMToken(user) {
       return;
     }
 
-    // Wait for Firebase messaging service worker
+    // Register the Firebase messaging service worker.
+    // (It was never registered before, so .ready waited forever.)
     const registration =
-      await navigator.serviceWorker.ready;
+      await navigator.serviceWorker.register(
+        "/firebase-messaging-sw.js"
+      );
+
+    await navigator.serviceWorker.ready;
 
     // ======================
     // NOTIFICATION PERMISSION
@@ -1974,11 +1979,19 @@ async function registerFCMToken(user) {
     let permission =
       Notification.permission;
 
-    if (permission !== "granted") {
+    if (permission === "default") {
 
-      permission =
-        await Notification.requestPermission();
+      // Phones only allow the permission prompt after a tap.
+      // Wait for the first tap anywhere, then try again.
+      document.addEventListener(
+        "click",
+        () => {
+          registerFCMToken(user).catch(console.error);
+        },
+        { once: true }
+      );
 
+      return;
     }
 
     if (permission !== "granted") {
@@ -2029,6 +2042,42 @@ async function registerFCMToken(user) {
       "FCM Token:",
       token
     );
+
+    // Foreground messages (page open): show a popup unless that chat is open
+    if (!window.__fcmForegroundHooked) {
+
+      window.__fcmForegroundHooked = true;
+
+      const { onMessage } = await import(
+        "https://www.gstatic.com/firebasejs/12.0.0/firebase-messaging.js"
+      );
+
+      onMessage(messaging, (payload) => {
+
+        const d = payload.data || {};
+
+        if (d.senderId && d.senderId === selectedFriendId) {
+          return;
+        }
+
+        try {
+          if (notificationSound) {
+            notificationSound.play().catch(() => {});
+          }
+        } catch (e) {}
+
+        registration.showNotification(
+          d.title || "Friend Zone Chat City",
+          {
+            body: d.body || "You have a new message.",
+            icon: "/icon-192.png",
+            data: d
+          }
+        );
+
+      });
+
+    }
 
     // ======================
     // SAVE TOKEN TO USER
@@ -2751,70 +2800,51 @@ if (sendBtn) {
 
         try {
 
-          const receiverRef =
-            doc(
-              db,
-              "users",
-              selectedFriendId
-            );
+          const idToken =
+            await auth.currentUser.getIdToken();
 
+          await fetch(
+            "/api/send-notification",
+            {
+              method: "POST",
 
-          const receiverSnap =
-            await getDoc(receiverRef);
+              headers: {
+                "Content-Type":
+                  "application/json",
+                "Authorization":
+                  "Bearer " + idToken
+              },
 
+              body: JSON.stringify({
 
-          if (receiverSnap.exists()) {
+                receiverId:
+                  selectedFriendId,
 
-            const receiverData =
-              receiverSnap.data();
+                title:
+                  currentUserName,
 
+                body:
+                  text || "Sent you a message",
 
-            const receiverToken =
-              receiverData.fcmToken;
+                data: {
 
+                  type:
+                    "chat",
 
-            if (receiverToken) {
+                  chatId:
+                    chatId,
 
-              await fetch(
-                "/api/send-notification",
-                {
-                  method: "POST",
+                  senderId:
+                    auth.currentUser.uid,
 
-                  headers: {
-                    "Content-Type":
-                      "application/json"
-                  },
-
-                  body: JSON.stringify({
-
-                    token:
-                      receiverToken,
-
-                    title:
-                      currentUserName,
-
-                    body:
-                      text,
-
-                    data: {
-
-                      type:
-                        "chat",
-
-                      chatId:
-                        chatId,
-
-                      senderId:
-                        auth.currentUser.uid
-                    }
-
-                  })
+                  chatUrl:
+                    "/Homepage.html?chat=" +
+                    auth.currentUser.uid
                 }
-              );
 
+              })
             }
-
-          }
+          );
 
         } catch (notificationError) {
 
@@ -6573,40 +6603,6 @@ window.addEventListener(
 
   }
 );
-
-
-// ======================
-// NOTIFICATION PERMISSION
-// ======================
-
-if (
-  "Notification" in window
-) {
-
-  Notification
-    .requestPermission()
-    .then(
-      permission => {
-
-        console.log(
-          "Notification permission:",
-          permission
-        );
-
-      }
-    )
-    .catch(
-      error => {
-
-        console.error(
-          "Notification permission error:",
-          error
-        );
-
-      }
-    );
-
-}
 
 
 // ======================
@@ -16553,12 +16549,8 @@ if (testNotificationBtn) {
 
   testNotificationBtn.addEventListener("click", async () => {
 
-    const token = prompt(
-      "Paste your FCM token from Firestore:"
-    );
-
-    if (!token) {
-      alert("No FCM token entered.");
+    if (!auth.currentUser) {
+      alert("Please log in first.");
       return;
     }
 
@@ -16570,11 +16562,13 @@ if (testNotificationBtn) {
           method: "POST",
 
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Authorization":
+              "Bearer " + await auth.currentUser.getIdToken()
           },
 
           body: JSON.stringify({
-            token: token,
+            receiverId: auth.currentUser.uid,
 
             title: "FriendsZone Chat City",
 
