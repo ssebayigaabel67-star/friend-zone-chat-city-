@@ -25,9 +25,10 @@ import {
   updateDoc,
   onSnapshot,
   addDoc,
-  serverTimestamp
+  serverTimestamp,
+  query,
+  where
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-
 
 // ==============================
 // FIREBASE CONFIG
@@ -551,10 +552,8 @@ async function startCall(type) {
     currentCallType =
       type;
 
-
-    const callRef =
-      doc(collection(db, "calls"));
-
+const callRef =  
+  doc(collection(db, "calls"));
 
     currentCallId =
       callRef.id;
@@ -863,8 +862,10 @@ function startIncomingCallListener() {
 
 
   onSnapshot(
-    collection(db, "calls"),
-    snapshot => {
+    query(
+  collection(db, "calls"),
+  where("receiver", "==", auth.currentUser.uid)
+),   snapshot => {
 
       snapshot.docChanges()
         .forEach(change => {
