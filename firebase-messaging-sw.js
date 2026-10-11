@@ -6,7 +6,7 @@ importScripts("https://www.gstatic.com/firebasejs/12.0.0/firebase-messaging-comp
 
 // IMPORTANT: apiKey must be IDENTICAL to the one in Home.js
 firebase.initializeApp({
-  apiKey: "AIzaSyAxSyuHiNb-NEeXLfMfaq0RS9ERfahORt4",
+  apiKey: "AIzaSyAxVyuHiNb-NEeXLfMfaq0RS9ERfahORt4",
   authDomain: "friend-zone-chat-city.firebaseapp.com",
   projectId: "friend-zone-chat-city",
   storageBucket: "friend-zone-chat-city.firebasestorage.app",
