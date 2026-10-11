@@ -5960,7 +5960,37 @@ if (
   );
 
 }
+// ==========================================
+// MY FRIENDS BUTTON
+// ==========================================
 
+const myFriendsBtn =
+  document.getElementById("myFriendsBtn");
+
+if (myFriendsBtn) {
+  myFriendsBtn.addEventListener("click", () => {
+    // Close the profile popover
+    const profilePopover =
+      document.getElementById("myProfilePopover");
+
+    if (profilePopover) {
+      profilePopover.classList.remove("show");
+    }
+
+    // Find the existing Friends list
+    const friendsList =
+      document.getElementById("friendsList");
+
+    if (friendsList) {
+      friendsList.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    } else {
+      alert("Friends list could not be found.");
+    }
+  });
+}
 // ======================
 // VOICE RECORDING
 // ======================
