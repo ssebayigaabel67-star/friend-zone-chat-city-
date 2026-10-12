@@ -15,7 +15,10 @@ exports.notifyIncomingCall = onDocumentCreated("calls/{callId}", async event => 
 
   const db = getFirestore();
   const userSnap = await db.collection("users").doc(call.receiver).get();
-  const tokens = (userSnap.exists && userSnap.data().fcmTokens) || [];
+  const u = userSnap.exists ? userSnap.data() : {};
+
+  // Home.js saves a single "fcmToken"; also accept an "fcmTokens" array.
+  const tokens = [...new Set([u.fcmToken, ...(u.fcmTokens || [])].filter(Boolean))];
 
   if (!tokens.length) return;
 
@@ -43,6 +46,8 @@ exports.notifyIncomingCall = onDocumentCreated("calls/{callId}", async event => 
   });
 
   if (dead.length) {
-    await userSnap.ref.update({ fcmTokens: FieldValue.arrayRemove(...dead) });
+    const patch = { fcmTokens: FieldValue.arrayRemove(...dead) };
+    if (dead.includes(u.fcmToken)) patch.fcmToken = FieldValue.delete();
+    await userSnap.ref.update(patch);
   }
 });

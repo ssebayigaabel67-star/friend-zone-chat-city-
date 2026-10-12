@@ -29,7 +29,8 @@ import {
   getDocs,
   updateDoc,
   increment,
-  setDoc
+  setDoc,
+  arrayUnion
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 // ======================
 // FIREBASE CONFIG
@@ -2101,7 +2102,10 @@ async function registerFCMToken(user) {
     await setDoc(
       userRef,
       {
-        fcmToken: token
+        // Latest device (kept for compatibility)
+        fcmToken: token,
+        // Every device this account is logged in on
+        fcmTokens: arrayUnion(token)
       },
       {
         merge: true
@@ -2415,8 +2419,8 @@ if (userSnap.exists()) {
   const data =
     userSnap.data();
 currentUserName =
-  data.username ||
   data.name ||
+  data.username ||
   "User";
 } else {
 

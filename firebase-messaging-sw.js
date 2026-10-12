@@ -1,3 +1,7 @@
+// IMPORTANT: Home.js already registers /firebase-messaging-sw.js.
+// If you already have this file, do NOT replace it. Copy only the
+// "incoming_call" part of onBackgroundMessage and the notificationclick
+// handler below into your existing file.
 // Put this file in the ROOT of your site (same folder as Homepage.html).
 importScripts("https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js");
 importScripts("https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js");

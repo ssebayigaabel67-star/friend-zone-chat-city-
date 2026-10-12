@@ -26,8 +26,7 @@ import {
   addDoc,
   serverTimestamp,
   query,
-  where,
-  arrayUnion
+  where
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 // ==============================
@@ -72,13 +71,9 @@ const STALE_CALL_MS = 60000;
 
 // Where user profiles live in Firestore, and which field names to try.
 const USERS_COLLECTION = "users";
-const NAME_FIELDS  = ["username", "userName", "displayName", "name"];
-const PHOTO_FIELDS = ["profilePic", "profilePicture", "photoURL", "photo", "avatar", "profileImage", "pfp"];
+const NAME_FIELDS  = ["name", "displayName", "username", "userName"];
+const PHOTO_FIELDS = ["photoURL", "profilePic", "profilePicture", "photo", "avatar", "profileImage", "pfp"];
 const DEFAULT_PHOTO = "images/default-profile.png";
-
-// Firebase Console > Project settings > Cloud Messaging > Web Push certificates > Key pair.
-// Leave empty to turn off background (closed-app) notifications.
-const VAPID_KEY = "BH6XiMfNNPSfvcnvFFtQNawwu1IcW1g25KUnMzvd9WDnB7UgalJoIkCkA4Kz2g_6BvOhCdUP1iY4LTD11xeW2e8";
 
 // ==============================
 // STATE
@@ -305,57 +300,6 @@ function stopRing() {
   }
 
   if (navigator.vibrate) navigator.vibrate(0);
-}
-
-// ==============================
-// BACKGROUND NOTIFICATIONS (FCM web push)
-// ==============================
-// Needs: VAPID_KEY above, firebase-messaging-sw.js at your site root,
-// and the Cloud Function in functions/index.js (see instructions).
-
-let pushAsked = false;
-
-async function enablePush(user) {
-  if (!VAPID_KEY || pushAsked) return;
-  if (!("serviceWorker" in navigator) || !("Notification" in window)) return;
-
-  pushAsked = true;
-
-  try {
-    const messagingLib = await import(
-      "https://www.gstatic.com/firebasejs/12.0.0/firebase-messaging.js"
-    );
-
-    if (!(await messagingLib.isSupported())) return;
-
-    if (Notification.permission === "default") {
-      await Notification.requestPermission();
-    }
-
-    if (Notification.permission !== "granted") return;
-
-    const registration = await navigator.serviceWorker.register(
-      "./firebase-messaging-sw.js"
-    );
-
-    const token = await messagingLib.getToken(
-      messagingLib.getMessaging(app),
-      { vapidKey: VAPID_KEY, serviceWorkerRegistration: registration }
-    );
-
-    if (!token) return;
-
-    await setDoc(
-      doc(db, USERS_COLLECTION, user.uid),
-      { fcmTokens: arrayUnion(token) },
-      { merge: true }
-    );
-
-    console.log("Push notifications enabled");
-  } catch (error) {
-    console.warn("Push setup failed:", error);
-    pushAsked = false;
-  }
 }
 
 // ==============================
@@ -1071,11 +1015,7 @@ onAuthStateChanged(auth, user => {
 
   startIncomingCallListener(user);
 
-  if ("Notification" in window && Notification.permission === "granted") {
-    enablePush(user);
-  } else {
-    document.addEventListener("click", () => enablePush(user), { once: true });
-  }
+  // Push tokens are registered by Home.js (registerFCMToken).
 });
 
 // ==============================
