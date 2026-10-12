@@ -78,7 +78,7 @@ const DEFAULT_PHOTO = "images/default-profile.png";
 
 // Firebase Console > Project settings > Cloud Messaging > Web Push certificates > Key pair.
 // Leave empty to turn off background (closed-app) notifications.
-const VAPID_KEY = "";
+const VAPID_KEY = "BH6XiMfNNPSfvcnvFFtQNawwu1IcW1g25KUnMzvd9WDnB7UgalJoIkCkA4Kz2g_6BvOhCdUP1iY4LTD11xeW2e8";
 
 // ==============================
 // STATE
