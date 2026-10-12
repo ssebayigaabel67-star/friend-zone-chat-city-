@@ -26,7 +26,8 @@ import {
   addDoc,
   serverTimestamp,
   query,
-  where
+  where,
+  arrayUnion
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 // ==============================
@@ -64,6 +65,20 @@ const rtcConfig = {
 
 const RING_TIMEOUT_MS = 45000;
 const STALE_CALL_MS = 60000;
+
+// ==============================
+// SETTINGS YOU MAY NEED TO EDIT
+// ==============================
+
+// Where user profiles live in Firestore, and which field names to try.
+const USERS_COLLECTION = "users";
+const NAME_FIELDS  = ["username", "userName", "displayName", "name"];
+const PHOTO_FIELDS = ["profilePic", "profilePicture", "photoURL", "photo", "avatar", "profileImage", "pfp"];
+const DEFAULT_PHOTO = "images/default-profile.png";
+
+// Firebase Console > Project settings > Cloud Messaging > Web Push certificates > Key pair.
+// Leave empty to turn off background (closed-app) notifications.
+const VAPID_KEY = "";
 
 // ==============================
 // STATE
@@ -128,6 +143,7 @@ function showIncomingBox() {
 
 function hideIncomingBox() {
   showEl("incomingCallBox", false);
+  stopRing();
 }
 
 function friendlyMediaError(error) {
@@ -141,6 +157,204 @@ function friendlyMediaError(error) {
       return "Your microphone or camera is being used by another app.";
     default:
       return (error && error.message) || "Unknown error";
+  }
+}
+
+// ==============================
+// PROFILES (real username + profile picture)
+// ==============================
+
+const profileCache = {};
+
+function pickFirst(obj, keys) {
+  for (const k of keys) {
+    if (obj && typeof obj[k] === "string" && obj[k].trim()) return obj[k].trim();
+  }
+  return "";
+}
+
+async function getProfile(uid) {
+  if (!uid) return { name: "", photo: "" };
+  if (profileCache[uid]) return profileCache[uid];
+
+  let data = {};
+
+  try {
+    const snap = await getDoc(doc(db, USERS_COLLECTION, uid));
+    if (snap.exists()) data = snap.data();
+  } catch (error) {
+    console.warn("Could not read profile for", uid, error);
+  }
+
+  const profile = {
+    name: pickFirst(data, NAME_FIELDS),
+    photo: pickFirst(data, PHOTO_FIELDS)
+  };
+
+  const me = auth.currentUser;
+
+  if (me && me.uid === uid) {
+    profile.name = profile.name || me.displayName || "";
+    profile.photo = profile.photo || me.photoURL || "";
+  }
+
+  if (profile.name) profileCache[uid] = profile;
+
+  return profile;
+}
+
+function applyCallIdentity(name, photo) {
+  const nameEl = $("callUserName");
+  if (nameEl) nameEl.textContent = name || "Unknown";
+
+  setPic("callProfilePic", photo);
+}
+
+function setPic(id, photo) {
+  const img = $(id);
+  if (!img) return;
+
+  img.onerror = () => {
+    img.onerror = null;
+    img.src = DEFAULT_PHOTO;
+  };
+
+  img.src = photo || DEFAULT_PHOTO;
+}
+
+// ==============================
+// CALL SOUNDS (generated, no audio files needed)
+// ==============================
+
+let audioCtx = null;
+let ringInterval = null;
+
+function unlockAudio() {
+  try {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    if (audioCtx.state === "suspended") audioCtx.resume();
+  } catch (error) {
+    console.warn("Audio unlock failed:", error);
+  }
+}
+
+// Phones only allow sound after the person has tapped the page once.
+["pointerdown", "touchstart", "keydown", "click"].forEach(evt =>
+  document.addEventListener(evt, unlockAudio, { passive: true })
+);
+
+function tone(freqs, start, duration, volume) {
+  freqs.forEach(freq => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.type = "sine";
+    osc.frequency.value = freq;
+
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.exponentialRampToValueAtTime(volume, start + 0.03);
+    gain.gain.setValueAtTime(volume, start + duration - 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.start(start);
+    osc.stop(start + duration + 0.02);
+  });
+}
+
+// mode "incoming" = ringtone for the receiver, "outgoing" = ringback for the caller
+function startRing(mode) {
+  stopRing();
+  unlockAudio();
+
+  if (!audioCtx) return;
+
+  const play = () => {
+    if (audioCtx.state !== "running") {
+      audioCtx.resume().catch(() => {});
+      return;
+    }
+
+    const t = audioCtx.currentTime;
+
+    if (mode === "incoming") {
+      tone([880, 1100], t, 0.35, 0.18);
+      tone([880, 1100], t + 0.5, 0.35, 0.18);
+    } else {
+      tone([440, 480], t, 1.6, 0.12);
+    }
+  };
+
+  play();
+  ringInterval = setInterval(play, mode === "incoming" ? 2200 : 4000);
+
+  if (mode === "incoming" && navigator.vibrate) {
+    navigator.vibrate([400, 200, 400, 1200, 400, 200, 400]);
+  }
+}
+
+function stopRing() {
+  if (ringInterval) {
+    clearInterval(ringInterval);
+    ringInterval = null;
+  }
+
+  if (navigator.vibrate) navigator.vibrate(0);
+}
+
+// ==============================
+// BACKGROUND NOTIFICATIONS (FCM web push)
+// ==============================
+// Needs: VAPID_KEY above, firebase-messaging-sw.js at your site root,
+// and the Cloud Function in functions/index.js (see instructions).
+
+let pushAsked = false;
+
+async function enablePush(user) {
+  if (!VAPID_KEY || pushAsked) return;
+  if (!("serviceWorker" in navigator) || !("Notification" in window)) return;
+
+  pushAsked = true;
+
+  try {
+    const messagingLib = await import(
+      "https://www.gstatic.com/firebasejs/12.0.0/firebase-messaging.js"
+    );
+
+    if (!(await messagingLib.isSupported())) return;
+
+    if (Notification.permission === "default") {
+      await Notification.requestPermission();
+    }
+
+    if (Notification.permission !== "granted") return;
+
+    const registration = await navigator.serviceWorker.register(
+      "./firebase-messaging-sw.js"
+    );
+
+    const token = await messagingLib.getToken(
+      messagingLib.getMessaging(app),
+      { vapidKey: VAPID_KEY, serviceWorkerRegistration: registration }
+    );
+
+    if (!token) return;
+
+    await setDoc(
+      doc(db, USERS_COLLECTION, user.uid),
+      { fcmTokens: arrayUnion(token) },
+      { merge: true }
+    );
+
+    console.log("Push notifications enabled");
+  } catch (error) {
+    console.warn("Push setup failed:", error);
+    pushAsked = false;
   }
 }
 
@@ -258,6 +472,7 @@ function createPeerConnection() {
 
     if (pc.connectionState === "connected") {
       clearTimeout(ringTimeout);
+      stopRing();
       setCallStatus("Connected");
       startCallTimer();
     }
@@ -335,6 +550,16 @@ async function startCall(type) {
 
     await getMedia(type);
 
+    const [me, friend] = await Promise.all([
+      getProfile(user.uid),
+      getProfile(friendId)
+    ]);
+
+    applyCallIdentity(
+      friend.name || window.selectedFriendName || "",
+      friend.photo || window.selectedFriendPhoto || ""
+    );
+
     const callRef = doc(collection(db, "calls"));
     currentCallId = callRef.id;
 
@@ -358,6 +583,10 @@ async function startCall(type) {
     await setDoc(callRef, {
       caller: user.uid,
       receiver: friendId,
+      callerName: me.name || user.displayName || "Someone",
+      callerPhoto: me.photo || user.photoURL || "",
+      receiverName: friend.name || "",
+      receiverPhoto: friend.photo || "",
       type,
       offer: { type: offer.type, sdp: offer.sdp },
       status: "ringing",
@@ -365,6 +594,7 @@ async function startCall(type) {
     });
 
     setCallStatus(type === "video" ? "Calling with video..." : "Calling...");
+    startRing("outgoing");
 
     watchCall(currentCallId);
 
@@ -430,6 +660,7 @@ function watchCall(callId) {
             new RTCSessionDescription(call.answer)
           );
 
+          stopRing();
           setCallStatus("Connecting...");
           listenForCandidates(callId, "answerCandidates");
         } catch (error) {
@@ -540,20 +771,32 @@ function startIncomingCallListener(user) {
 // SHOW INCOMING CALL
 // ==============================
 
-function showIncomingCall(call) {
+async function showIncomingCall(call) {
+  const callId = currentCallId;
+
   const callerName = $("callerName");
 
-  if (callerName) {
-    callerName.textContent =
-      call.type === "video"
-        ? "Incoming video call..."
-        : "Incoming voice call...";
-  }
+  const render = (name, photo) => {
+    if (callerName) {
+      callerName.textContent =
+        `${name || "Someone"} is ${call.type === "video" ? "video calling" : "calling"} you`;
+    }
 
+    setPic("callerPic", photo);
+  };
+
+  // Show immediately with what the call already carries...
+  render(call.callerName, call.callerPhoto);
   showIncomingBox();
+  startRing("incoming");
 
-  if (navigator.vibrate) {
-    navigator.vibrate([300, 150, 300]);
+  // ...then upgrade from the user's profile if the call had no name or photo.
+  if (!call.callerName || !call.callerPhoto) {
+    const profile = await getProfile(call.caller);
+
+    if (callId === currentCallId) {
+      render(call.callerName || profile.name, call.callerPhoto || profile.photo);
+    }
   }
 
   if ("Notification" in window && Notification.permission === "granted") {
@@ -602,8 +845,15 @@ async function acceptCall() {
     isCaller = false;
 
     hideIncomingBox();
+    applyCallIdentity(call.callerName, call.callerPhoto);
     showCallScreen();
     setCallStatus("Connecting...");
+
+    if (!call.callerName || !call.callerPhoto) {
+      getProfile(call.caller).then(profile =>
+        applyCallIdentity(call.callerName || profile.name, call.callerPhoto || profile.photo)
+      );
+    }
 
     await getMedia(type);
 
@@ -708,8 +958,10 @@ async function cleanupCall(message) {
   closePeerConnection();
   stopCallTimer();
 
+  stopRing();
   hideIncomingBox();
   hideCallScreen();
+  applyCallIdentity("", "");
 
   ["remoteAudio", "localAudio", "remoteVideo", "localVideo"].forEach(id => {
     const el = $(id);
@@ -818,6 +1070,12 @@ onAuthStateChanged(auth, user => {
   console.log("Calls.js ready for:", user.uid);
 
   startIncomingCallListener(user);
+
+  if ("Notification" in window && Notification.permission === "granted") {
+    enablePush(user);
+  } else {
+    document.addEventListener("click", () => enablePush(user), { once: true });
+  }
 });
 
 // ==============================

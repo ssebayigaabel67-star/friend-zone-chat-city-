@@ -8990,6 +8990,16 @@ body.dark-mode .unblock-user-btn {
   display: block;
 }
 
+#callerPic {
+  display: block;
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 8px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #00eaff;
+}
+
 #incomingCallBox h3 {
   margin: 0 0 6px;
 }
@@ -16742,6 +16752,17 @@ body.dark-mode .account-option.account-delete-option strong {
   </button>
 
 
+  <!-- SETTINGS -->
+
+  <button
+    id="profileSettingsBtn"
+    class="my-profile-action-btn"
+    type="button"
+  >
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-settings"></use></svg> Settings
+  </button>
+
+
   <!-- ==================================================
        EDIT PROFILE PANEL
   ================================================== -->
@@ -17388,6 +17409,8 @@ body.dark-mode .account-option.account-delete-option strong {
 <div
   id="incomingCallBox"
 >
+
+  <img id="callerPic" src="images/default-profile.png" alt="Caller">
 
   <h3>
     <svg class="fz-icon" aria-hidden="true"><use href="#icon-phone"></use></svg> Incoming Call

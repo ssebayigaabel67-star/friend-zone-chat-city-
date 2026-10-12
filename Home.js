@@ -17466,3 +17466,90 @@ function closeAllAccountSubPopovers(exceptModal = null) {
   }
 
 });
+// MY FRIENDS BUTTON
+const myFriendsBtn = document.getElementById("myFriendsBtn");
+const myFriendsModal = document.getElementById("myFriendsModal");
+const closeMyFriendsBtn = document.getElementById("closeMyFriendsBtn");
+const myFriendsList = document.getElementById("myFriendsList");
+
+myFriendsBtn?.addEventListener("click", async () => {
+  myFriendsModal.style.display = "flex";
+  myFriendsList.innerHTML = "<p>Loading friends...</p>";
+
+  try {
+    const user = auth.currentUser;
+
+    if (!user) {
+      myFriendsList.innerHTML = "<p>Please sign in first.</p>";
+      return;
+    }
+
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      myFriendsList.innerHTML = "<p>Your profile was not found.</p>";
+      return;
+    }
+
+    const friends = userSnap.data().friends || [];
+
+    if (!Array.isArray(friends) || friends.length === 0) {
+      myFriendsList.innerHTML = "<p>You have no friends yet.</p>";
+      return;
+    }
+
+    myFriendsList.innerHTML = "";
+
+    for (const friendUid of friends) {
+      const friendSnap = await getDoc(doc(db, "users", friendUid));
+
+      if (!friendSnap.exists()) continue;
+
+      const friend = friendSnap.data();
+      const item = document.createElement("div");
+      item.className = "my-friend-item";
+
+      const img = document.createElement("img");
+      img.src = friend.photoURL || friend.profilePicture || "";
+      img.alt = "";
+      img.onerror = () => {
+        img.onerror = null;
+        img.src = "https://placehold.co/100x100?text=User";
+      };
+
+      const details = document.createElement("div");
+      details.className = "my-friend-details";
+
+      const name = document.createElement("strong");
+      name.textContent = friend.name || friend.username || "User";
+
+      const username = document.createElement("small");
+      username.textContent = friend.username
+        ? "@" + friend.username
+        : "";
+
+      details.append(name, username);
+      item.append(img, details);
+      myFriendsList.appendChild(item);
+    }
+
+    if (!myFriendsList.children.length) {
+      myFriendsList.innerHTML = "<p>No friends found.</p>";
+    }
+  } catch (error) {
+    console.error("Failed to load friends:", error);
+    myFriendsList.innerHTML =
+      "<p>Couldn't load friends. Please try again.</p>";
+  }
+});
+
+closeMyFriendsBtn?.addEventListener("click", () => {
+  myFriendsModal.style.display = "none";
+});
+
+myFriendsModal?.addEventListener("click", (event) => {
+  if (event.target === myFriendsModal) {
+    myFriendsModal.style.display = "none";
+  }
+});

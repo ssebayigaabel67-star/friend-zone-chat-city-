@@ -1,10 +1,7 @@
-// FRIEND ZONE CHAT CITY - FCM SERVICE WORKER
-// Must live at the site root: https://yoursite.com/firebase-messaging-sw.js
+// Put this file in the ROOT of your site (same folder as Homepage.html).
+importScripts("https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js");
+importScripts("https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js");
 
-importScripts("https://www.gstatic.com/firebasejs/12.0.0/firebase-app-compat.js");
-importScripts("https://www.gstatic.com/firebasejs/12.0.0/firebase-messaging-compat.js");
-
-// IMPORTANT: apiKey must be IDENTICAL to the one in Home.js
 firebase.initializeApp({
   apiKey: "AIzaSyAxVyuHiNb-NEeXLfMfaq0RS9ERfahORt4",
   authDomain: "friend-zone-chat-city.firebaseapp.com",
@@ -16,46 +13,39 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// The server sends DATA-ONLY messages, so this is the only place a
-// popup is created (no duplicates).
-messaging.onBackgroundMessage((payload) => {
+// The Cloud Function sends data-only messages, so we draw the notification here.
+messaging.onBackgroundMessage(payload => {
   const d = payload.data || {};
 
+  if (d.kind !== "incoming_call") return;
+
+  const name = d.callerName || "Someone";
+  const video = d.type === "video";
+
   return self.registration.showNotification(
-    d.title || "Friend Zone Chat City",
+    video ? "Incoming video call" : "Incoming voice call",
     {
-      body: d.body || "You have a new message.",
-      icon: "/icon-192.png",
-      badge: "/icon-192.png",
-      tag: d.chatId || "fz-chat",   // groups messages from one chat
+      body: `${name} is ${video ? "video calling" : "calling"} you`,
+      icon: d.callerPhoto || "images/default-profile.png",
+      tag: "incoming-call-" + d.callId,
+      requireInteraction: true,
       renotify: true,
-      data: d
+      vibrate: [400, 200, 400, 200, 400],
+      data: { callId: d.callId }
     }
   );
 });
 
-self.addEventListener("notificationclick", (event) => {
+// Tapping the notification opens the site; the ringing popup appears there.
+self.addEventListener("notificationclick", event => {
   event.notification.close();
 
-  const target = new URL(
-    event.notification.data?.chatUrl || "/Homepage.html",
-    self.location.origin
-  ).href;
-
-  event.waitUntil((async () => {
-    const list = await clients.matchAll({
-      type: "window",
-      includeUncontrolled: true
-    });
-
-    for (const client of list) {
-      try {
-        await client.focus();
-        if ("navigate" in client) await client.navigate(target);
-        return;
-      } catch (e) { /* try next / open new window */ }
-    }
-
-    if (clients.openWindow) return clients.openWindow(target);
-  })());
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then(list => {
+      for (const c of list) {
+        if ("focus" in c) return c.focus();
+      }
+      return clients.openWindow("/");
+    })
+  );
 });
