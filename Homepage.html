@@ -15451,6 +15451,149 @@ body.dark-mode .account-option.account-delete-option strong {
   outline: 3px solid #2196F3;
   outline-offset: 2px;
 }
+
+/* ==================================================
+   FRIENDS / OTHERS TABS
+================================================== */
+
+#friendsList::before {
+  display: none !important;
+}
+
+.friends-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 4px;
+  margin: 6px 7px 8px;
+  border-radius: 14px;
+  background: rgba(128,128,128,.14);
+  border: 1px solid rgba(255,255,255,.07);
+}
+
+.friends-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 8px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #555555;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: background .2s ease, color .2s ease, box-shadow .2s ease;
+}
+
+.dark-mode .friends-tab {
+  color: #cfd8dc;
+}
+
+.friends-tab.active {
+  color: #001218;
+  background: linear-gradient(135deg, #00eaff, #7b61ff);
+  box-shadow: 0 0 12px rgba(0,234,255,.45);
+}
+
+.friends-tab-count {
+  font-size: 10px;
+  opacity: .8;
+}
+
+.friends-tab-dot {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: red;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.friends-tab-dot.show {
+  display: inline-flex;
+}
+
+.friends-search {
+  display: block;
+  box-sizing: border-box;
+  width: calc(100% - 14px);
+  margin: 0 7px 6px;
+  padding: 9px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(128,128,128,.3);
+  background: rgba(128,128,128,.1);
+  color: #292929;
+  font-size: 13px;
+  outline: none;
+  pointer-events: auto;
+}
+
+.dark-mode .friends-search {
+  color: #f5f5f5;
+}
+
+.friends-search:focus {
+  border-color: #00eaff;
+  box-shadow: 0 0 8px rgba(0,234,255,.4);
+}
+
+.friends-empty {
+  padding: 18px 12px;
+  text-align: center;
+  font-size: 13px;
+  color: #555555;
+  opacity: .85;
+}
+
+.dark-mode .friends-empty {
+  color: #cfd8dc;
+}
+
+.friend-quick-btn {
+  flex-shrink: 0;
+  position: relative;
+  z-index: 12;
+  margin-left: 8px;
+  padding: 7px 11px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #00eaff, #7b61ff);
+  color: #001218;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.friend-quick-btn:disabled {
+  opacity: .6;
+  cursor: default;
+}
+
+.user-profile-actions button#removeFriendBtn {
+  background: #e53935;
+  color: #ffffff;
+}
+
+.user-profile-actions button#removeFriendBtn:hover {
+  background: #c62828;
+}
+
+.user-profile-actions button#removeFriendBtn:disabled {
+  opacity: .6;
+  cursor: default;
+}
 </style>
  </head>
 <body>
@@ -16316,12 +16459,29 @@ body.dark-mode .account-option.account-delete-option strong {
 
     <div class="sidebar-section">
 
-      <h3
-        class="sidebar-section-title"
-      >
-        Friends
-      </h3>
+      <div class="friends-tabs" id="friendsTabs" role="tablist">
 
+        <button type="button" class="friends-tab active" data-tab="friends" role="tab" aria-selected="true">
+          Friends
+          <span class="friends-tab-count" id="friendsTabFriendsCount"></span>
+          <span class="friends-tab-dot" id="friendsTabFriendsUnread"></span>
+        </button>
+
+        <button type="button" class="friends-tab" data-tab="others" role="tab" aria-selected="false">
+          Others
+          <span class="friends-tab-count" id="friendsTabOthersCount"></span>
+          <span class="friends-tab-dot" id="friendsTabOthersUnread"></span>
+        </button>
+
+      </div>
+
+      <input
+        type="search"
+        id="friendsSearch"
+        class="friends-search"
+        placeholder="Search people..."
+        autocomplete="off"
+      >
 
       <div
         id="friendsList"
@@ -17351,6 +17511,15 @@ body.dark-mode .account-option.account-delete-option strong {
       type="button"
     >
     Add Friend
+    </button>
+
+
+    <button
+      id="removeFriendBtn"
+      type="button"
+      style="display:none"
+    >
+      Remove Friend
     </button>
 
   </div>

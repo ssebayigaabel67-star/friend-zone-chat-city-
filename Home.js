@@ -214,333 +214,923 @@ async function markPrivateMessagesAsRead(friendId) {
 
 
 // ==================================================
+// FRIENDS / OTHERS
+// ==================================================
+
+let friendsTab = "friends";
+
+try {
+  if (localStorage.getItem("friendsTab") === "others") {
+    friendsTab = "others";
+  }
+} catch (e) {}
+
+let friendsSearchTerm = "";
+let usersCache = [];
+let myFriendIds = new Set();
+let mySentRequestIds = new Set();
+let myIncomingRequestIds = new Set();
+let friendsLoadError = "";
+let friendshipUnsubs = [];
+
+
+// ======================
+// SPLIT USERS INTO TABS
+// ======================
+
+function getFriendBuckets() {
+
+  const friends = [];
+  const others = [];
+
+  usersCache.forEach((entry) => {
+
+    if (myFriendIds.has(entry.id)) {
+      friends.push(entry);
+    } else if (!mySentRequestIds.has(entry.id)) {
+      // not a friend AND no request sent by me
+      others.push(entry);
+    }
+
+  });
+
+  return { friends, others };
+
+}
+
+
+// ======================
+// TAB COUNTS + UNREAD DOTS
+// ======================
+
+function updateFriendsTabInfo() {
+
+  const { friends, others } = getFriendBuckets();
+
+  const unreadSum = (list) =>
+    list.reduce(
+      (total, entry) =>
+        total + (unreadCounts[entry.id] || 0),
+      0
+    );
+
+  const setText = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+  };
+
+  const setDot = (id, value) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = value > 99 ? "99+" : value;
+    el.classList.toggle("show", value > 0);
+  };
+
+  setText("friendsTabFriendsCount", friends.length);
+  setText("friendsTabOthersCount", others.length);
+  setDot("friendsTabFriendsUnread", unreadSum(friends));
+  setDot("friendsTabOthersUnread", unreadSum(others));
+
+}
+
+
+// ======================
+// EMPTY / MESSAGE BOX
+// ======================
+
+function makeFriendsEmpty(text, actionLabel, actionFn) {
+
+  const box = document.createElement("div");
+  box.className = "friends-empty";
+
+  const p = document.createElement("div");
+  p.textContent = text;
+  box.appendChild(p);
+
+  if (actionLabel && actionFn) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "friend-quick-btn";
+    btn.style.marginTop = "10px";
+    btn.textContent = actionLabel;
+    btn.addEventListener("click", actionFn);
+    box.appendChild(btn);
+  }
+
+  return box;
+
+}
+
+
+// ======================
+// BUILD ONE ROW
+// ======================
+
+function buildFriendRow(entry) {
+
+  const userId = entry.id;
+  const friend = entry.data;
+  const isOthers = friendsTab === "others";
+  const requestedMe = myIncomingRequestIds.has(userId);
+  const unread = unreadCounts[userId] || 0;
+
+  const div = document.createElement("div");
+  div.className = "friend";
+  div.dataset.friendId = userId;
+
+  if (selectedFriendId === userId) {
+    div.classList.add("active");
+  }
+
+  div.innerHTML = `
+
+    <img
+      class="friend-profile-picture"
+      src="${friend.photoURL || "images/default-profile.png"}"
+      alt="Profile"
+    >
+
+    <span style="flex:1;">
+
+      ${escapeHTML(friend.name || friend.email || "User")}
+
+      ${friend.online ? " 🟢" : " ⚫"}
+
+      ${
+        isOthers && requestedMe
+          ? `<small style="display:block;opacity:.75;font-size:11px;">wants to be your friend</small>`
+          : ""
+      }
+
+    </span>
+
+    ${
+      unread > 0
+        ? `<span
+            class="unread-message-badge"
+            style="
+              background:red;
+              color:white;
+              border-radius:50%;
+              min-width:22px;
+              height:22px;
+              display:flex;
+              align-items:center;
+              justify-content:center;
+              font-size:12px;
+              font-weight:bold;
+              margin-left:8px;
+            "
+          >${unread}</span>`
+        : ""
+    }
+
+  `;
+
+
+  // ======================
+  // PROFILE PICTURE → POPOVER
+  // ======================
+
+  const profilePicture =
+    div.querySelector(".friend-profile-picture");
+
+  if (profilePicture) {
+    profilePicture.addEventListener("click", (event) => {
+      event.stopPropagation();
+      openUserProfilePopover(userId, friend);
+    });
+  }
+
+
+  // ======================
+  // QUICK ADD / ACCEPT (OTHERS TAB)
+  // ======================
+
+  if (isOthers) {
+
+    const quick = document.createElement("button");
+    quick.type = "button";
+    quick.className = "friend-quick-btn";
+
+    const idleLabel = requestedMe ? "✔ Accept" : "+ Add";
+    quick.textContent = idleLabel;
+
+    quick.addEventListener("click", async (event) => {
+
+      event.stopPropagation();
+
+      quick.disabled = true;
+      quick.textContent = "...";
+
+      const result = await sendFriendRequestTo(userId);
+
+      // success → the row leaves the Others tab by itself
+      if (result === "failed" || result === "pending") {
+        quick.disabled = false;
+        quick.textContent = idleLabel;
+      }
+
+    });
+
+    div.appendChild(quick);
+
+  }
+
+
+  // ======================
+  // OPEN CHAT
+  // ======================
+
+  div.addEventListener("click", async () => {
+
+    selectedFriendId = userId;
+    window.selectedFriendId = selectedFriendId;
+    selectedGroupId = "";
+    isGroupChat = false;
+
+    await markPrivateMessagesAsRead(userId);
+
+    const badge = div.querySelector(".unread-message-badge");
+    if (badge) badge.remove();
+
+    unreadCounts[userId] = 0;
+    updateFriendsTabInfo();
+
+    document.querySelectorAll(".friend").forEach((item) => {
+      item.classList.remove("active");
+    });
+
+    div.classList.add("active");
+
+    const title = document.querySelector(".header h3");
+
+    if (title) {
+      title.textContent =
+        friend.name || friend.email || "Friend";
+    }
+
+    loadMessages();
+
+  });
+
+  return div;
+
+}
+
+
+// ======================
+// RENDER THE LIST
+// ======================
+
+function renderFriendsList() {
+
+  const list = document.getElementById("friendsList");
+
+  if (!list || !auth.currentUser) {
+    return;
+  }
+
+  updateFriendsTabInfo();
+
+  document.querySelectorAll(".friends-tab").forEach((btn) => {
+    const on = btn.dataset.tab === friendsTab;
+    btn.classList.toggle("active", on);
+    btn.setAttribute("aria-selected", on ? "true" : "false");
+  });
+
+  list.innerHTML = "";
+
+  if (friendsLoadError) {
+    list.appendChild(makeFriendsEmpty(friendsLoadError));
+    return;
+  }
+
+  const buckets = getFriendBuckets();
+  const term = friendsSearchTerm.trim().toLowerCase();
+
+  let users =
+    friendsTab === "others"
+      ? buckets.others
+      : buckets.friends;
+
+  if (term) {
+    users = users.filter((entry) =>
+      [entry.data.name, entry.data.username, entry.data.email]
+        .some((v) => String(v || "").toLowerCase().includes(term))
+    );
+  }
+
+  // online first, then A → Z
+  users = users.slice().sort((a, b) => {
+
+    if (!!a.data.online !== !!b.data.online) {
+      return a.data.online ? -1 : 1;
+    }
+
+    return String(a.data.name || a.data.email || "")
+      .localeCompare(String(b.data.name || b.data.email || ""));
+
+  });
+
+  if (!users.length) {
+
+    if (term) {
+      list.appendChild(makeFriendsEmpty("No one matches your search."));
+    } else if (friendsTab === "others") {
+      list.appendChild(makeFriendsEmpty("No new people to add right now."));
+    } else {
+      list.appendChild(
+        makeFriendsEmpty(
+          "You have no friends yet.",
+          "Find people",
+          () => setFriendsTab("others")
+        )
+      );
+    }
+
+    return;
+
+  }
+
+  users.forEach((entry) => {
+    list.appendChild(buildFriendRow(entry));
+  });
+
+}
+
+
+// ======================
+// TAB SWITCHING + SEARCH
+// ======================
+
+function setFriendsTab(tab) {
+
+  friendsTab = tab === "others" ? "others" : "friends";
+
+  try {
+    localStorage.setItem("friendsTab", friendsTab);
+  } catch (e) {}
+
+  renderFriendsList();
+
+}
+
+document.querySelectorAll(".friends-tab").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    setFriendsTab(btn.dataset.tab);
+  });
+});
+
+const friendsSearchInput =
+  document.getElementById("friendsSearch");
+
+if (friendsSearchInput) {
+  friendsSearchInput.addEventListener("input", () => {
+    friendsSearchTerm = friendsSearchInput.value;
+    renderFriendsList();
+  });
+}
+
+
+// ======================
+// POPOVER BUTTON STATE
+// ======================
+
+function applyPopoverFriendState(userId) {
+
+  const addBtn = document.getElementById("addFriendBtn");
+  const removeBtn = document.getElementById("removeFriendBtn");
+
+  if (!addBtn) return;
+
+  const show = (el, on) => {
+    if (el) el.style.display = on ? "" : "none";
+  };
+
+  const me = auth.currentUser;
+
+  if (!me || !userId || userId === me.uid) {
+    show(addBtn, false);
+    show(removeBtn, false);
+    return;
+  }
+
+  if (myFriendIds.has(userId)) {
+
+    show(addBtn, false);
+    show(removeBtn, true);
+
+    if (removeBtn) {
+      removeBtn.disabled = false;
+      removeBtn.textContent = "Remove Friend";
+    }
+
+    return;
+
+  }
+
+  show(removeBtn, false);
+  show(addBtn, true);
+
+  if (mySentRequestIds.has(userId)) {
+    addBtn.textContent = "⏳ Request Sent";
+    addBtn.disabled = true;
+  } else if (myIncomingRequestIds.has(userId)) {
+    addBtn.textContent = "✔ Accept Request";
+    addBtn.disabled = false;
+  } else {
+    addBtn.textContent = "Add Friend";
+    addBtn.disabled = false;
+  }
+
+}
+
+// called when the popover opens: show cached state instantly,
+// then double-check with the database
+async function refreshPopoverFriendButtons(userId) {
+
+  applyPopoverFriendState(userId);
+
+  const me = auth.currentUser;
+
+  if (!me || !userId || userId === me.uid) return;
+
+  try {
+
+    const [friendSnap, sentSnap, incomingSnap] =
+      await Promise.all([
+        getDoc(doc(db, "users", me.uid, "friends", userId)),
+        getDoc(doc(db, "friendRequests", me.uid + "_" + userId)),
+        getDoc(doc(db, "friendRequests", userId + "_" + me.uid))
+          .catch(() => null)
+      ]);
+
+    const isFriend = friendSnap.exists();
+
+    const sentPending =
+      sentSnap.exists() &&
+      sentSnap.data().status === "pending";
+
+    const incomingPending =
+      !!incomingSnap &&
+      incomingSnap.exists() &&
+      incomingSnap.data().status === "pending";
+
+    const changed =
+      isFriend !== myFriendIds.has(userId) ||
+      sentPending !== mySentRequestIds.has(userId) ||
+      incomingPending !== myIncomingRequestIds.has(userId);
+
+    if (isFriend) myFriendIds.add(userId);
+    else myFriendIds.delete(userId);
+
+    if (sentPending) mySentRequestIds.add(userId);
+    else mySentRequestIds.delete(userId);
+
+    if (incomingPending) myIncomingRequestIds.add(userId);
+    else myIncomingRequestIds.delete(userId);
+
+    if (changed) {
+      onRelationshipsChanged();
+    } else if (window.selectedProfileUserId === userId) {
+      applyPopoverFriendState(userId);
+    }
+
+  } catch (error) {
+    console.warn("Popover friend check failed:", error);
+  }
+
+}
+
+function onRelationshipsChanged() {
+
+  renderFriendsList();
+
+  const popover =
+    document.getElementById("userProfilePopover");
+
+  if (
+    popover &&
+    popover.classList.contains("show") &&
+    window.selectedProfileUserId
+  ) {
+    applyPopoverFriendState(window.selectedProfileUserId);
+  }
+
+}
+
+
+// ======================
+// SEND REQUEST (shared by popover + quick add)
+// returns: "sent" | "accepted" | "pending" | "failed"
+// ======================
+
+async function sendFriendRequestTo(targetUserId) {
+
+  const me = auth.currentUser;
+
+  if (!me) {
+    alert("Please log in first.");
+    return "failed";
+  }
+
+  if (!targetUserId) {
+    alert("User not found.");
+    return "failed";
+  }
+
+  if (targetUserId === me.uid) {
+    alert("You cannot add yourself.");
+    return "failed";
+  }
+
+  if (myFriendIds.has(targetUserId)) {
+    alert("You are already friends.");
+    return "failed";
+  }
+
+  try {
+
+    const requestRef =
+      doc(db, "friendRequests", me.uid + "_" + targetUserId);
+
+    const reverseId = targetUserId + "_" + me.uid;
+
+    const [mySnap, theirSnap] = await Promise.all([
+      getDoc(requestRef),
+      getDoc(doc(db, "friendRequests", reverseId))
+        .catch(() => null)
+    ]);
+
+    // they already asked me → just accept it
+    if (
+      theirSnap &&
+      theirSnap.exists() &&
+      theirSnap.data().status === "pending"
+    ) {
+
+      const ok =
+        await acceptFriendRequest(
+          reverseId,
+          theirSnap.data()
+        );
+
+      return ok ? "accepted" : "failed";
+
+    }
+
+    // I already asked
+    if (
+      mySnap.exists() &&
+      mySnap.data().status === "pending"
+    ) {
+
+      mySentRequestIds.add(targetUserId);
+      onRelationshipsChanged();
+
+      alert("Friend request already sent.");
+
+      return "pending";
+
+    }
+
+    // new request (also replaces an old accepted/stale one)
+    await setDoc(requestRef, {
+      senderId: me.uid,
+      receiverId: targetUserId,
+      status: "pending",
+      timestamp: serverTimestamp()
+    });
+
+    mySentRequestIds.add(targetUserId);
+    onRelationshipsChanged();
+
+    return "sent";
+
+  } catch (error) {
+
+    console.error("Friend request error:", error);
+
+    alert(
+      "Could not send friend request: " +
+      error.message
+    );
+
+    return "failed";
+
+  }
+
+}
+
+
+// ======================
+// REMOVE FRIEND
+// ======================
+
+async function removeFriend(targetUserId, displayName) {
+
+  const me = auth.currentUser;
+
+  if (!me || !targetUserId) return false;
+
+  if (
+    !confirm(
+      "Remove " +
+      (displayName || "this user") +
+      " from your friends?"
+    )
+  ) {
+    return false;
+  }
+
+  try {
+
+    // 1) delete both friend links
+    const links = await Promise.allSettled([
+      deleteDoc(doc(db, "users", me.uid, "friends", targetUserId)),
+      deleteDoc(doc(db, "users", targetUserId, "friends", me.uid))
+    ]);
+
+    if (links[0].status === "rejected") {
+      throw links[0].reason;
+    }
+
+    // 2) lower friend counts (only where the link was deleted)
+    const counts = [
+      updateDoc(doc(db, "users", me.uid), {
+        friendsCount: increment(-1)
+      })
+    ];
+
+    if (links[1].status === "fulfilled") {
+      counts.push(
+        updateDoc(doc(db, "users", targetUserId), {
+          friendsCount: increment(-1)
+        })
+      );
+    } else {
+      console.warn("Could not remove their side of the link:", links[1].reason);
+    }
+
+    // 3) delete old requests so you can add each other again later
+    const cleanup = await Promise.allSettled([
+      ...counts,
+      deleteDoc(doc(db, "friendRequests", me.uid + "_" + targetUserId)),
+      deleteDoc(doc(db, "friendRequests", targetUserId + "_" + me.uid))
+    ]);
+
+    cleanup.forEach((r) => {
+      if (r.status === "rejected") {
+        console.warn("Remove friend cleanup step failed:", r.reason);
+      }
+    });
+
+    myFriendIds.delete(targetUserId);
+    mySentRequestIds.delete(targetUserId);
+    myIncomingRequestIds.delete(targetUserId);
+
+    const popover =
+      document.getElementById("userProfilePopover");
+
+    if (popover) popover.classList.remove("show");
+
+    onRelationshipsChanged();
+
+    return true;
+
+  } catch (error) {
+
+    console.error("Remove friend error:", error);
+
+    alert(
+      "Could not remove friend: " +
+      error.message
+    );
+
+    return false;
+
+  }
+
+}
+
+
+// ======================
+// LIVE UPDATES
+// (friend accepted you, request arrived, etc.)
+// ======================
+
+function stopFriendshipListeners() {
+
+  friendshipUnsubs.forEach((unsub) => {
+    if (typeof unsub === "function") unsub();
+  });
+
+  friendshipUnsubs = [];
+
+}
+
+function startFriendshipListeners() {
+
+  stopFriendshipListeners();
+
+  if (!auth.currentUser) return;
+
+  const myUid = auth.currentUser.uid;
+
+  friendshipUnsubs.push(
+    onSnapshot(
+      collection(db, "users", myUid, "friends"),
+      (snap) => {
+        myFriendIds = new Set(snap.docs.map((d) => d.id));
+        onRelationshipsChanged();
+      },
+      (error) => console.error("Friends listener error:", error)
+    )
+  );
+
+  friendshipUnsubs.push(
+    onSnapshot(
+      query(
+        collection(db, "friendRequests"),
+        where("senderId", "==", myUid),
+        where("status", "==", "pending")
+      ),
+      (snap) => {
+        mySentRequestIds = new Set(
+          snap.docs.map((d) => d.data().receiverId)
+        );
+        onRelationshipsChanged();
+      },
+      (error) => console.warn("Sent requests listener error:", error)
+    )
+  );
+
+  friendshipUnsubs.push(
+    onSnapshot(
+      query(
+        collection(db, "friendRequests"),
+        where("receiverId", "==", myUid),
+        where("status", "==", "pending")
+      ),
+      (snap) => {
+        myIncomingRequestIds = new Set(
+          snap.docs.map((d) => d.data().senderId)
+        );
+        onRelationshipsChanged();
+      },
+      (error) => console.warn("Incoming requests listener error:", error)
+    )
+  );
+
+}
+
+
+// ======================
+// FIRST LOAD OF RELATIONSHIPS
+// ======================
+
+async function fetchRelationships() {
+
+  const myUid = auth.currentUser.uid;
+
+  // my friends
+  try {
+
+    const friendsSnap =
+      await getDocs(collection(db, "users", myUid, "friends"));
+
+    myFriendIds = new Set(friendsSnap.docs.map((d) => d.id));
+
+  } catch (error) {
+
+    console.error("Could not read friends list:", error);
+
+    myFriendIds = new Set();
+
+    friendsLoadError =
+      "Could not load your friends (permission error — check the console).";
+
+  }
+
+  // requests I sent
+  try {
+
+    const sentSnap = await getDocs(
+      query(
+        collection(db, "friendRequests"),
+        where("senderId", "==", myUid),
+        where("status", "==", "pending")
+      )
+    );
+
+    mySentRequestIds = new Set(
+      sentSnap.docs.map((d) => d.data().receiverId)
+    );
+
+  } catch (error) {
+
+    // fallback: check each person one by one
+    console.warn("Sent-requests query blocked, using fallback:", error);
+
+    const candidates = usersCache.filter(
+      (entry) => !myFriendIds.has(entry.id)
+    );
+
+    const snaps = await Promise.all(
+      candidates.map((entry) =>
+        getDoc(doc(db, "friendRequests", myUid + "_" + entry.id))
+          .catch(() => null)
+      )
+    );
+
+    mySentRequestIds = new Set();
+
+    snaps.forEach((snap, i) => {
+      if (snap && snap.exists() && snap.data().status === "pending") {
+        mySentRequestIds.add(candidates[i].id);
+      }
+    });
+
+  }
+
+  // requests sent to me
+  try {
+
+    const incomingSnap = await getDocs(
+      query(
+        collection(db, "friendRequests"),
+        where("receiverId", "==", myUid),
+        where("status", "==", "pending")
+      )
+    );
+
+    myIncomingRequestIds = new Set(
+      incomingSnap.docs.map((d) => d.data().senderId)
+    );
+
+  } catch (error) {
+
+    console.warn("Incoming requests query failed:", error);
+
+    myIncomingRequestIds = new Set();
+
+  }
+
+}
+
+
+// ==================================================
 // LOAD FRIENDS
 // ==================================================
 
 async function loadFriends() {
 
-  const list =
-    document.getElementById(
-      "friendsList"
-    );
+  const list = document.getElementById("friendsList");
 
-
-  if (
-    !list ||
-    !auth.currentUser
-  ) {
+  if (!list || !auth.currentUser) {
     return;
   }
 
-
-  // ======================
-  // CLEAR FRIEND LIST
-  // ======================
+  const myUid = auth.currentUser.uid;
 
   list.innerHTML = "";
-
+  list.appendChild(makeFriendsEmpty("Loading..."));
 
   try {
 
-    console.log("FRIENDS TEST: starting users read");
+    const snapshot =
+      await getDocs(collection(db, "users"));
 
-const snapshot =
-  await getDocs(
-    collection(
-      db,
-      "users"
-    )
-  );
+    usersCache = [];
 
-console.log(
-  "FRIENDS TEST: users read successfully:",
-  snapshot.size
-);
+    snapshot.forEach((userDoc) => {
 
+      // don't show yourself
+      if (userDoc.id === myUid) return;
 
-    snapshot.forEach(
-      (userDoc) => {
+      usersCache.push({
+        id: userDoc.id,
+        data: userDoc.data()
+      });
 
-        // ======================
-        // DON'T SHOW YOURSELF
-        // ======================
+    });
 
-        if (
-          userDoc.id ===
-          auth.currentUser.uid
-        ) {
+    friendsLoadError = "";
 
-          return;
+    await fetchRelationships();
 
-        }
+    renderFriendsList();
 
-
-        const friend =
-          userDoc.data();
-
-
-        // ======================
-        // FRIEND ROW
-        // ======================
-
-        const div =
-          document.createElement(
-            "div"
-          );
-
-
-        div.className =
-          "friend";
-
-
-        // ======================
-        // FRIEND ID
-        // ======================
-
-        div.dataset.friendId =
-          userDoc.id;
-
-
-        // ======================
-        // ACTIVE FRIEND
-        // ======================
-
-        if (
-          selectedFriendId ===
-          userDoc.id
-        ) {
-
-          div.classList.add(
-            "active"
-          );
-
-        }
-
-        // ======================
-        // FRIEND HTML
-        // ======================
-
-        div.innerHTML = `
-
-          <img
-            class="friend-profile-picture"
-            src="${
-              friend.photoURL ||
-              "images/default-profile.png"
-            }"
-            alt="Profile"
-          >
-
-          <span style="
-            flex:1;
-          ">
-
-            ${escapeHTML(
-              friend.name ||
-              friend.email ||
-              "User"
-            )}
-
-            ${
-              friend.online
-                ? " 🟢"
-                : " ⚫"
-            }
-
-          </span>
-
-          ${
-            unreadCounts[userDoc.id] > 0
-              ? `
-
-                <span
-                  class="unread-message-badge"
-                  style="
-                    background:red;
-                    color:white;
-                    border-radius:50%;
-                    min-width:22px;
-                    height:22px;
-                    display:flex;
-                    align-items:center;
-                    justify-content:center;
-                    font-size:12px;
-                    font-weight:bold;
-                    margin-left:8px;
-                  "
-                >
-
-                  ${unreadCounts[userDoc.id]}
-
-                </span>
-
-              `
-              : ""
-          }
-
-        `;
-
-
-        // ======================
-        // PROFILE PICTURE
-        // ======================
-
-        const profilePicture =
-          div.querySelector(
-            ".friend-profile-picture"
-          );
-
-
-        if (profilePicture) {
-
-          profilePicture.addEventListener(
-            "click",
-            (event) => {
-
-              event.stopPropagation();
-
-
-              openUserProfilePopover(
-                userDoc.id,
-                friend
-              );
-
-            }
-          );
-
-        }
-
-
-        // ======================
-        // OPEN CHAT
-        // ======================
-
-        div.addEventListener(
-          "click",
-          async () => {
-
-            // ======================
-            // SET SELECTED FRIEND
-            // ======================
-
-            selectedFriendId =
-              userDoc.id;
-
-
-            window.selectedFriendId =
-              selectedFriendId;
-
-
-            selectedGroupId =
-              "";
-
-
-            isGroupChat =
-              false;
-
-
-            // ======================
-            // MARK MESSAGES AS READ
-            // ======================
-
-            await markPrivateMessagesAsRead(
-              userDoc.id
-            );
-
-
-            // ======================
-            // REMOVE BADGE
-            // ======================
-
-            const badge =
-              div.querySelector(
-                ".unread-message-badge"
-              );
-
-
-            if (badge) {
-
-              badge.remove();
-
-            }
-
-
-            // ======================
-            // REMOVE OLD ACTIVE
-            // ======================
-
-            document
-              .querySelectorAll(
-                ".friend"
-              )
-              .forEach(
-                item => {
-
-                  item.classList.remove(
-                    "active"
-                  );
-
-                }
-              );
-
-
-            // ======================
-            // MAKE THIS FRIEND ACTIVE
-            // ======================
-
-            div.classList.add(
-              "active"
-            );
-
-
-            // ======================
-            // UPDATE CHAT TITLE
-            // ======================
-
-            const title =
-              document.querySelector(
-                ".header h3"
-              );
-
-
-            if (title) {
-
-              title.textContent =
-                friend.name ||
-                friend.email ||
-                "Friend";
-
-            }
-
-
-            // ======================
-            // LOAD MESSAGES
-            // ======================
-
-            loadMessages();
-
-          }
-        );
-
-
-        // ======================
-        // ADD FRIEND TO LIST
-        // ======================
-
-        list.appendChild(
-          div
-        );
-
-      }
-    );
-
+    startFriendshipListeners();
 
   } catch (error) {
 
-    console.error(
-      "Load friends error:",
-      error
-    );
+    console.error("Load friends error:", error);
+
+    friendsLoadError = "Could not load users. Please refresh.";
+
+    renderFriendsList();
 
   }
 
@@ -717,6 +1307,9 @@ function startUnreadMessageListeners() {
                     messagesSnapshot.size;
 
                 }
+
+
+                updateFriendsTabInfo();
 
 
                 // ======================
@@ -1106,6 +1699,13 @@ function openUserProfilePopover(
 
 
   // ======================
+  // FRIEND / REMOVE BUTTON STATE
+  // ======================
+
+  refreshPopoverFriendButtons(userId);
+
+
+  // ======================
   // SHOW POPOVER
   // ======================
 
@@ -1388,171 +1988,54 @@ if (userProfilePopover) {
 
 }
 // ==================================================
-// SEND FRIEND REQUEST
+// POPOVER BUTTONS: ADD / ACCEPT / REMOVE FRIEND
 // ==================================================
 
 const addFriendBtn =
-  document.getElementById(
-    "addFriendBtn"
-  );
+  document.getElementById("addFriendBtn");
 
 if (addFriendBtn) {
 
-  addFriendBtn.addEventListener(
-    "click",
-    async () => {
+  addFriendBtn.addEventListener("click", async () => {
 
-      // ======================
-      // CHECK LOGIN
-      // ======================
+    const targetUserId = window.selectedProfileUserId;
 
-      if (!auth.currentUser) {
+    addFriendBtn.disabled = true;
 
-        alert(
-          "Please log in first."
-        );
+    const result = await sendFriendRequestTo(targetUserId);
 
-        return;
-
-      }
-
-
-      // ======================
-      // GET TARGET USER
-      // ======================
-
-      const targetUserId =
-        window.selectedProfileUserId;
-
-
-      if (!targetUserId) {
-
-        alert(
-          "User not found."
-        );
-
-        return;
-
-      }
-
-
-      // ======================
-      // DON'T ADD YOURSELF
-      // ======================
-
-      if (
-        targetUserId ===
-        auth.currentUser.uid
-      ) {
-
-        alert(
-          "You cannot add yourself."
-        );
-
-        return;
-
-      }
-
-
-      try {
-
-        // ======================
-        // CREATE REQUEST ID
-        // ======================
-
-        const requestId =
-          auth.currentUser.uid +
-          "_" +
-          targetUserId;
-
-
-        const requestRef =
-          doc(
-            db,
-            "friendRequests",
-            requestId
-          );
-
-
-        // ======================
-        // CHECK EXISTING REQUEST
-        // ======================
-
-        const requestSnap =
-          await getDoc(
-            requestRef
-          );
-
-
-        if (
-          requestSnap.exists()
-        ) {
-
-          alert(
-            "Friend request already sent."
-          );
-
-          return;
-
-        }
-
-
-        // ======================
-        // SAVE FRIEND REQUEST
-        // ======================
-
-        await setDoc(
-          requestRef,
-          {
-
-            senderId:
-              auth.currentUser.uid,
-
-            receiverId:
-              targetUserId,
-
-            status:
-              "pending",
-
-            timestamp:
-              serverTimestamp()
-
-          }
-        );
-
-
-        // ======================
-        // CHANGE BUTTON
-        // ======================
-
-        addFriendBtn.textContent =
-          "⏳ Request Sent";
-
-        addFriendBtn.disabled =
-          true;
-
-
-        alert(
-          "Friend request sent!"
-        );
-
-
-      } catch (error) {
-
-        console.error(
-          "Friend request error:",
-          error
-        );
-
-        alert(
-          "Could not send friend request: " +
-          error.message
-        );
-
-      }
-
+    if (result === "sent") {
+      alert("Friend request sent!");
     }
-  );
+
+    applyPopoverFriendState(targetUserId);
+
+  });
+
+}
+
+const removeFriendBtn =
+  document.getElementById("removeFriendBtn");
+
+if (removeFriendBtn) {
+
+  removeFriendBtn.addEventListener("click", async () => {
+
+    const targetUserId = window.selectedProfileUserId;
+    const targetData = window.selectedProfileUserData || {};
+
+    removeFriendBtn.disabled = true;
+
+    const done = await removeFriend(
+      targetUserId,
+      targetData.name || targetData.email
+    );
+
+    if (!done) {
+      applyPopoverFriendState(targetUserId);
+    }
+
+  });
 
 }
 // ======================
@@ -1886,9 +2369,16 @@ async function acceptFriendRequest(
     loadFriendRequests();
 
 
+    myFriendIds.add(senderId);
+    myIncomingRequestIds.delete(senderId);
+    onRelationshipsChanged();
+
+
     alert(
       "Friend request accepted!"
     );
+
+    return true;
 
 
   } catch (error) {
@@ -1901,6 +2391,8 @@ async function acceptFriendRequest(
     alert(
       "Could not accept friend request."
     );
+
+    return false;
 
   }
 
