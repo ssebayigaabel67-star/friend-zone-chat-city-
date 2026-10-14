@@ -15594,6 +15594,50 @@ body.dark-mode .account-option.account-delete-option strong {
   opacity: .6;
   cursor: default;
 }
+
+/* ==================================================
+   LINKS IN MESSAGES + IMAGE ZOOM
+================================================== */
+
+.chat-link {
+  color: inherit;
+  text-decoration: underline;
+  word-break: break-all;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.chat-link:hover {
+  opacity: .8;
+}
+
+.message img:not([class*="profile"]):not([class*="avatar"]),
+.chat-message-image,
+.announcement-item-image,
+.news-item-image {
+  cursor: zoom-in;
+}
+
+.news-item-image {
+  max-width: 100%;
+  border-radius: 12px;
+}
+
+/* photo viewer always on top (above announcement + news windows) */
+.photo-viewer {
+  z-index: 2147483000 !important;
+}
+
+#photoViewerImage {
+  max-width: 100%;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+.close-photo-viewer {
+  z-index: 2147483001;
+}
 </style>
  </head>
 <body>
@@ -16305,7 +16349,8 @@ body.dark-mode .account-option.account-delete-option strong {
       type="text"
       placeholder="Announcement title"
       maxlength="100"
-    >
+  autocomplete="off"
+>
 
 
     <!-- MESSAGE -->
@@ -16655,11 +16700,19 @@ body.dark-mode .account-option.account-delete-option strong {
     <div class="bottom">
 <input
   id="messageInput"
+  name="fz_chat_message"
   type="text"
   placeholder="Type your message..."
   autocomplete="off"
+  autocorrect="on"
   autocapitalize="sentences"
   spellcheck="true"
+  enterkeyhint="send"
+  aria-autocomplete="none"
+  data-lpignore="true"
+  data-1p-ignore="true"
+  data-bwignore="true"
+  data-form-type="other"
 >
       <!-- CHAT IMAGE -->
 
@@ -16946,7 +16999,8 @@ body.dark-mode .account-option.account-delete-option strong {
       type="text"
       id="editProfileUsername"
       placeholder="Username"
-    >
+  autocomplete="off"
+>
 
 
     <label>
@@ -16957,7 +17011,8 @@ body.dark-mode .account-option.account-delete-option strong {
       type="text"
       id="editProfileName"
       placeholder="Your name"
-    >
+  autocomplete="off"
+>
 
 
     <label>
@@ -16978,7 +17033,8 @@ body.dark-mode .account-option.account-delete-option strong {
       type="text"
       id="editProfileNationality"
       placeholder="Nationality"
-    >
+  autocomplete="off"
+>
 
 
     <label>
@@ -17012,7 +17068,8 @@ body.dark-mode .account-option.account-delete-option strong {
       type="tel"
       id="editProfilePhone"
       placeholder="Phone number"
-    >
+  autocomplete="off"
+>
 
 
     <div class="edit-profile-buttons">
@@ -18151,12 +18208,14 @@ body.dark-mode .account-option.account-delete-option strong {
       Create a new password for your account
     </p>
 
-    <div class="edit-account-form">
+    <form class="edit-account-form" autocomplete="off" onsubmit="return false;">
 
       <label>New Password</label>
       <input
         type="password"
         id="newPasswordInput"
+        name="fz_new_password"
+        autocomplete="new-password"
         placeholder="Enter new password"
       >
 
@@ -18164,6 +18223,8 @@ body.dark-mode .account-option.account-delete-option strong {
       <input
         type="password"
         id="confirmPasswordInput"
+        name="fz_confirm_password"
+        autocomplete="new-password"
         placeholder="Confirm new password"
       >
 
@@ -18175,7 +18236,7 @@ body.dark-mode .account-option.account-delete-option strong {
         <svg class="fz-icon" aria-hidden="true"><use href="#icon-key"></use></svg> Change Password
       </button>
 
-    </div>
+    </form>
 
   </div>
 
@@ -18213,7 +18274,8 @@ body.dark-mode .account-option.account-delete-option strong {
         type="email"
         id="newEmailInput"
         placeholder="Enter your new email"
-      >
+  autocomplete="off"
+>
 
       <button
         id="saveNewEmailBtn"
@@ -18283,14 +18345,16 @@ body.dark-mode .account-option.account-delete-option strong {
         type="text"
         id="editAccountName"
         placeholder="Enter your name"
-      >
+  autocomplete="off"
+>
 
       <label>Username</label>
       <input
         type="text"
         id="editAccountUsername"
         placeholder="Enter your username"
-      >
+  autocomplete="off"
+>
 
       <label>Age</label>
       <input
@@ -18299,14 +18363,16 @@ body.dark-mode .account-option.account-delete-option strong {
         placeholder="Enter your age"
         min="1"
         max="120"
-      >
+  autocomplete="off"
+>
 
       <label>Nationality</label>
       <input
         type="text"
         id="editAccountNationality"
         placeholder="Enter your nationality"
-      >
+  autocomplete="off"
+>
 
       <button
         id="saveAccountChangesBtn"

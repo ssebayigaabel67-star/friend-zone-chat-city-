@@ -102,6 +102,105 @@ document.createElement("div");
   div.textContent =
     String(text);
   return div.innerHTML;}
+
+// ==================================================
+// LINKS: make typed links clickable (safe)
+// ==================================================
+function linkifyHTML(text) {
+
+  const safe =
+    escapeHTML(text)
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+
+  return safe.replace(
+    /\b((?:https?:\/\/|www\.)[^\s<]+)/gi,
+    (match) => {
+
+      let url = match;
+      let trail = "";
+      let changed = true;
+
+      // keep sentence punctuation outside the link
+      while (changed) {
+
+        changed = false;
+
+        const t = url.match(
+          /(&quot;|&#39;|&gt;|[.,!?;:)\]}])$/
+        );
+
+        if (t) {
+          trail = t[1] + trail;
+          url = url.slice(0, -t[1].length);
+          changed = true;
+        }
+
+      }
+
+      if (!/^(https?:\/\/|www\.)\S+/i.test(url)) {
+        return match;
+      }
+
+      const href =
+        /^www\./i.test(url)
+          ? "https://" + url
+          : url;
+
+      return (
+        '<a href="' + href + '" target="_blank" ' +
+        'rel="noopener noreferrer nofollow" ' +
+        'class="chat-link">' + url + "</a>" + trail
+      );
+
+    }
+  );
+
+}
+
+// ==================================================
+// IMAGES: click any sent image to enlarge it
+// ==================================================
+document.addEventListener("click", (event) => {
+
+  const target = event.target;
+
+  if (!target || !target.closest) return;
+
+  const img = target.closest("img");
+
+  if (!img || img.closest("#photoViewer")) return;
+
+  const isAvatar =
+    img.matches('[class*="profile"], [class*="avatar"], .fz-icon');
+
+  const zoomable =
+    img.matches(
+      ".chat-message-image, .announcement-item-image, .news-item-image, .zoomable-image"
+    ) ||
+    (!!img.closest(".message") && !isAvatar);
+
+  if (!zoomable || !img.src) return;
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  openPhotoViewer(img.currentSrc || img.src);
+
+});
+
+document.addEventListener("keydown", (event) => {
+
+  if (event.key !== "Escape") return;
+
+  const viewer = document.getElementById("photoViewer");
+
+  if (viewer && viewer.classList.contains("show")) {
+    closePhoto();
+  }
+
+});
+
 // ==================================================
 // MARK PRIVATE MESSAGES AS READ
 // ==================================================
@@ -231,6 +330,7 @@ let myFriendIds = new Set();
 let mySentRequestIds = new Set();
 let myIncomingRequestIds = new Set();
 let friendsLoadError = "";
+let friendsSetReady = false;
 let friendshipUnsubs = [];
 
 
@@ -247,8 +347,8 @@ function getFriendBuckets() {
 
     if (myFriendIds.has(entry.id)) {
       friends.push(entry);
-    } else if (!mySentRequestIds.has(entry.id)) {
-      // not a friend AND no request sent by me
+    } else {
+      // everyone who is not a friend yet (including pending requests)
       others.push(entry);
     }
 
@@ -357,9 +457,11 @@ function buildFriendRow(entry) {
       ${friend.online ? " 🟢" : " ⚫"}
 
       ${
-        isOthers && requestedMe
-          ? `<small style="display:block;opacity:.75;font-size:11px;">wants to be your friend</small>`
-          : ""
+        isOthers && mySentRequestIds.has(userId)
+          ? `<small style="display:block;opacity:.75;font-size:11px;">request sent • waiting for them</small>`
+          : isOthers && requestedMe
+            ? `<small style="display:block;opacity:.75;font-size:11px;">wants to be your friend</small>`
+            : ""
       }
 
     </span>
@@ -413,8 +515,20 @@ function buildFriendRow(entry) {
     quick.type = "button";
     quick.className = "friend-quick-btn";
 
-    const idleLabel = requestedMe ? "✔ Accept" : "+ Add";
+    const alreadySent = mySentRequestIds.has(userId);
+
+    const idleLabel =
+      alreadySent
+        ? "⏳ Sent"
+        : requestedMe
+          ? "✔ Accept"
+          : "+ Add";
+
     quick.textContent = idleLabel;
+
+    if (alreadySent) {
+      quick.disabled = true;
+    }
 
     quick.addEventListener("click", async (event) => {
 
@@ -427,8 +541,8 @@ function buildFriendRow(entry) {
 
       // success → the row leaves the Others tab by itself
       if (result === "failed" || result === "pending") {
-        quick.disabled = false;
-        quick.textContent = idleLabel;
+        quick.disabled = result === "pending";
+        quick.textContent = result === "pending" ? "⏳ Sent" : idleLabel;
       }
 
     });
@@ -706,6 +820,7 @@ async function refreshPopoverFriendButtons(userId) {
 function onRelationshipsChanged() {
 
   renderFriendsList();
+  updateOwnFriendCountUI();
 
   const popover =
     document.getElementById("userProfilePopover");
@@ -943,6 +1058,7 @@ function startFriendshipListeners() {
       collection(db, "users", myUid, "friends"),
       (snap) => {
         myFriendIds = new Set(snap.docs.map((d) => d.id));
+        friendsSetReady = true;
         onRelationshipsChanged();
       },
       (error) => console.error("Friends listener error:", error)
@@ -1001,6 +1117,7 @@ async function fetchRelationships() {
       await getDocs(collection(db, "users", myUid, "friends"));
 
     myFriendIds = new Set(friendsSnap.docs.map((d) => d.id));
+    friendsSetReady = true;
 
   } catch (error) {
 
@@ -1133,6 +1250,348 @@ async function loadFriends() {
     renderFriendsList();
 
   }
+
+}
+
+
+
+// ==================================================
+// REAL FRIENDS COUNT
+// ==================================================
+
+async function getRealFriendsCount(uid, fallback) {
+
+  try {
+
+    if (
+      auth.currentUser &&
+      uid === auth.currentUser.uid &&
+      friendsSetReady
+    ) {
+      return myFriendIds.size;
+    }
+
+    const snap =
+      await getDocs(collection(db, "users", uid, "friends"));
+
+    return snap.size;
+
+  } catch (error) {
+
+    console.warn("Could not count friends:", error);
+
+    return fallback || 0;
+
+  }
+
+}
+
+function updateOwnFriendCountUI() {
+
+  if (!friendsSetReady) return;
+
+  ["myProfileFriends", "accountInfoFriends"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = myFriendIds.size;
+  });
+
+}
+
+
+// ==================================================
+// PROFILE POPOVER: "SETTINGS" + "MESSAGE" BUTTONS
+// ==================================================
+
+const profileSettingsBtnEl =
+  document.getElementById("profileSettingsBtn");
+
+if (profileSettingsBtnEl) {
+
+  profileSettingsBtnEl.addEventListener("click", () => {
+
+    const settings = document.getElementById("settingsPopover");
+
+    if (!settings) return;
+
+    const profile = document.querySelector(".profile-popover.show");
+
+    if (profile) profile.classList.remove("show");
+
+    settings.classList.add("show");
+
+  });
+
+}
+
+const messageUserBtnEl =
+  document.getElementById("messageUserBtn");
+
+if (messageUserBtnEl) {
+
+  messageUserBtnEl.addEventListener("click", async () => {
+
+    if (!auth.currentUser) {
+      alert("Please log in first.");
+      return;
+    }
+
+    const uid = window.selectedProfileUserId;
+    const data = window.selectedProfileUserData || {};
+
+    if (!uid || uid === auth.currentUser.uid) return;
+
+    selectedFriendId = uid;
+    window.selectedFriendId = uid;
+    selectedGroupId = "";
+    isGroupChat = false;
+
+    try {
+      await markPrivateMessagesAsRead(uid);
+    } catch (error) {
+      console.warn("Could not mark messages as read:", error);
+    }
+
+    unreadCounts[uid] = 0;
+
+    const title = document.querySelector(".header h3");
+
+    if (title) {
+      title.textContent = data.name || data.email || "Chat";
+    }
+
+    const popover = document.getElementById("userProfilePopover");
+
+    if (popover) popover.classList.remove("show");
+
+    renderFriendsList();
+    loadMessages();
+
+  });
+
+}
+
+
+// ==================================================
+// PRIVACY PANELS: LAST SEEN, CALL PRIVACY, REPORTED USERS
+// ==================================================
+
+function buildPrivacyPanel(titleText, subtitleText) {
+
+  const old = document.getElementById("privacyChoicePanel");
+
+  if (old) old.remove();
+
+  const dark = document.body.classList.contains("dark-mode");
+
+  const overlay = document.createElement("div");
+  overlay.id = "privacyChoicePanel";
+  overlay.style.cssText =
+    "position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;" +
+    "align-items:center;justify-content:center;z-index:2147483000;padding:16px;";
+
+  const box = document.createElement("div");
+  box.style.cssText =
+    "width:100%;max-width:340px;max-height:80vh;overflow-y:auto;" +
+    "border-radius:18px;padding:20px;text-align:center;" +
+    "box-shadow:0 8px 35px rgba(0,0,0,.35);" +
+    "background:" + (dark ? "#1e1e1e" : "#ffffff") + ";" +
+    "color:" + (dark ? "#f5f5f5" : "#222222") + ";";
+
+  const h = document.createElement("h3");
+  h.textContent = titleText;
+  h.style.margin = "0 0 4px";
+
+  const p = document.createElement("p");
+  p.textContent = subtitleText;
+  p.style.cssText = "margin:0 0 14px;font-size:13px;opacity:.75;";
+
+  const body = document.createElement("div");
+
+  const close = document.createElement("button");
+  close.type = "button";
+  close.textContent = "Close";
+  close.style.cssText =
+    "margin-top:14px;width:100%;padding:10px;border:none;border-radius:12px;" +
+    "cursor:pointer;font-weight:700;background:rgba(128,128,128,.2);color:inherit;";
+
+  const closePanel = () => overlay.remove();
+
+  close.addEventListener("click", closePanel);
+
+  overlay.addEventListener("click", (event) => {
+    if (event.target === overlay) closePanel();
+  });
+
+  box.append(h, p, body, close);
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+
+  return body;
+
+}
+
+async function openPrivacyChoicePanel(titleText, subtitleText, field, labels) {
+
+  if (!auth.currentUser) {
+    alert("Please log in first.");
+    return;
+  }
+
+  const body = buildPrivacyPanel(titleText, subtitleText);
+
+  const myRef = doc(db, "users", auth.currentUser.uid);
+
+  let current = "everyone";
+
+  try {
+    const snap = await getDoc(myRef);
+    if (snap.exists() && snap.data()[field]) {
+      current = snap.data()[field];
+    }
+  } catch (error) {
+    console.warn("Could not read privacy setting:", error);
+  }
+
+  const buttons = {};
+
+  const paint = () => {
+    Object.keys(buttons).forEach((key) => {
+      const on = key === current;
+      buttons[key].style.background =
+        on ? "linear-gradient(135deg,#00eaff,#7b61ff)" : "rgba(128,128,128,.15)";
+      buttons[key].style.color = on ? "#001218" : "inherit";
+      buttons[key].textContent = (on ? "✓ " : "") + labels[key];
+    });
+  };
+
+  Object.keys(labels).forEach((key) => {
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.style.cssText =
+      "display:block;width:100%;margin:6px 0;padding:12px;border:none;" +
+      "border-radius:12px;cursor:pointer;font-weight:700;font-size:14px;";
+
+    btn.addEventListener("click", async () => {
+
+      const previous = current;
+      current = key;
+      paint();
+
+      try {
+        await updateDoc(myRef, { [field]: key });
+      } catch (error) {
+        console.error("Could not save privacy setting:", error);
+        current = previous;
+        paint();
+        alert("Could not save: " + error.message);
+      }
+
+    });
+
+    buttons[key] = btn;
+    body.appendChild(btn);
+
+  });
+
+  paint();
+
+}
+
+const lastSeenPrivacyBtnEl =
+  document.getElementById("lastSeenPrivacyBtn");
+
+if (lastSeenPrivacyBtnEl) {
+  lastSeenPrivacyBtnEl.addEventListener("click", () => {
+    openPrivacyChoicePanel(
+      "Last Seen",
+      "Who can see when you were last active",
+      "lastSeenPrivacy",
+      { everyone: "Everyone", friends: "My friends only", nobody: "Nobody" }
+    );
+  });
+}
+
+const callPrivacyBtnEl =
+  document.getElementById("callPrivacyBtn");
+
+if (callPrivacyBtnEl) {
+  callPrivacyBtnEl.addEventListener("click", () => {
+    openPrivacyChoicePanel(
+      "Call Privacy",
+      "Who can call you",
+      "callPrivacy",
+      { everyone: "Everyone", friends: "My friends only", nobody: "Nobody" }
+    );
+  });
+}
+
+const reportedUsersBtnEl =
+  document.getElementById("reportedUsersBtn");
+
+if (reportedUsersBtnEl) {
+
+  reportedUsersBtnEl.addEventListener("click", async () => {
+
+    if (!auth.currentUser) {
+      alert("Please log in first.");
+      return;
+    }
+
+    const body = buildPrivacyPanel(
+      "Reported Users",
+      "People you have reported"
+    );
+
+    body.textContent = "Loading...";
+
+    try {
+
+      const snap = await getDocs(
+        query(
+          collection(db, "reports"),
+          where("reporterId", "==", auth.currentUser.uid)
+        )
+      );
+
+      body.textContent = "";
+
+      if (snap.empty) {
+        body.textContent = "You haven't reported anyone.";
+        body.style.opacity = ".75";
+        return;
+      }
+
+      snap.forEach((reportDoc) => {
+
+        const report = reportDoc.data();
+
+        const row = document.createElement("div");
+        row.style.cssText =
+          "text-align:left;padding:10px;margin:6px 0;border-radius:12px;" +
+          "background:rgba(128,128,128,.15);";
+
+        const name = document.createElement("strong");
+        name.textContent =
+          report.reportedName || report.reportedUserId || "User";
+
+        const reason = document.createElement("div");
+        reason.style.cssText = "font-size:12px;opacity:.75;margin-top:2px;";
+        reason.textContent = report.reason || "";
+
+        row.append(name, reason);
+        body.appendChild(row);
+
+      });
+
+    } catch (error) {
+
+      console.error("Reported users error:", error);
+      body.textContent = "Could not load reported users.";
+
+    }
+
+  });
 
 }
 
@@ -1662,10 +2121,16 @@ function openUserProfilePopover(
 
     friends.textContent =
       "Friends: " +
-      (
-        userData.friendsCount ||
-        0
-      );
+      (userData.friendsCount || 0);
+
+    getRealFriendsCount(
+      userId,
+      userData.friendsCount
+    ).then((n) => {
+      if (window.selectedProfileUserId === userId) {
+        friends.textContent = "Friends: " + n;
+      }
+    });
 
   }
 
@@ -3756,7 +4221,7 @@ function loadMessages() {
               html += `
 
                 <div>
-                  ${escapeHTML(
+                  ${linkifyHTML(
                     data.text
                   )}
                 </div>
@@ -5913,7 +6378,7 @@ function loadGroupMessages() {
             html += `
 
               <div>
-                ${escapeHTML(
+                ${linkifyHTML(
                   data.text
                 )}
               </div>
@@ -5931,7 +6396,7 @@ function loadGroupMessages() {
 
             html += `
 
-              <img
+              <img class="chat-message-image" alt="Photo"
                 src="${escapeHTML(
                   data.imageURL
                 )}"
@@ -9990,6 +10455,14 @@ async function loadMyProfilePopover() {
       friends.textContent =
         userData.friendsCount ||
         0;
+
+    // real number of friends (counted from the friends list)
+    getRealFriendsCount(
+      auth.currentUser.uid,
+      userData.friendsCount
+    ).then((n) => {
+      friends.textContent = n;
+    });
 
     }
 
@@ -15489,6 +15962,79 @@ if (publishAnnouncementBtn) {
   publishAnnouncementBtn.addEventListener(
     "click",
     async () => {
+      // ======================
+      // LOGIN CHECK
+      // ======================
+
+      if (!auth.currentUser) {
+
+        alert(
+          "Please log in first."
+        );
+
+        return;
+
+      }
+
+
+      // ======================
+      // GET VALUES
+      // ======================
+
+      const title =
+        announcementTitleInput
+          ? announcementTitleInput.value.trim()
+          : "";
+
+      const message =
+        announcementMessageInput
+          ? announcementMessageInput.value.trim()
+          : "";
+
+      const priority =
+        announcementPriorityInput
+          ? announcementPriorityInput.value
+          : "normal";
+
+
+      // ======================
+      // VALIDATION
+      // ======================
+
+      if (!title) {
+
+        alert(
+          "Please enter an announcement title."
+        );
+
+        return;
+
+      }
+
+
+      if (!message) {
+
+        alert(
+          "Please write your announcement."
+        );
+
+        return;
+
+      }
+
+
+      try {
+
+        publishAnnouncementBtn.disabled =
+          true;
+
+        publishAnnouncementBtn.textContent =
+          "Publishing...";
+
+        // ======================
+        // PROCESS IMAGE (inside try so errors are shown)
+        // ======================
+
 let imageData = "";
 
 if (
@@ -15582,7 +16128,7 @@ if (
 
           if (
             compressedImage.length >
-            900000
+            750000
           ) {
 
             reject(
@@ -15633,74 +16179,8 @@ if (
     }
   );
 }
-      // ======================
-      // LOGIN CHECK
-      // ======================
-
-      if (!auth.currentUser) {
-
-        alert(
-          "Please log in first."
-        );
-
-        return;
-
-      }
 
 
-      // ======================
-      // GET VALUES
-      // ======================
-
-      const title =
-        announcementTitleInput
-          ? announcementTitleInput.value.trim()
-          : "";
-
-      const message =
-        announcementMessageInput
-          ? announcementMessageInput.value.trim()
-          : "";
-
-      const priority =
-        announcementPriorityInput
-          ? announcementPriorityInput.value
-          : "normal";
-
-
-      // ======================
-      // VALIDATION
-      // ======================
-
-      if (!title) {
-
-        alert(
-          "Please enter an announcement title."
-        );
-
-        return;
-
-      }
-
-
-      if (!message) {
-
-        alert(
-          "Please write your announcement."
-        );
-
-        return;
-
-      }
-
-
-      try {
-
-        publishAnnouncementBtn.disabled =
-          true;
-
-        publishAnnouncementBtn.textContent =
-          "Publishing...";
 
 
         // ======================
@@ -15722,6 +16202,9 @@ if (
 
             priority:
               priority,
+
+            imageData:
+              imageData,
 
             senderId:
               auth.currentUser.uid,
@@ -15748,6 +16231,15 @@ if (
 
         announcementPriorityInput.value =
           "normal";
+
+        if (announcementImageInput) {
+          announcementImageInput.value = "";
+        }
+
+        if (announcementImagePreview) {
+          announcementImagePreview.src = "";
+          announcementImagePreview.style.display = "none";
+        }
 
 
         // ======================
@@ -15973,18 +16465,18 @@ const announcementImage =
 
               <div class="announcement-item-message">
 
-                ${escapeHTML(
+                ${linkifyHTML(
                   data.message ||
                   ""
                 )}
 
               </div>
 ${
-  data.imageURL
+  announcementImage
     ? `
       <div class="announcement-image-container">
         <img
-          src="${data.imageURL}"
+          src="${escapeHTML(announcementImage)}"
           class="announcement-item-image"
           alt="Announcement image"
           loading="lazy"
@@ -16615,7 +17107,7 @@ ${
 }
               <p class="news-item-text">
 
-                ${escapeHTML(
+                ${linkifyHTML(
                   news.text ||
                   ""
                 )}
@@ -17185,7 +17677,10 @@ if (accountInfoBtn && accountInfoModal) {
         data.likesCount ?? data.likes ?? 0;
 
       document.getElementById("accountInfoFriends").textContent =
-        data.friendsCount ?? data.friends ?? 0;
+        await getRealFriendsCount(
+          auth.currentUser.uid,
+          data.friendsCount ?? data.friends ?? 0
+        );
 
     } catch (error) {
 
@@ -17988,7 +18483,21 @@ myFriendsBtn?.addEventListener("click", async () => {
       return;
     }
 
-    const friends = userSnap.data().friends || [];
+    const legacyFriends = Array.isArray(userSnap.data().friends)
+      ? userSnap.data().friends
+      : [];
+    let linkedFriends = [];
+    try {
+      const linkSnap = await getDocs(
+        collection(db, "users", user.uid, "friends")
+      );
+      linkedFriends = linkSnap.docs.map((d) => d.id);
+    } catch (linkError) {
+      console.warn("Could not read friends list:", linkError);
+    }
+    const friends = Array.from(
+      new Set([...linkedFriends, ...legacyFriends])
+    );
 
     if (!Array.isArray(friends) || friends.length === 0) {
       myFriendsList.innerHTML = "<p>You have no friends yet.</p>";
