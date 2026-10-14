@@ -3041,6 +3041,8 @@ async function registerFCMToken(user) {
           {
             body: d.body || "You have a new message.",
             icon: "/icon-192.png",
+            tag: d.senderId || "fzcc",
+            renotify: true,
             data: d
           }
         );
