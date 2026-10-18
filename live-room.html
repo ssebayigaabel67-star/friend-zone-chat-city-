@@ -3882,6 +3882,13 @@ body.dark-mode .image-caption-text { color: #ccc; }
     <div style="margin-left: auto; display: flex; align-items: center;">
 
       <button
+        id="rankTableBtn"
+        class="header-icon-btn"
+        type="button"
+        title="Rank table"
+      >🏆</button>
+
+      <button
         id="searchBtn"
         class="header-icon-btn"
         type="button"
@@ -4189,6 +4196,9 @@ body.dark-mode .image-caption-text { color: #ccc; }
         <span class="dot"></span>
         <span id="profileModalStatusText">Online</span>
       </div>
+
+      <!-- RANK + PROGRESS (filled by ranks.js) -->
+      <div id="profileModalRank"></div>
 
       <div id="profileModalInfo" class="profile-modal-info"></div>
 

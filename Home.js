@@ -32,6 +32,13 @@ import {
   setDoc,
   arrayUnion
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+// Ranks (shared with the live room)
+import {
+  awardMessagePoints,
+  showRankCard
+} from "./ranks.js";
+
 // ======================
 // FIREBASE CONFIG
 // ======================
@@ -2171,6 +2178,21 @@ function openUserProfilePopover(
 
 
   // ======================
+  // RANK + PROGRESS
+  // ======================
+
+  showRankCard(
+    "userPopoverRank",
+    db,
+    userId,
+    {
+      tableButton: true,
+      currentUid: auth.currentUser ? auth.currentUser.uid : null
+    }
+  );
+
+
+  // ======================
   // SHOW POPOVER
   // ======================
 
@@ -3684,6 +3706,9 @@ if (sendBtn) {
           );
 
 
+          // Rank points (+3 per message)
+          awardMessagePoints(db, auth.currentUser.uid, text);
+
           // Clear immediately after message is saved
 
           input.value = "";
@@ -3754,6 +3779,9 @@ if (sendBtn) {
           }
         );
 
+
+        // Rank points (+3 per message)
+        awardMessagePoints(db, auth.currentUser.uid, text);
 
         // ======================
         // CLEAR INPUT IMMEDIATELY
@@ -7612,6 +7640,21 @@ if (
         "show"
       );
 
+      if (
+        auth.currentUser &&
+        profilePopoverElement.classList.contains("show")
+      ) {
+        showRankCard(
+          "myProfileRank",
+          db,
+          auth.currentUser.uid,
+          {
+            tableButton: true,
+            currentUid: auth.currentUser.uid
+          }
+        );
+      }
+
     }
   );
 
@@ -7865,6 +7908,8 @@ async function openMyProfilePopover() {
       </div>
 
 
+      <div id="myPopoverRank"></div>
+
       <button
         id="closeProfileButton"
         type="button"
@@ -7892,6 +7937,17 @@ async function openMyProfilePopover() {
 
     document.body.appendChild(
       popover
+    );
+
+    // Rank + progress
+    showRankCard(
+      "myPopoverRank",
+      db,
+      auth.currentUser.uid,
+      {
+        tableButton: true,
+        currentUid: auth.currentUser.uid
+      }
     );
 
 

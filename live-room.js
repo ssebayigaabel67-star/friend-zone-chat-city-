@@ -41,6 +41,13 @@ import {
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
 
+// Ranks (shared with the homepage)
+import {
+  awardMessagePoints,
+  showRankCard,
+  openRankTable
+} from "./ranks.js";
+
 
 // ==========================================
 // FIREBASE CONFIG
@@ -1711,6 +1718,20 @@ async function openProfilePopup(user) {
   }
 
   // ==========================================
+  // RANK + PROGRESS
+  // ==========================================
+
+  showRankCard(
+    "profileModalRank",
+    db,
+    uid,
+    {
+      tableButton: true,
+      currentUid: currentUser ? currentUser.uid : null
+    }
+  );
+
+  // ==========================================
   // PROFILE INFORMATION
   // ==========================================
 
@@ -2454,6 +2475,19 @@ profileModalActions.appendChild(banBtn);
 }
 
 // ==========================================
+// RANK TABLE BUTTON (header)
+// ==========================================
+
+const rankTableBtn = document.getElementById("rankTableBtn");
+
+if (rankTableBtn) {
+  rankTableBtn.addEventListener("click", () => {
+    openRankTable(db, currentUser ? currentUser.uid : null);
+  });
+}
+
+
+// ==========================================
 // CLOSE PROFILE POPUP
 // ==========================================
 function closeProfilePopup() {
@@ -2797,6 +2831,9 @@ async function sendMessage() {
             : null
       }
     );
+
+    // Rank points (+3 per message)
+    awardMessagePoints(db, currentUser.uid, text);
 
 
     // ==========================================
@@ -3502,4 +3539,4 @@ content.appendChild(nameRow);
 
 backBtn.addEventListener("click", () => {
   window.history.back();
-});
+});0
