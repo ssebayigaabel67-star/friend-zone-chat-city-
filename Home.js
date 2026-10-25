@@ -30,7 +30,9 @@ import {
   updateDoc,
   increment,
   setDoc,
-  arrayUnion
+  arrayUnion,
+  limit,
+  writeBatch
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 // Ranks (shared with the live room)
@@ -82,6 +84,57 @@ let unsubscribeMessages = null;
 let unsubscribeTyping = null;
 let isGroupChat = false;
 let replyingTo = null;
+
+// ======================
+// SPEED HELPERS
+// ======================
+// localStorage is read once per render instead of once per message
+const lsCache = new Map();
+function lsGet(key) {
+  if (!lsCache.has(key)) {
+    let value = null;
+    try { value = localStorage.getItem(key); } catch (e) {}
+    lsCache.set(key, value);
+  }
+  return lsCache.get(key);
+}
+
+// chats only load the newest messages; "Load older" fetches more
+const MESSAGE_PAGE_SIZE = 30;
+let privateMessageLimit = MESSAGE_PAGE_SIZE;
+let groupMessageLimit = MESSAGE_PAGE_SIZE;
+let lastPrivateChatId = "";
+let lastGroupChatId = "";
+
+function captureChatScroll(box, key) {
+  const sameChat = box.dataset.chatKey === key;
+  box.dataset.chatKey = key;
+  return {
+    stick: !sameChat ||
+      box.scrollHeight - box.scrollTop - box.clientHeight < 120,
+    fromBottom: box.scrollHeight - box.scrollTop
+  };
+}
+
+function restoreChatScroll(box, state) {
+  box.scrollTop = state.stick
+    ? box.scrollHeight
+    : box.scrollHeight - state.fromBottom;
+}
+
+function addLoadOlderButton(box, loadedCount, pageLimit, onMore) {
+  if (loadedCount < pageLimit) return;
+  const wrap = document.createElement("div");
+  wrap.style.cssText = "text-align:center;padding:8px;";
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.textContent = "Load older messages";
+  btn.style.cssText =
+    "border:none;border-radius:14px;padding:6px 14px;cursor:pointer;opacity:.85;";
+  btn.addEventListener("click", onMore);
+  wrap.appendChild(btn);
+  box.appendChild(wrap);
+}
 // ======================
 // VOICE RECORDING
 // ======================
@@ -284,18 +337,12 @@ async function markPrivateMessagesAsRead(friendId) {
     // MARK EACH MESSAGE READ
     // ======================
 
-    for (
-      const messageDoc
-      of snapshot.docs
-    ) {
-
-      await updateDoc(
-        messageDoc.ref,
-        {
-          read: true
-        }
-      );
-
+    for (let i = 0; i < snapshot.docs.length; i += 400) {
+      const batch = writeBatch(db);
+      snapshot.docs.slice(i, i + 400).forEach((messageDoc) => {
+        batch.update(messageDoc.ref, { read: true });
+      });
+      await batch.commit();
     }
 // ======================
     // CLEAR LOCAL COUNT
@@ -345,6 +392,148 @@ let myIncomingRequestIds = new Set();
 let friendsLoadError = "";
 let friendsSetReady = false;
 let friendshipUnsubs = [];
+
+// "Others" are loaded on demand (one small page + server search)
+let othersLoaded = false;
+let othersHasMore = false;
+let othersLoading = false;
+let othersSearchTimer = null;
+const OTHERS_PAGE = 60;
+
+function relationshipIds() {
+  return new Set([
+    ...myFriendIds,
+    ...mySentRequestIds,
+    ...myIncomingRequestIds
+  ]);
+}
+
+// load only the users we need (friends + pending requests)
+async function ensureUsersInCache(ids) {
+
+  if (!auth.currentUser) return false;
+
+  const myUid = auth.currentUser.uid;
+  const have = new Set(usersCache.map((entry) => entry.id));
+
+  const missing = [...ids].filter(
+    (id) => id && id !== myUid && !have.has(id)
+  );
+
+  if (!missing.length) return false;
+
+  const snaps = await Promise.all(
+    missing.map((id) =>
+      getDoc(doc(db, "users", id)).catch(() => null)
+    )
+  );
+
+  let added = false;
+
+  snaps.forEach((snap) => {
+    if (snap && snap.exists()) {
+      usersCache.push({ id: snap.id, data: snap.data() });
+      added = true;
+    }
+  });
+
+  return added;
+
+}
+
+// friends only, shaped like a Firestore snapshot's docs (id + data())
+async function getFriendUserDocs() {
+
+  await ensureUsersInCache(relationshipIds());
+
+  return usersCache
+    .filter((entry) => myFriendIds.has(entry.id))
+    .map((entry) => ({ id: entry.id, data: () => entry.data }));
+
+}
+
+function mergeUsersIntoCache(docs) {
+
+  if (!auth.currentUser) return;
+
+  const myUid = auth.currentUser.uid;
+  const have = new Set(usersCache.map((entry) => entry.id));
+
+  docs.forEach((userDoc) => {
+    if (userDoc.id === myUid || have.has(userDoc.id)) return;
+    have.add(userDoc.id);
+    usersCache.push({ id: userDoc.id, data: userDoc.data() });
+  });
+
+}
+
+async function loadOthers() {
+
+  if (othersLoaded || othersLoading || !auth.currentUser) return;
+
+  othersLoading = true;
+
+  try {
+
+    const snap = await getDocs(
+      query(collection(db, "users"), limit(OTHERS_PAGE))
+    );
+
+    mergeUsersIntoCache(snap.docs);
+    othersHasMore = snap.size >= OTHERS_PAGE;
+    othersLoaded = true;
+
+  } catch (error) {
+
+    console.warn("Could not load other users:", error);
+
+  } finally {
+
+    othersLoading = false;
+
+  }
+
+  renderFriendsList();
+
+}
+
+// finds people beyond the first page when you type in the search box
+async function searchOthersOnServer(term) {
+
+  const t = String(term || "").trim();
+
+  if (t.length < 2 || !auth.currentUser) return;
+
+  const cap = t.charAt(0).toUpperCase() + t.slice(1);
+
+  const specs = [
+    ["username", t.toLowerCase()],
+    ["name", t],
+    ["name", cap]
+  ].filter((spec, i, all) =>
+    all.findIndex((o) => o[0] === spec[0] && o[1] === spec[1]) === i
+  );
+
+  const results = await Promise.all(
+    specs.map(([field, value]) =>
+      getDocs(
+        query(
+          collection(db, "users"),
+          where(field, ">=", value),
+          where(field, "<=", value + "\uf8ff"),
+          limit(20)
+        )
+      ).catch(() => null)
+    )
+  );
+
+  results.forEach((snap) => {
+    if (snap) mergeUsersIntoCache(snap.docs);
+  });
+
+  renderFriendsList();
+
+}
 
 
 // ======================
@@ -400,7 +589,12 @@ function updateFriendsTabInfo() {
   };
 
   setText("friendsTabFriendsCount", friends.length);
-  setText("friendsTabOthersCount", others.length);
+  setText(
+    "friendsTabOthersCount",
+    othersLoaded
+      ? others.length + (othersHasMore ? "+" : "")
+      : (others.length || "")
+  );
   setDot("friendsTabFriendsUnread", unreadSum(friends));
   setDot("friendsTabOthersUnread", unreadSum(others));
 
@@ -701,6 +895,8 @@ function setFriendsTab(tab) {
 
   renderFriendsList();
 
+  if (friendsTab === "others") loadOthers();
+
 }
 
 document.querySelectorAll(".friends-tab").forEach((btn) => {
@@ -716,6 +912,13 @@ if (friendsSearchInput) {
   friendsSearchInput.addEventListener("input", () => {
     friendsSearchTerm = friendsSearchInput.value;
     renderFriendsList();
+
+    if (friendsTab === "others") {
+      clearTimeout(othersSearchTimer);
+      othersSearchTimer = setTimeout(() => {
+        searchOthersOnServer(friendsSearchTerm);
+      }, 350);
+    }
   });
 }
 
@@ -834,6 +1037,18 @@ function onRelationshipsChanged() {
 
   renderFriendsList();
   updateOwnFriendCountUI();
+
+  if (auth.currentUser && friendsSetReady) {
+
+    // only watch unread messages for friends / people who wrote to me
+    syncUnreadListeners();
+
+    // make sure everyone involved is loaded (without loading everybody)
+    ensureUsersInCache(relationshipIds())
+      .then((added) => { if (added) renderFriendsList(); })
+      .catch(() => {});
+
+  }
 
   const popover =
     document.getElementById("userProfilePopover");
@@ -1229,28 +1444,21 @@ async function loadFriends() {
 
   try {
 
-    const snapshot =
-      await getDocs(collection(db, "users"));
-
     usersCache = [];
-
-    snapshot.forEach((userDoc) => {
-
-      // don't show yourself
-      if (userDoc.id === myUid) return;
-
-      usersCache.push({
-        id: userDoc.id,
-        data: userDoc.data()
-      });
-
-    });
+    othersLoaded = false;
+    othersHasMore = false;
 
     friendsLoadError = "";
 
     await fetchRelationships();
 
+    // only friends + pending requests are downloaded here
+    await ensureUsersInCache(relationshipIds());
+
     renderFriendsList();
+
+    // the rest of the people load only when "Others" is opened
+    if (friendsTab === "others") loadOthers();
 
     startFriendshipListeners();
 
@@ -1619,315 +1827,139 @@ let unreadMessageListeners =
 
 
 
+let unreadListenersUid = "";
+
 function startUnreadMessageListeners() {
+  syncUnreadListeners();
+}
 
-  if (
-    !auth.currentUser
-  ) {
+function applyUnreadBadge(friendId) {
 
-    return;
+  updateFriendsTabInfo();
+
+  const friendRow =
+    document.querySelector(
+      `.friend[data-friend-id="${friendId}"]`
+    );
+
+  if (!friendRow) return;
+
+  let unreadBadge =
+    friendRow.querySelector(".unread-message-badge");
+
+  const count = unreadCounts[friendId] || 0;
+
+  if (count > 0) {
+
+    if (!unreadBadge) {
+
+      unreadBadge = document.createElement("span");
+      unreadBadge.className = "unread-message-badge";
+      unreadBadge.style.cssText = `
+        background:red;
+        color:white;
+        border-radius:50%;
+        min-width:22px;
+        height:22px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-size:12px;
+        font-weight:bold;
+        margin-left:8px;
+      `;
+
+      friendRow.appendChild(unreadBadge);
+
+    }
+
+    unreadBadge.textContent = count;
+
+  } else if (unreadBadge) {
+
+    unreadBadge.remove();
 
   }
 
+}
 
-  const myUid =
-    auth.currentUser.uid;
+// Keeps ONE unread listener per friend / incoming request
+// (before: one per user on the whole site).
+function syncUnreadListeners() {
 
+  if (!auth.currentUser) return;
 
-  // ======================
-  // STOP OLD LISTENERS
-  // ======================
+  const myUid = auth.currentUser.uid;
 
-  Object.values(
-    unreadMessageListeners
-  ).forEach(
-    unsubscribe => {
+  // a different account logged in: drop everything first
+  if (unreadListenersUid !== myUid) {
 
-      if (
-        typeof unsubscribe ===
-        "function"
-      ) {
+    Object.values(unreadMessageListeners).forEach((unsubscribe) => {
+      if (typeof unsubscribe === "function") unsubscribe();
+    });
 
-        unsubscribe();
+    unreadMessageListeners = {};
+    unreadCounts = {};
+    unreadListenersUid = myUid;
 
-      }
+  }
 
-    }
-  );
+  const wanted = new Set([
+    ...myFriendIds,
+    ...myIncomingRequestIds
+  ]);
 
+  wanted.delete(myUid);
 
-  unreadMessageListeners =
-    {};
+  // stop listeners for people who are no longer relevant
+  Object.keys(unreadMessageListeners).forEach((friendId) => {
 
+    if (wanted.has(friendId)) return;
 
-  unreadCounts =
-    {};
+    const unsubscribe = unreadMessageListeners[friendId];
 
+    if (typeof unsubscribe === "function") unsubscribe();
 
-  // ======================
-  // GET ALL USERS
-  // ======================
+    delete unreadMessageListeners[friendId];
+    delete unreadCounts[friendId];
 
-  getDocs(
-    collection(
-      db,
-      "users"
-    )
-  )
-  .then(
-    snapshot => {
+  });
 
-      snapshot.forEach(
-        userDoc => {
+  // start listeners for new ones
+  wanted.forEach((friendId) => {
 
-          const friendId =
-            userDoc.id;
+    if (unreadMessageListeners[friendId]) return;
 
+    const unreadQuery =
+      query(
+        collection(db, "chats", getChatId(myUid, friendId), "messages"),
+        where("senderId", "==", friendId),
+        where("read", "==", false)
+      );
 
-          // ======================
-          // DON'T WATCH YOURSELF
-          // ======================
+    unreadMessageListeners[friendId] =
+      onSnapshot(
+        unreadQuery,
+        (messagesSnapshot) => {
 
-          if (
-            friendId ===
-            myUid
-          ) {
+          unreadCounts[friendId] =
+            selectedFriendId === friendId
+              ? 0
+              : messagesSnapshot.size;
 
-            return;
+          applyUnreadBadge(friendId);
 
-          }
-
-
-          // ======================
-          // CHAT ID
-          // ======================
-
-          const chatId =
-            getChatId(
-              myUid,
-              friendId
-            );
-
-
-          // ======================
-          // MESSAGES REFERENCE
-          // ======================
-
-          const messagesRef =
-            collection(
-              db,
-              "chats",
-              chatId,
-              "messages"
-            );
-
-
-          // ======================
-          // UNREAD QUERY
-          // ======================
-
-          const unreadQuery =
-            query(
-
-              messagesRef,
-
-              where(
-                "senderId",
-                "==",
-                friendId
-              ),
-
-              where(
-                "read",
-                "==",
-                false
-              )
-
-            );
-
-
-          // ======================
-          // LISTEN FOR UNREAD
-          // ======================
-
-          const unsubscribe =
-            onSnapshot(
-              unreadQuery,
-
-              (
-                messagesSnapshot
-              ) => {
-
-                // ======================
-                // CURRENT CHAT
-                // ======================
-
-                if (
-                  selectedFriendId ===
-                  friendId
-                ) {
-
-                  unreadCounts[
-                    friendId
-                  ] = 0;
-
-                } else {
-
-                  unreadCounts[
-                    friendId
-                  ] =
-                    messagesSnapshot.size;
-
-                }
-
-
-                updateFriendsTabInfo();
-
-
-                // ======================
-                // FIND FRIEND ROW
-                // ======================
-
-                const friendRow =
-                  document.querySelector(
-                    `.friend[data-friend-id="${friendId}"]`
-                  );
-
-
-                if (!friendRow) {
-
-                  return;
-
-                }
-
-
-                // ======================
-                // FIND BADGE
-                // ======================
-
-                let unreadBadge =
-                  friendRow.querySelector(
-                    ".unread-message-badge"
-                  );
-
-
-                const count =
-                  unreadCounts[
-                    friendId
-                  ] || 0;
-
-
-                // ======================
-                // SHOW BADGE
-                // ======================
-
-                if (
-                  count > 0
-                ) {
-
-                  if (
-                    !unreadBadge
-                  ) {
-
-                    unreadBadge =
-                      document.createElement(
-                        "span"
-                      );
-
-
-                    unreadBadge.className =
-                      "unread-message-badge";
-
-
-                    unreadBadge.style.cssText = `
-                      background:red;
-                      color:white;
-                      border-radius:50%;
-                      min-width:22px;
-                      height:22px;
-                      display:flex;
-                      align-items:center;
-                      justify-content:center;
-                      font-size:12px;
-                      font-weight:bold;
-                      margin-left:8px;
-                    `;
-
-
-                    friendRow.appendChild(
-                      unreadBadge
-                    );
-
-                  }
-
-
-                  unreadBadge.textContent =
-                    count;
-
-
-                } else {
-
-                  // ======================
-                  // REMOVE BADGE
-                  // ======================
-
-                  if (
-                    unreadBadge
-                  ) {
-
-                    unreadBadge.remove();
-
-                  }
-
-                }
-
-              },
-
-
-              // ======================
-              // LISTENER ERROR
-              // ======================
-
-              (error) => {
-
-                console.error(
-                  "Unread listener error:",
-                  error
-                );
-
-              }
-
-            );
-
-
-          // ======================
-          // SAVE LISTENER
-          // ======================
-
-          unreadMessageListeners[
-            friendId
-          ] =
-            unsubscribe;
-
+        },
+        (error) => {
+          console.error("Unread listener error:", error);
         }
-
       );
 
-    }
-
-  )
-  .catch(
-    error => {
-
-      console.error(
-        "Unread users error:",
-        error
-      );
-
-    }
-  );
+  });
 
 }
+
+
 // ======================
 // OPEN USER PROFILE POPOVER
 // ======================
@@ -4012,13 +4044,19 @@ function loadMessages() {
     );
 
 
+  if (chatId !== lastPrivateChatId) {
+    privateMessageLimit = MESSAGE_PAGE_SIZE;
+    lastPrivateChatId = chatId;
+  }
+
   const q =
     query(
       messagesRef,
       orderBy(
         "timestamp",
-        "asc"
-      )
+        "desc"
+      ),
+      limit(privateMessageLimit)
     );
 
 
@@ -4046,14 +4084,28 @@ function loadMessages() {
         // CLEAR OLD DISPLAY
         // ======================
 
+        const scrollState = captureChatScroll(box, "p:" + chatId);
+
+        lsCache.clear();
+
         box.innerHTML = "";
+
+        addLoadOlderButton(
+          box,
+          snapshot.size,
+          privateMessageLimit,
+          () => {
+            privateMessageLimit += MESSAGE_PAGE_SIZE;
+            loadMessages();
+          }
+        );
 
 
         // ======================
         // DISPLAY MESSAGES
         // ======================
 
-        snapshot.docs.forEach(
+        snapshot.docs.slice().reverse().forEach(
           (docSnap) => {
 
             const data =
@@ -4082,13 +4134,13 @@ function loadMessages() {
             // =====================================
 
             const savedSentColor =
-              localStorage.getItem(
+              lsGet(
                 "friendszoneSentBubbleColor"
               ) || "#25D366";
 
 
             const savedReceivedColor =
-              localStorage.getItem(
+              lsGet(
                 "friendszoneReceivedBubbleColor"
               ) || "#ffffff";
 
@@ -4117,7 +4169,7 @@ function loadMessages() {
             // =====================================
 
             const savedEffect =
-              localStorage.getItem(
+              lsGet(
                 "friendszoneMessageEffect"
               ) || "none";
 
@@ -4133,7 +4185,7 @@ function loadMessages() {
             // =====================================
 
             const savedBubbleStyle =
-              localStorage.getItem(
+              lsGet(
                 "friendszoneBubbleStyle"
               ) || "classic";
 
@@ -4150,7 +4202,7 @@ function loadMessages() {
             // =====================================
 
             const savedFont =
-              localStorage.getItem(
+              lsGet(
                 "friendszoneMessageFont"
               ) || "Arial";
 
@@ -4167,7 +4219,7 @@ function loadMessages() {
             // ======================
 
             const savedNameColor =
-              localStorage.getItem(
+              lsGet(
                 "friendszoneNameColor"
               ) || "#2196F3";
 
@@ -4436,7 +4488,7 @@ function loadMessages() {
             // =====================================
 
             const messageFont =
-              localStorage.getItem(
+              lsGet(
                 "friendszoneMessageFont"
               ) || "Arial";
 
@@ -4474,7 +4526,7 @@ function loadMessages() {
 
 
             const currentNameColor =
-              localStorage.getItem(
+              lsGet(
                 "friendszoneNameColor"
               ) || "#2196F3";
 
@@ -4584,8 +4636,7 @@ function loadMessages() {
         // SCROLL TO BOTTOM
         // ======================
 
-        box.scrollTop =
-          box.scrollHeight;
+        restoreChatScroll(box, scrollState);
 
       },
       (error) => {
@@ -4622,9 +4673,7 @@ async function loadFriendSelector() {
   try {
 
     const users =
-      await getDocs(
-        collection(db, "users")
-      );
+      await getFriendUserDocs();
 
 
     users.forEach(
@@ -5816,9 +5865,7 @@ async function openAddMemberDialog() {
     // ======================
 
     const usersSnapshot =
-      await getDocs(
-        collection(db, "users")
-      );
+      await getFriendUserDocs();
 
     const availableFriends = [];
 
@@ -6278,6 +6325,11 @@ function loadGroupMessages() {
   }
 
 
+  if (selectedGroupId !== lastGroupChatId) {
+    groupMessageLimit = MESSAGE_PAGE_SIZE;
+    lastGroupChatId = selectedGroupId;
+  }
+
   const q =
     query(
       collection(
@@ -6288,8 +6340,9 @@ function loadGroupMessages() {
       ),
       orderBy(
         "timestamp",
-        "asc"
-      )
+        "desc"
+      ),
+      limit(groupMessageLimit)
     );
 
 
@@ -6309,13 +6362,26 @@ function loadGroupMessages() {
         }
 
 
+        const scrollState = captureChatScroll(box, "g:" + selectedGroupId);
+
+        lsCache.clear();
+
         box.innerHTML = "";
 
+        addLoadOlderButton(
+          box,
+          snapshot.size,
+          groupMessageLimit,
+          () => {
+            groupMessageLimit += MESSAGE_PAGE_SIZE;
+            loadGroupMessages();
+          }
+        );
 
-        for (
-          const docSnap of
-          snapshot.docs
-        ) {
+        const unreadRefs = [];
+
+
+        for (const docSnap of snapshot.docs.slice().reverse()) {
 
           const data =
             docSnap.data();
@@ -6331,24 +6397,7 @@ function loadGroupMessages() {
             !data.read
           ) {
 
-            try {
-
-              await updateDoc(
-                docSnap.ref,
-                {
-                  read:
-                    true
-                }
-              );
-
-            } catch (error) {
-
-              console.error(
-                "Group read error:",
-                error
-              );
-
-            }
+            unreadRefs.push(docSnap.ref);
 
           }
 
@@ -6578,8 +6627,22 @@ q                  data.text || ""
         }
 
 
-        box.scrollTop =
-          box.scrollHeight;
+        restoreChatScroll(box, scrollState);
+
+        // mark everything read in ONE write (was one write per message)
+        if (unreadRefs.length) {
+          try {
+            for (let i = 0; i < unreadRefs.length; i += 400) {
+              const batch = writeBatch(db);
+              unreadRefs.slice(i, i + 400).forEach((ref) => {
+                batch.update(ref, { read: true });
+              });
+              await batch.commit();
+            }
+          } catch (error) {
+            console.error("Group read error:", error);
+          }
+        }
 
       },
       (error) => {
@@ -16400,7 +16463,8 @@ function loadAnnouncements() {
       orderBy(
         "timestamp",
         "desc"
-      )
+      ),
+      limit(30)
     );
 
 
@@ -17010,7 +17074,7 @@ function loadNewsRoom() {
 
   unsubscribeNewsRoom =
     onSnapshot(
-      newsRef,
+      query(newsRef, orderBy("timestamp", "desc"), limit(30)),
 
       (snapshot) => {
 
