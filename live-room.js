@@ -48,6 +48,9 @@ import {
   openRankTable
 } from "./ranks.js";
 
+// Music player (shared with the homepage)
+import { initMusic } from "./music.js";
+
 
 // ==========================================
 // FIREBASE CONFIG
@@ -2475,6 +2478,13 @@ profileModalActions.appendChild(banBtn);
 }
 
 // ==========================================
+// MUSIC BUTTON (header)
+// ==========================================
+
+initMusic("musicBtn");
+
+
+// ==========================================
 // RANK TABLE BUTTON (header)
 // ==========================================
 
@@ -3539,4 +3549,4 @@ content.appendChild(nameRow);
 
 backBtn.addEventListener("click", () => {
   window.history.back();
-});0
+});

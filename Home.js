@@ -39,6 +39,9 @@ import {
   showRankCard
 } from "./ranks.js";
 
+// Music player (shared with the live room)
+import { initMusic } from "./music.js";
+
 // ======================
 // FIREBASE CONFIG
 // ======================
@@ -63,6 +66,9 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 const db = getFirestore(app);
+
+// Music button (right feature bar)
+initMusic("musicBtn");
 // ======================
 // GLOBAL VARIABLES
 // ======================
