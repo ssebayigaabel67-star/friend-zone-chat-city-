@@ -51,6 +51,45 @@ import {
 // Music player (shared with the homepage)
 import { initMusic } from "./music.js";
 
+// ==========================================
+// APP ICONS (SVG, same style as live-room.html)
+// icon("name", size, filled?)  ->  <svg> markup
+// ==========================================
+
+const ICON_PATHS = {
+  chat: '<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>',
+  heart: '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>',
+  check: '<polyline points="20 6 9 17 4 12"/>',
+  x: '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+  userCheck: '<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/>',
+  userPlus: '<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/>',
+  users: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  volume: '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>',
+  volumeX: '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>',
+  shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  ban: '<circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>',
+  crown: '<path d="M2 7l5 5 5-8 5 8 5-5-2 13H4L2 7z"/>',
+  lock: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+  trophy: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-1.21 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98 1.21 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/>',
+  award: '<circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>',
+  smile: '<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>',
+  reply: '<polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/>',
+  pin: '<line x1="12" y1="17" x2="12" y2="22"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/>',
+  play: '<polygon points="6 3 20 12 6 21 6 3"/>',
+  pause: '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>'
+};
+
+function icon(name, size = 16, filled = false, spaced = false) {
+  return `<svg class="ic${filled ? " ic-fill" : ""}${spaced ? " ic-l" : ""}" viewBox="0 0 24 24" width="${size}" height="${size}" aria-hidden="true">${ICON_PATHS[name] || ""}</svg>`;
+}
+
+// icon followed by a text label (label must be plain, trusted text)
+function iconLabel(name, label, size = 16, filled = false) {
+  return icon(name, size, filled, true) + label;
+}
+
+
 
 // ==========================================
 // FIREBASE CONFIG
@@ -346,7 +385,7 @@ async function loadLiveRoomFriendRequests() {
 
       friendRequestsList.innerHTML = `
         <div style="padding:25px;text-align:center;opacity:.7;">
-          🤝 No pending friend requests
+          ${icon("users", 18, false, true)}No pending friend requests
         </div>
       `;
 
@@ -459,7 +498,7 @@ async function loadLiveRoomFriendRequests() {
               cursor:pointer;
             "
           >
-            ✓
+            ${icon("check", 16)}
           </button>
 
           <button
@@ -475,7 +514,7 @@ async function loadLiveRoomFriendRequests() {
               cursor:pointer;
             "
           >
-            ✕
+            ${icon("x", 16)}
           </button>
 
         </div>
@@ -758,7 +797,8 @@ function showToast(message, options) {
   const opts = options || {};
   const toast = document.createElement("div");
   toast.className = "toast";
-  toast.textContent = message;
+  // toasts are plain text: drop any leading emoji so no emoji icons show up
+  toast.textContent = String(message).replace(/^[\p{Extended_Pictographic}\uFE0F\s]+/u, "");
 
   if (opts.onClick) {
     toast.style.cursor = "pointer";
@@ -960,7 +1000,7 @@ function renderPinnedBanner() {
   }
 
   const pin = roomMeta.pinnedMessage;
-  const label = pin.text || (pin.imageURL ? "📸 Image" : pin.audioURL ? "🎤 Voice message" : "Message");
+  const label = pin.text || (pin.imageURL ? "Image" : pin.audioURL ? "Voice message" : "Message");
   pinnedBannerText.textContent = `${pin.senderName || "Someone"}: ${label}`;
   pinnedBanner.classList.add("show");
 }
@@ -986,7 +1026,7 @@ if (announcementDismissBtn) {
 
 function updateRoomTopicLine() {
   if (!roomTopicLine) return;
-  roomTopicLine.textContent = roomMeta.topic ? `🔴 Topic: ${roomMeta.topic}` : "";
+  roomTopicLine.textContent = roomMeta.topic ? `Topic: ${roomMeta.topic}` : "";
   roomTopicLine.style.display = roomMeta.topic ? "block" : "none";
 }
 
@@ -997,10 +1037,10 @@ function updateChatLockedNotice() {
   const moderator = isModerator(uid);
 
   if (roomMeta.locked && !moderator) {
-    chatLockedNotice.textContent = "🔒 This room is locked — only the owner/admins can send messages right now.";
+    chatLockedNotice.innerHTML = iconLabel("lock", "This room is locked — only the owner/admins can send messages right now.", 14);
     chatLockedNotice.classList.add("show");
   } else if (roomMeta.slowModeOn && !moderator) {
-    chatLockedNotice.textContent = `🐢 Slow mode is on — wait ${roomMeta.slowModeSeconds}s between messages.`;
+    chatLockedNotice.innerHTML = iconLabel("clock", `Slow mode is on — wait ${Number(roomMeta.slowModeSeconds) || 0}s between messages.`, 14);
     chatLockedNotice.classList.add("show");
   } else {
     chatLockedNotice.classList.remove("show");
@@ -1391,7 +1431,7 @@ onSnapshot(
   onlineUsersQuery,
   (snapshot) => {
     onlineCountText.textContent = `${snapshot.size} online`;
-    if (onlineCountHeader) onlineCountHeader.textContent = `👥 ${snapshot.size} online`;
+    if (onlineCountHeader) onlineCountHeader.innerHTML = iconLabel("users", `${snapshot.size} online`, 13);
 
     onlineUsersMap.clear();
     const currentUids = new Set();
@@ -1496,13 +1536,13 @@ function renderOnlineUsersList(filterTerm) {
     }
 
     if (topContributorUids.has(uid)) {
-      badges.innerHTML += `<span class="role-badge admin" title="Top contributor">🏆</span>`;
+      badges.innerHTML += `<span class="role-badge admin" title="Top contributor">${icon("trophy", 12)}</span>`;
     }
 
      if (isMuted(uid)) {
   badges.innerHTML += `
     <span class="muted-badge">
-      🔇 Muted
+      ${iconLabel("volumeX", "Muted", 12)}
     </span>
   `;
 }   
@@ -1590,8 +1630,8 @@ onSnapshot(
       return;
     }
 
-    const medals = ["🥇", "🥈", "🥉", "🏅", "🏅"];
-    topContributorsEl.innerHTML = `<div class="modal-section-title" style="margin:0 0 6px;">🏆 Top contributors</div>`;
+    const medalColors = ["#f2b600", "#9aa5b1", "#cd7f32", "#8a5cff", "#8a5cff"];
+    topContributorsEl.innerHTML = `<div class="modal-section-title" style="margin:0 0 6px;">${iconLabel("trophy", "Top contributors", 15)}</div>`;
 
     snapshot.forEach((userDoc, index) => {
       const user = userDoc.data();
@@ -1603,7 +1643,7 @@ onSnapshot(
       const row = document.createElement("div");
       row.className = "top-contributors-row";
       row.innerHTML = `
-        <span class="medal">${medals[index] || "🏅"}</span>
+        <span class="medal" style="color:${medalColors[index] || "#8a5cff"}">${icon("award", 18)}</span>
         <img src="${user.photoURL || user.profilePicture || user.photo || "https://via.placeholder.com/24"}" alt="">
         <span class="name">${escapeHtml(user.name || user.username || "User")}</span>
         <span class="count">${user.messageCount} msgs</span>
@@ -1702,9 +1742,9 @@ async function openProfilePopup(user) {
 
   if (profileModalBadges) {
     let badgesHtml = "";
-    if (isOwner(uid)) badgesHtml += `<span class="role-badge owner">👑 Owner</span>`;
-    else if (isAdmin(uid)) badgesHtml += `<span class="role-badge admin">🛡️ Admin</span>`;
-    if (topContributorUids.has(uid)) badgesHtml += `<span class="role-badge admin">🏆 Top contributor</span>`;
+    if (isOwner(uid)) badgesHtml += `<span class="role-badge owner">${iconLabel("crown", "Owner", 12)}</span>`;
+    else if (isAdmin(uid)) badgesHtml += `<span class="role-badge admin">${iconLabel("shield", "Admin", 12)}</span>`;
+    if (topContributorUids.has(uid)) badgesHtml += `<span class="role-badge admin">${iconLabel("trophy", "Top contributor", 12)}</span>`;
     profileModalBadges.innerHTML = badgesHtml;
   }
 
@@ -1765,7 +1805,7 @@ async function openProfilePopup(user) {
     const chatBtn = document.createElement("button");
     chatBtn.type = "button";
     chatBtn.className = "profile-action-btn chat";
-    chatBtn.textContent = "💬 Chat";
+    chatBtn.innerHTML = iconLabel("chat", "Chat");
     chatBtn.addEventListener("click", () => {
       window.location.href = `${PRIVATE_CHAT_URL}?chat=${encodeURIComponent(uid)}&name=${encodeURIComponent(fullUser.name || "")}`;
     });
@@ -1792,7 +1832,7 @@ async function openProfilePopup(user) {
     const likeBtn = document.createElement("button");
     likeBtn.type = "button";
     likeBtn.className = "profile-action-btn like" + (liked ? " liked" : "");
-    likeBtn.textContent = liked ? `♥ Liked (${fullUser.likedBy.length})` : `🤍 Like (${(fullUser.likedBy || []).length})`;
+    likeBtn.innerHTML = liked ? iconLabel("heart", `Liked (${fullUser.likedBy.length})`, 16, true) : iconLabel("heart", `Like (${(fullUser.likedBy || []).length})`);
     likeBtn.addEventListener("click", () => toggleLike(uid, fullUser.name));
     profileModalActions.appendChild(likeBtn);
   }
@@ -1893,8 +1933,7 @@ if (!isSelf) {
 
   if (status.friends) {
 
-    friendBtn.textContent =
-      "✅ Friends";
+    friendBtn.innerHTML = iconLabel("userCheck", "Friends");
 
     friendBtn.disabled = true;
 
@@ -1907,8 +1946,7 @@ if (!isSelf) {
 
   else if (status.incoming) {
 
-    friendBtn.textContent =
-      "🤝 Accept request";
+    friendBtn.innerHTML = iconLabel("userCheck", "Accept request");
 
     friendBtn.disabled = false;
 
@@ -1937,8 +1975,7 @@ if (!isSelf) {
 
   else if (status.outgoing) {
 
-    friendBtn.textContent =
-      "⏳ Request sent";
+    friendBtn.innerHTML = iconLabel("clock", "Request sent");
 
     friendBtn.disabled = true;
 
@@ -1951,8 +1988,7 @@ if (!isSelf) {
 
   else {
 
-    friendBtn.textContent =
-      "➕ Add Friend";
+    friendBtn.innerHTML = iconLabel("userPlus", "Add Friend");
 
     friendBtn.disabled = false;
 
@@ -1962,8 +1998,7 @@ if (!isSelf) {
 
         friendBtn.disabled = true;
 
-        friendBtn.textContent =
-          "⏳ Sending...";
+        friendBtn.innerHTML = iconLabel("clock", "Sending...");
 
         await sendLiveRoomFriendRequest(
           uid,
@@ -2433,7 +2468,7 @@ async function acceptLiveRoomFriendRequest(
     const muteBtn = document.createElement("button");
     muteBtn.type = "button";
     muteBtn.className = "profile-action-btn mute";
-    muteBtn.textContent = muted ? "🔊 Unmute" : "🔇 Mute (15m)";
+    muteBtn.innerHTML = muted ? iconLabel("volume", "Unmute") : iconLabel("volumeX", "Mute (15m)");
     muteBtn.addEventListener("click", () => {
       if (muted) unmuteUser(uid);
       else muteUser(uid, 15);
@@ -2444,7 +2479,7 @@ async function acceptLiveRoomFriendRequest(
     const removeBtn = document.createElement("button");
     removeBtn.type = "button";
     removeBtn.className = "profile-action-btn remove";
-    removeBtn.textContent = "🛡️ Remove";
+    removeBtn.innerHTML = iconLabel("shield", "Remove");
     removeBtn.addEventListener("click", () => {
       const confirmed = confirm(`Remove ${fullUser.name || "this user"} from the room?`);
       if (confirmed) {
@@ -2457,7 +2492,7 @@ async function acceptLiveRoomFriendRequest(
     const banBtn = document.createElement("button");
 banBtn.type = "button";
 banBtn.className = "profile-action-btn remove";
-banBtn.textContent = "⛔ Ban";
+banBtn.innerHTML = iconLabel("ban", "Ban");
 
 banBtn.addEventListener("click", async () => {
 
@@ -2697,7 +2732,7 @@ function startReply(messageData, messageId) {
     id: messageId,
     senderId: messageData.senderId || "",
     senderName: messageData.senderName || messageData.username || "User",
-    text: messageData.text || (messageData.imageURL ? "📸 Image" : messageData.audioURL ? "🎤 Voice message" : "")
+    text: messageData.text || (messageData.imageURL ? "Image" : messageData.audioURL ? "Voice message" : "")
   };
 
   replyPreviewName.textContent = "Replying to " + replyingTo.senderName;
@@ -3302,7 +3337,7 @@ nameRow.appendChild(name);
 if (isMuted(data.senderId)) {
   const mutedStatus = document.createElement("span");
   mutedStatus.className = "message-muted-status";
-  mutedStatus.textContent = "🔇 Muted";
+  mutedStatus.innerHTML = iconLabel("volumeX", "Muted", 12);
   nameRow.appendChild(mutedStatus);
 }
 
@@ -3327,7 +3362,7 @@ content.appendChild(nameRow);
         repliedName.textContent = data.replyTo.senderName || "User";
 
         const repliedText = document.createElement("span");
-        repliedText.textContent = data.replyTo.text || "📸 Image";
+        repliedText.textContent = data.replyTo.text || "Image";
 
         repliedMessage.appendChild(repliedName);
         repliedMessage.appendChild(repliedText);
@@ -3379,7 +3414,7 @@ content.appendChild(nameRow);
         const playBtn = document.createElement("button");
         playBtn.type = "button";
         playBtn.className = "voice-play-btn";
-        playBtn.textContent = "▶";
+        playBtn.innerHTML = icon("play", 14, true);
 
         const wave = document.createElement("div");
         wave.className = "voice-wave";
@@ -3404,17 +3439,17 @@ content.appendChild(nameRow);
           if (audioEl.paused) {
             audioEl.play();
             activeAudioEl = audioEl;
-            playBtn.textContent = "⏸";
+            playBtn.innerHTML = icon("pause", 14, true);
             wave.classList.add("playing");
           } else {
             audioEl.pause();
-            playBtn.textContent = "▶";
+            playBtn.innerHTML = icon("play", 14, true);
             wave.classList.remove("playing");
           }
         });
 
         audioEl.addEventListener("ended", () => {
-          playBtn.textContent = "▶";
+          playBtn.innerHTML = icon("play", 14, true);
           wave.classList.remove("playing");
         });
 
@@ -3459,7 +3494,7 @@ content.appendChild(nameRow);
       const addReactionBtn = document.createElement("button");
       addReactionBtn.type = "button";
       addReactionBtn.className = "add-reaction-btn";
-      addReactionBtn.textContent = "😊";
+      addReactionBtn.innerHTML = icon("smile", 16);
       addReactionBtn.title = "React";
       addReactionBtn.addEventListener("click", () => openReactionPicker(addReactionBtn, messageId));
       reactionsBar.appendChild(addReactionBtn);
@@ -3469,7 +3504,7 @@ content.appendChild(nameRow);
       // ---- reply button ----
       const replyBtn = document.createElement("button");
       replyBtn.type = "button";
-      replyBtn.textContent = "↩️ Reply";
+      replyBtn.innerHTML = iconLabel("reply", "Reply", 12);
       replyBtn.style.border = "none";
       replyBtn.style.background = "transparent";
       replyBtn.style.color = "#555";
@@ -3485,7 +3520,7 @@ content.appendChild(nameRow);
         pinBtn.type = "button";
         pinBtn.className = "pin-msg-btn";
         const isCurrentlyPinned = roomMeta.pinnedMessage && roomMeta.pinnedMessage.id === messageId;
-        pinBtn.textContent = isCurrentlyPinned ? "📌 Unpin" : "📌 Pin";
+        pinBtn.innerHTML = iconLabel("pin", isCurrentlyPinned ? "Unpin" : "Pin", 12);
         pinBtn.style.border = "none";
         pinBtn.style.fontSize = "10px";
         pinBtn.style.padding = "3px 8px";

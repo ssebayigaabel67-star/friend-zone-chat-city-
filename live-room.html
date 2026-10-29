@@ -3843,6 +3843,128 @@ body.dark-mode .image-caption-text { color: #ccc; }
 .profile-action-btn.friend { background: rgba(53,208,127,.16); color: #1c8a55; }
 .profile-action-btn.like { background: rgba(255,45,139,.14); color: #c4005e; }
 
+
+/* =====================================================
+   APP ICONS + HEADER THAT FITS EVERY SCREEN
+   (placed last so it wins over older header rules)
+   ===================================================== */
+.ic {
+  display: inline-block;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vertical-align: -3px;
+}
+.ic.ic-fill { fill: currentColor; }
+.ic-l { margin-right: 5px; }
+
+.live-header {
+  gap: 8px;
+}
+
+.live-header .back-btn {
+  flex-shrink: 0;
+  font-size: 0;
+}
+
+.live-header .room-title {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.live-header .room-title > div:last-child {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.live-header .room-title h1 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.live-header .room-title span {
+  white-space: nowrap;
+}
+
+.live-header .room-icon {
+  flex-shrink: 0;
+  color: #6c2cff;
+  font-size: 0;
+}
+
+.header-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.live-header .header-icon-btn,
+.live-header .theme-toggle-btn {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 0;
+  cursor: pointer;
+  background: rgba(255,255,255,.92);
+  color: #6c2cff;
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+}
+
+.live-header .header-icon-btn .ic,
+.live-header .theme-toggle-btn .ic {
+  vertical-align: 0;
+}
+
+body.dark-mode .live-header .header-icon-btn,
+body.dark-mode .live-header .theme-toggle-btn {
+  background: rgba(255,255,255,.14);
+  color: #fff;
+}
+
+body.dark-mode .live-header .theme-toggle-btn {
+  color: #ffd000;
+}
+
+.welcome-icon { color: #fff; font-size: 0; }
+
+.online-arrow { display: inline-flex; align-items: center; }
+
+/* phones: hide the globe so all five buttons fit */
+@media (max-width: 480px) {
+  .live-header { padding: 0 8px; gap: 6px; }
+  .live-header .room-icon { display: none; }
+  .header-actions { gap: 4px; }
+  .live-header .header-icon-btn,
+  .live-header .theme-toggle-btn { width: 33px; height: 33px; }
+  .live-header .header-icon-btn .ic,
+  .live-header .theme-toggle-btn .ic { width: 17px; height: 17px; }
+}
+
+/* very small phones */
+@media (max-width: 360px) {
+  .live-header { padding: 0 6px; gap: 5px; }
+  .live-header .back-btn { width: 34px; height: 34px; }
+  .live-header .room-title h1 { font-size: 14px; }
+  .header-actions { gap: 3px; }
+  .live-header .header-icon-btn,
+  .live-header .theme-toggle-btn { width: 30px; height: 30px; }
+  .live-header .header-icon-btn .ic,
+  .live-header .theme-toggle-btn .ic { width: 16px; height: 16px; }
+}
 </style>
 <body>
 
@@ -3853,14 +3975,16 @@ body.dark-mode .image-caption-text { color: #ccc; }
       id="backBtn"
       class="back-btn"
       type="button"
+      title="Back"
+      aria-label="Back"
     >
-      ←
+      <svg class="ic" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
     </button>
 
     <div class="room-title">
 
       <div class="room-icon">
-        🌍
+        <svg class="ic" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
       </div>
 
       <div>
@@ -3879,40 +4003,35 @@ body.dark-mode .image-caption-text { color: #ccc; }
 
     </div>
 
-    <div style="margin-left: auto; display: flex; align-items: center;">
+    <div class="header-actions">
 
       <button
         id="musicBtn"
         class="header-icon-btn"
         type="button"
         title="Music"
-      >🎵</button>
+        aria-label="Music"
+      ><svg class="ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></button>
 
       <button
         id="rankTableBtn"
         class="header-icon-btn"
         type="button"
         title="Rank table"
-      >🏆</button>
-
-      <button
-        id="searchBtn"
-        class="header-icon-btn"
-        type="button"
-        title="Search"
-      >🔎</button>
+        aria-label="Rank table"
+      ><svg class="ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-1.21 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98 1.21 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg></button>
 
       <button
         id="friendRequestsBtn"
         class="header-icon-btn"
         type="button"
         title="Friend requests"
-        style="position: relative;"
+        aria-label="Friend requests"
       >
-        🔔
+        <svg class="ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <span
           id="friendRequestsBadge"
-          style="display:none; position:absolute; top:-2px; right:-2px; background:#ff2d55; color:#fff; font-size:9px; font-weight:800; border-radius:999px; padding:1px 5px;"
+          style="display:none; position:absolute; top:-3px; right:-3px; background:#ff2d55; color:#fff; font-size:9px; font-weight:800; border-radius:999px; padding:1px 5px;"
         >0</span>
       </button>
 
@@ -3921,7 +4040,8 @@ body.dark-mode .image-caption-text { color: #ccc; }
         class="header-icon-btn"
         type="button"
         title="Room info"
-      >ℹ️</button>
+        aria-label="Room info"
+      ><svg class="ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></button>
 
       <button
         id="themeToggleBtn"
@@ -3929,9 +4049,8 @@ body.dark-mode .image-caption-text { color: #ccc; }
         type="button"
         title="Toggle dark mode"
         aria-label="Toggle dark mode"
-        style="margin-left: 6px;"
       >
-        🌙
+        <svg class="ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       </button>
 
     </div>
@@ -3959,9 +4078,7 @@ body.dark-mode .image-caption-text { color: #ccc; }
       0 online
     </span>
 
-    <span class="online-arrow">
-      ▾
-    </span>
+    <span class="online-arrow"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></span>
   </button>
 
 
@@ -3986,9 +4103,7 @@ body.dark-mode .image-caption-text { color: #ccc; }
         id="closeOnlinePopover"
         type="button"
         class="close-online-popover"
-      >
-        ✕
-      </button>
+      ><svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
 
     </div>
 
@@ -4021,7 +4136,7 @@ body.dark-mode .image-caption-text { color: #ccc; }
         id="pinnedBanner"
         class="pinned-banner"
       >
-        <span class="pin-icon">📌</span>
+        <span class="pin-icon"><svg class="ic" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><line x1="12" y1="17" x2="12" y2="22"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg></span>
         <div class="pinned-banner-body">
           <div class="pinned-banner-label">Pinned message</div>
           <div id="pinnedBannerText" class="pinned-banner-text"></div>
@@ -4052,7 +4167,7 @@ body.dark-mode .image-caption-text { color: #ccc; }
         <div class="welcome-message">
 
           <div class="welcome-icon">
-            🌍
+            <svg class="ic" viewBox="0 0 24 24" width="40" height="40" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
           </div>
 
           <h2>Welcome to FriendsZone Live!</h2>
@@ -4335,13 +4450,13 @@ body.dark-mode .image-caption-text { color: #ccc; }
         if (theme === 'dark') {
           body.classList.add('dark-mode');
           if (btn) {
-            btn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+            btn.innerHTML = '<svg class="ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
             btn.style.display = 'inline-flex';
           }
         } else {
           body.classList.remove('dark-mode');
           if (btn) {
-            btn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+            btn.innerHTML = '<svg class="ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
             btn.style.display = 'inline-flex';
           }
         }

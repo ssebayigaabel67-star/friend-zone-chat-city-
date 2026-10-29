@@ -15382,6 +15382,7 @@ body.dark-mode .save-account-btn {
 .fz-icon:has(use[href="#icon-globe"])      { color: #29B6F6; }
 .fz-icon:has(use[href="#icon-shield"])     { color: #26A69A; }
 .fz-icon:has(use[href="#icon-moon"])       { color: #B39DDB; }
+.fz-icon:has(use[href="#icon-music"])      { color: #EC407A; }
 .fz-icon:has(use[href="#icon-megaphone"])  { color: #FF7043; }
 .fz-icon:has(use[href="#icon-logout"])     { color: #E53935; }
 .fz-icon:has(use[href="#icon-alert"])      { color: #E53935; }
@@ -15660,6 +15661,12 @@ body.dark-mode .account-option.account-delete-option strong {
 
   <symbol id="icon-shield" viewBox="0 0 24 24">
     <path d="M12 3l8 3v5c0 5.2-3.4 8.7-8 10-4.6-1.3-8-4.8-8-10V6l8-3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+  </symbol>
+
+  <symbol id="icon-music" viewBox="0 0 24 24">
+    <path d="M9 18V5l12-2v13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="6" cy="18" r="3" fill="none" stroke="currentColor" stroke-width="2"/>
+    <circle cx="18" cy="16" r="3" fill="none" stroke="currentColor" stroke-width="2"/>
   </symbol>
 
   <symbol id="icon-moon" viewBox="0 0 24 24">
@@ -16030,7 +16037,7 @@ body.dark-mode .account-option.account-delete-option strong {
     title="Music"
     type="button"
   >
-    🎵
+    <svg class="fz-icon" aria-hidden="true"><use href="#icon-music"></use></svg>
   </button>
 
 

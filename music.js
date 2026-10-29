@@ -78,6 +78,32 @@ function toast(message) {
 }
 
 
+
+// ==========================================
+// ICONS (SVG, same style as the rest of the app)
+// ==========================================
+
+const ICONS = {
+  music: '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+  x: '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+  play: '<polygon points="6 3 20 12 6 21 6 3"/>',
+  pause: '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>',
+  prev: '<polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/>',
+  next: '<polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/>',
+  shuffle: '<polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/>',
+  repeat: '<polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>',
+  repeatOne: '<polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/><path d="M11 10h1v4"/>',
+  volLow: '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>',
+  volHigh: '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>',
+  search: '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+  phone: '<rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>',
+  plus: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>'
+};
+
+function svg(name, size = 18, filled = false) {
+  return `<svg class="fzm-ic${filled ? " f" : ""}" viewBox="0 0 24 24" width="${size}" height="${size}" aria-hidden="true">${ICONS[name] || ""}</svg>`;
+}
+
 // ==========================================
 // STYLES (injected once)
 // ==========================================
@@ -147,6 +173,13 @@ function injectStyles() {
     .fzm-toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);z-index:100001;padding:10px 16px;
       border-radius:99px;color:#fff;font-weight:700;font-size:13px;background:#333;box-shadow:0 8px 24px rgba(0,0,0,.3)}
 
+    .fzm-ic{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px;flex-shrink:0}
+    .fzm-ic.f{fill:currentColor}
+    .fzm-head h3,.fzm-tab,.fzm-pick{display:flex;align-items:center;justify-content:center;gap:6px}
+    .fzm-head h3{justify-content:flex-start}
+    .fzm-ctl,.fzm-mini,.fzm-x{display:inline-flex;align-items:center;justify-content:center;padding:0}
+    .fzm-mini{padding:7px 10px}
+    .fzm-vol{display:flex;align-items:center;gap:8px}
     @keyframes fzmPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
     .fzm-playing{animation:fzmPulse 1.2s infinite}
   `;
@@ -167,13 +200,13 @@ function buildPanel() {
   overlay.innerHTML = `
     <div class="fzm-sheet">
       <div class="fzm-head">
-        <h3>🎵 Music</h3>
-        <button type="button" class="fzm-x" data-act="close">✕</button>
+        <h3>${svg("music", 18)} Music</h3>
+        <button type="button" class="fzm-x" data-act="close">${svg("x", 16)}</button>
       </div>
 
       <div class="fzm-now">
         <div class="fzm-nowrow">
-          <div class="fzm-art" id="fzmArt">🎵</div>
+          <div class="fzm-art" id="fzmArt">${svg("music", 26)}</div>
           <div class="fzm-meta">
             <div class="fzm-title" id="fzmTitle">Nothing playing</div>
             <div class="fzm-artist" id="fzmArtist">Pick a song below</div>
@@ -187,19 +220,19 @@ function buildPanel() {
         </div>
 
         <div class="fzm-controls">
-          <button type="button" class="fzm-ctl" id="fzmShuffle" data-act="shuffle" title="Shuffle">🔀</button>
-          <button type="button" class="fzm-ctl" data-act="prev" title="Previous">⏮</button>
-          <button type="button" class="fzm-ctl big" id="fzmPlay" data-act="toggle" title="Play / pause">▶</button>
-          <button type="button" class="fzm-ctl" data-act="next" title="Next">⏭</button>
-          <button type="button" class="fzm-ctl" id="fzmRepeat" data-act="repeat" title="Repeat">🔁</button>
+          <button type="button" class="fzm-ctl" id="fzmShuffle" data-act="shuffle" title="Shuffle">${svg("shuffle")}</button>
+          <button type="button" class="fzm-ctl" data-act="prev" title="Previous">${svg("prev", 18, true)}</button>
+          <button type="button" class="fzm-ctl big" id="fzmPlay" data-act="toggle" title="Play / pause">${svg("play", 22, true)}</button>
+          <button type="button" class="fzm-ctl" data-act="next" title="Next">${svg("next", 18, true)}</button>
+          <button type="button" class="fzm-ctl" id="fzmRepeat" data-act="repeat" title="Repeat">${svg("repeat")}</button>
         </div>
 
-        <div class="fzm-vol">🔈 <input type="range" id="fzmVol" min="0" max="100" value="80"> 🔊</div>
+        <div class="fzm-vol">${svg("volLow", 16)} <input type="range" id="fzmVol" min="0" max="100" value="80"> ${svg("volHigh", 16)}</div>
       </div>
 
       <div class="fzm-tabs">
-        <button type="button" class="fzm-tab active" data-tab="search">🔎 Search</button>
-        <button type="button" class="fzm-tab" data-tab="phone">📱 My phone</button>
+        <button type="button" class="fzm-tab active" data-tab="search">${svg("search", 15)} Search</button>
+        <button type="button" class="fzm-tab" data-tab="phone">${svg("phone", 15)} My phone</button>
         <button type="button" class="fzm-tab" data-tab="queue" id="fzmQueueTab">Queue</button>
       </div>
 
@@ -324,7 +357,7 @@ function setTab(tab) {
 function trackRow(t, i, kind) {
   const art = t.cover
     ? `<img src="${esc(t.cover)}" alt="" loading="lazy">`
-    : `<div class="fzm-thumb">🎵</div>`;
+    : `<div class="fzm-thumb">${svg("music", 20)}</div>`;
 
   if (kind === "result") {
     return `
@@ -334,8 +367,8 @@ function trackRow(t, i, kind) {
           <div class="fzm-title">${esc(t.title)}</div>
           <div class="fzm-artist">${esc(t.artist)}</div>
         </div>
-        <button type="button" class="fzm-mini" data-act="add-result" data-i="${i}" title="Add to queue">＋</button>
-        <button type="button" class="fzm-mini" data-act="play-result" data-i="${i}" title="Play">▶</button>
+        <button type="button" class="fzm-mini" data-act="add-result" data-i="${i}" title="Add to queue">${svg("plus", 16)}</button>
+        <button type="button" class="fzm-mini" data-act="play-result" data-i="${i}" title="Play">${svg("play", 14, true)}</button>
       </div>`;
   }
 
@@ -343,10 +376,10 @@ function trackRow(t, i, kind) {
     <div class="fzm-row${i === state.index ? " playing" : ""}">
       ${art}
       <div class="fzm-meta" data-act="play-queue" data-i="${i}">
-        <div class="fzm-title">${i === state.index ? "🎶 " : ""}${esc(t.title)}</div>
+        <div class="fzm-title">${i === state.index ? svg("music", 13) + " " : ""}${esc(t.title)}</div>
         <div class="fzm-artist">${esc(t.artist)}</div>
       </div>
-      <button type="button" class="fzm-mini" data-act="remove" data-i="${i}" title="Remove">✕</button>
+      <button type="button" class="fzm-mini" data-act="remove" data-i="${i}" title="Remove">${svg("x", 14)}</button>
     </div>`;
 }
 
@@ -380,7 +413,7 @@ function renderBody() {
   // ---------- PHONE ----------
   if (state.tab === "phone") {
     body.innerHTML = `
-      <div class="fzm-pick" data-act="pick">📱 Choose music from your phone</div>
+      <div class="fzm-pick" data-act="pick">${svg("phone", 18)} Choose music from your phone</div>
       <div class="fzm-note">
         Pick one or many songs. They play right on your device and are never uploaded.<br>
         Local songs are cleared when you close or refresh the page.
@@ -418,16 +451,16 @@ function updatePlayer() {
 
   const art = overlay.querySelector("#fzmArt");
   if (t && t.cover) art.innerHTML = `<img src="${esc(t.cover)}" alt="" style="width:100%;height:100%;border-radius:12px;object-fit:cover">`;
-  else art.textContent = "🎵";
+  else art.innerHTML = svg("music", 26);
 
   overlay.querySelector("#fzmTitle").textContent = t ? t.title : "Nothing playing";
   overlay.querySelector("#fzmArtist").textContent = t ? t.artist : "Pick a song below";
-  overlay.querySelector("#fzmPlay").textContent = playing ? "⏸" : "▶";
+  overlay.querySelector("#fzmPlay").innerHTML = playing ? svg("pause", 22, true) : svg("play", 22, true);
   overlay.querySelector("#fzmShuffle").classList.toggle("on", state.shuffle);
 
   const rep = overlay.querySelector("#fzmRepeat");
   rep.classList.toggle("on", state.repeat !== "off");
-  rep.textContent = state.repeat === "one" ? "🔂" : "🔁";
+  rep.innerHTML = state.repeat === "one" ? svg("repeatOne") : svg("repeat");
 
   // Only the queue needs a redraw (highlights the playing song).
   // Redrawing the search tab would wipe what the user is typing.
