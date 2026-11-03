@@ -1674,6 +1674,21 @@ onSnapshot(
 // the user has already opened a different profile (or closed the popup).
 let profileRequestToken = 0;
 
+// ==========================================
+// AGE FROM DATE OF BIRTH (same as homepage)
+// ==========================================
+
+function calcAgeFromDob(dob) {
+  if (!dob) return "";
+  const birth = new Date(dob);
+  if (isNaN(birth.getTime())) return "";
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  const m = today.getMonth() - birth.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+  return age >= 0 ? age : "";
+}
+
 async function openProfilePopup(user) {
   const uid = user.uid;
   const myToken = ++profileRequestToken;
@@ -1714,13 +1729,32 @@ async function openProfilePopup(user) {
         username: data.username || user.username || "",
         photoURL: data.photoURL || data.profilePicture || data.photo || user.photoURL || "",
         email: data.email || "",
-        age: data.age || "",
-        country: data.country || data.location || "",
+        age: calcAgeFromDob(data.dob) || data.age || "",
+        country: data.nationality || data.country || data.location || "",
         online: data.online !== undefined ? data.online : online,
-        likedBy: data.likedBy || [],
-        friends: data.friends || [],
+        likesCount: data.likesCount || 0,
+        friendsCount: data.friendsCount || 0,
         messageCount: data.messageCount || 0
       };
+
+      // Real friend count + whether I already liked this person
+      // (same data the homepage profile popover uses)
+      try {
+        const friendsSnap = await getDocs(collection(db, "users", uid, "friends"));
+        fullUser.friendsCount = friendsSnap.size;
+      } catch (e) {
+        console.warn("Could not count friends:", e);
+      }
+
+      fullUser.likedByMe = false;
+      if (currentUser && currentUser.uid !== uid) {
+        try {
+          const myLike = await getDoc(doc(db, "users", uid, "likes", currentUser.uid));
+          fullUser.likedByMe = myLike.exists();
+        } catch (e) {
+          console.warn("Could not read like status:", e);
+        }
+      }
 
       profileModalAvatar.src = fullUser.photoURL || "https://via.placeholder.com/84";
       profileModalName.textContent = fullUser.name;
@@ -1755,8 +1789,8 @@ async function openProfilePopup(user) {
   if (profileModalStats) {
     profileModalStats.innerHTML = `
       <div class="profile-modal-stat"><span class="num">${fullUser.messageCount || 0}</span><span class="lbl">Messages</span></div>
-      <div class="profile-modal-stat"><span class="num">${(fullUser.likedBy || []).length}</span><span class="lbl">Likes</span></div>
-      <div class="profile-modal-stat"><span class="num">${(fullUser.friends || []).length}</span><span class="lbl">Friends</span></div>
+      <div class="profile-modal-stat"><span class="num">${fullUser.likesCount || 0}</span><span class="lbl">Likes</span></div>
+      <div class="profile-modal-stat"><span class="num">${fullUser.friendsCount || 0}</span><span class="lbl">Friends</span></div>
     `;
   }
 
@@ -1781,7 +1815,7 @@ async function openProfilePopup(user) {
   const rows = [
     { label: "Email", value: fullUser.email || "Not provided" },
     { label: "Age", value: fullUser.age || "Not provided" },
-    { label: "Country", value: fullUser.country || "Not provided" }
+    { label: "Nationality", value: fullUser.country || "Not provided" }
   ];
 
   profileModalInfo.innerHTML = rows
@@ -1828,11 +1862,11 @@ async function openProfilePopup(user) {
 
   // ---- like ----
   if (!isSelf) {
-    const liked = (fullUser.likedBy || []).includes(currentUser ? currentUser.uid : "");
+    const liked = !!fullUser.likedByMe;
     const likeBtn = document.createElement("button");
     likeBtn.type = "button";
     likeBtn.className = "profile-action-btn like" + (liked ? " liked" : "");
-    likeBtn.innerHTML = liked ? iconLabel("heart", `Liked (${fullUser.likedBy.length})`, 16, true) : iconLabel("heart", `Like (${(fullUser.likedBy || []).length})`);
+    likeBtn.innerHTML = liked ? iconLabel("heart", `Liked (${fullUser.likesCount || 0})`, 16, true) : iconLabel("heart", `Like (${fullUser.likesCount || 0})`);
     likeBtn.addEventListener("click", () => toggleLike(uid, fullUser.name));
     profileModalActions.appendChild(likeBtn);
   }
@@ -1850,39 +1884,25 @@ async function toggleLike(uid, name) {
   }
 
   try {
-    const userRef = doc(db, "users", uid);
-    const snap = await getDoc(userRef);
+    // Same system as the homepage: users/{uid}/likes/{myUid} + likesCount
+    const likeRef = doc(db, "users", uid, "likes", currentUser.uid);
+    const likeSnap = await getDoc(likeRef);
 
-    if (!snap.exists()) {
-      showToast("User profile not found.");
-      return;
-    }
-
-    const data = snap.data();
-
-    const likedBy = Array.isArray(data.likedBy)
-      ? data.likedBy
-      : [];
-
-    const alreadyLiked =
-      likedBy.includes(currentUser.uid);
-
-    if (alreadyLiked) {
-
-      await updateDoc(userRef, {
-        likedBy: arrayRemove(currentUser.uid)
-      });
-
+    if (likeSnap.exists()) {
+      await deleteDoc(likeRef);
+      await updateDoc(doc(db, "users", uid), { likesCount: increment(-1) });
       showToast("💔 Like removed.");
-
     } else {
-
-      await updateDoc(userRef, {
-        likedBy: arrayUnion(currentUser.uid)
+      await setDoc(likeRef, {
+        userId: currentUser.uid,
+        timestamp: serverTimestamp()
       });
-
+      await updateDoc(doc(db, "users", uid), { likesCount: increment(1) });
       showToast(`❤️ You liked ${name || "this profile"}!`);
     }
+
+    // Refresh the popup so the count and button update
+    openProfilePopup({ uid, name, online: onlineUsersMap.has(uid) });
 
   } catch (error) {
 

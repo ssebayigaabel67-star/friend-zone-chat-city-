@@ -10,6 +10,15 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="manifest" href="manifest.json">
+<script>
+  /* Capture the browser's install prompt as early as possible */
+  window.__fzInstallEvent = null;
+  window.addEventListener("beforeinstallprompt", function (e) {
+    e.preventDefault();
+    window.__fzInstallEvent = e;
+    window.dispatchEvent(new Event("fz-install-ready"));
+  });
+</script>
 <title>Friend Zone Chat
 </title>
 <style>
@@ -5592,6 +5601,73 @@ body.dark-mode .settings-option small {
   }
 
 }
+
+/* Settings options that are links */
+a.settings-option {
+  text-decoration: none;
+  color: inherit;
+  box-sizing: border-box;
+}
+
+/* =================================
+   INSTALL APP POPOVER
+================================= */
+.fz-install-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 100001;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+}
+.fz-install-overlay.show { display: flex; }
+.fz-install-card {
+  width: 100%;
+  max-width: 360px;
+  background: #fff;
+  color: #222;
+  border-radius: 20px;
+  padding: 24px 20px;
+  text-align: center;
+  box-shadow: 0 15px 50px rgba(0,0,0,0.4);
+}
+.fz-install-card img {
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
+  margin-bottom: 10px;
+}
+.fz-install-card h2 { margin: 0 0 6px; font-size: 20px; }
+.fz-install-card p { margin: 0 0 14px; font-size: 14px; line-height: 1.5; color: #555; }
+.fz-install-steps { text-align: left; font-size: 14px; line-height: 1.6; margin: 0 0 14px; padding-left: 20px; color: #333; }
+.fz-install-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: #176b57;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.fz-install-later {
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  color: #777;
+  font-size: 14px;
+  cursor: pointer;
+}
+body.dark-mode .fz-install-card { background: #1e1e1e; color: #fff; }
+body.dark-mode .fz-install-card p,
+body.dark-mode .fz-install-steps { color: #ccc; }
+body.dark-mode .fz-install-later { color: #aaa; }
+
   /* =====================================
    NOTIFICATIONS POPOVER
 ===================================== */
@@ -17943,6 +18019,38 @@ body.dark-mode .account-option.account-delete-option strong {
       <b>›</b>
     </button>
 
+    <a
+      class="settings-option"
+      href="FriendsZone_Privacy_Policy_and_Terms.html"
+      target="_blank"
+      rel="noopener"
+    >
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-shield"></use></svg></span>
+
+      <div>
+        <strong>Privacy Policy &amp; Terms</strong>
+        <small>How we handle your information</small>
+      </div>
+
+      <b>›</b>
+    </a>
+
+    <a
+      class="settings-option"
+      href="advertise.html"
+      target="_blank"
+      rel="noopener"
+    >
+      <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-globe"></use></svg></span>
+
+      <div>
+        <strong>Advertise with FriendsZone</strong>
+        <small>Business and advertising enquiries</small>
+      </div>
+
+      <b>›</b>
+    </a>
+
   </div>
 
 </div>
@@ -20532,6 +20640,100 @@ body.dark-mode .account-option.account-delete-option strong {
 
   </div>
 </div>
+
+<!-- =====================================
+     INSTALL APP POPOVER (shown once to new visitors)
+===================================== -->
+<div id="fzInstallOverlay" class="fz-install-overlay">
+  <div class="fz-install-card" role="dialog" aria-modal="true" aria-labelledby="fzInstallTitle">
+    <img src="icon-192.png" alt="FriendsZone icon">
+    <h2 id="fzInstallTitle">Add FriendsZone to your phone</h2>
+    <p id="fzInstallText">Install the app for one-tap opening, straight from your home screen.</p>
+    <ol id="fzInstallSteps" class="fz-install-steps" style="display:none;"></ol>
+    <button id="fzInstallBtn" class="fz-install-btn" type="button">Install</button>
+    <button id="fzInstallLater" class="fz-install-later" type="button">Not now</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var KEY = "fz_install_prompt_done";
+
+  function safeGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function safeSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  // Already installed / opened from the home-screen icon: nothing to do
+  var standalone =
+    (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
+    window.navigator.standalone === true;
+  if (standalone) { safeSet(KEY, "installed"); return; }
+  if (safeGet(KEY)) return;
+
+  var overlay = document.getElementById("fzInstallOverlay");
+  var installBtn = document.getElementById("fzInstallBtn");
+  var laterBtn = document.getElementById("fzInstallLater");
+  var text = document.getElementById("fzInstallText");
+  var steps = document.getElementById("fzInstallSteps");
+  if (!overlay) return;
+
+  var ua = navigator.userAgent || "";
+  var isIOS = /iphone|ipad|ipod/i.test(ua);
+
+  function close(remember) {
+    overlay.classList.remove("show");
+    if (remember) safeSet(KEY, "dismissed");
+  }
+
+  function show() {
+    if (overlay.classList.contains("show")) return;
+
+    if (window.__fzInstallEvent) {
+      // Android / desktop Chrome: real install button
+      installBtn.style.display = "block";
+      steps.style.display = "none";
+    } else {
+      // iPhone Safari and others: show manual steps
+      installBtn.style.display = "none";
+      steps.style.display = "block";
+      if (isIOS) {
+        text.textContent = "Add FriendsZone to your home screen:";
+        steps.innerHTML =
+          "<li>Tap the <b>Share</b> button in Safari.</li>" +
+          "<li>Scroll down and tap <b>Add to Home Screen</b>.</li>" +
+          "<li>Tap <b>Add</b>.</li>";
+      } else {
+        text.textContent = "Add FriendsZone to your home screen:";
+        steps.innerHTML =
+          "<li>Open your browser menu (<b>⋮</b> or <b>⋯</b>).</li>" +
+          "<li>Tap <b>Install app</b> or <b>Add to Home screen</b>.</li>";
+      }
+    }
+    overlay.classList.add("show");
+  }
+
+  installBtn.addEventListener("click", function () {
+    var ev = window.__fzInstallEvent;
+    if (!ev) return;
+    ev.prompt();
+    ev.userChoice.then(function (choice) {
+      window.__fzInstallEvent = null;
+      close(true);
+    }).catch(function () { close(true); });
+  });
+
+  laterBtn.addEventListener("click", function () { close(true); });
+
+  window.addEventListener("appinstalled", function () {
+    safeSet(KEY, "installed");
+    close(false);
+  });
+
+  // Give the page a few seconds to load before showing it
+  window.addEventListener("load", function () {
+    setTimeout(show, 4000);
+  });
+})();
+</script>
 
 <script type="module" src="Home.js"></script>
 <script type="module" src="App.js"></script>
