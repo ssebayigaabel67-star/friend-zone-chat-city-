@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-fz-no-layout>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -42,13 +42,15 @@
     .filters { display: flex; gap: 6px; margin-bottom: 10px; }
     .filters button { flex: 1; }
     .banner { height: 60px; border-radius: 10px 10px 0 0; background: linear-gradient(135deg,#7b5cff,#ff5ca8,#ffb347); background-size: cover; background-position: center; margin: -14px -14px 10px; }
+    .badges { display: inline-flex; vertical-align: middle; margin-left: 6px; }
+    .badges .fz-badge { margin-left: 4px; }
     .logout { border: none; background: #555; color: #fff; padding: 10px 15px; border-radius: 8px; cursor: pointer; margin-top: 6px; }
   </style>
 </head>
 <body>
   <header class="hdr">
     <h1>👑 Owner Panel</h1>
-    <p>Reports • Accounts • Titles • Overview</p>
+    <p>Reports • Accounts • Staff • Overview</p>
   </header>
 
   <div id="adminStatus" class="status">Checking owner access...</div>
@@ -58,6 +60,7 @@
       <button class="tab active" data-tab="overview">Overview</button>
       <button class="tab" data-tab="reports">Reports <span id="reportBadge"></span></button>
       <button class="tab" data-tab="users">Users</button>
+      <button class="tab" data-tab="staff">Staff</button>
     </div>
 
     <div class="wrap">
@@ -84,6 +87,21 @@
         <div id="userList"></div>
       </section>
 
+      <!-- STAFF -->
+      <section id="tab-staff" class="hidden">
+        <div class="card">
+          <b>⭐ Current staff</b>
+          <div class="sm" style="margin:4px 0 10px">Staff get a shield badge next to their name.</div>
+          <div id="staffList"></div>
+        </div>
+        <div class="card">
+          <b>➕ Add staff</b>
+          <div class="sm" style="margin:4px 0 10px">Search a member, then tap “Make staff”.</div>
+          <input type="text" id="staffSearch" placeholder="Search name, email or username">
+          <div id="staffResults"></div>
+        </div>
+      </section>
+
       <button id="logoutBtn" class="logout" type="button">Log Out</button>
     </div>
   </div>
@@ -95,7 +113,7 @@
       getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc,
       updateDoc, arrayUnion, serverTimestamp, query, orderBy, limit
     } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-    import { TITLE_COLORS, isOnlineNow } from "./fz-shared.js";
+    import { isOnlineNow, renderBadge } from "./fz-shared.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAxVyuHiNb-NEeXLfMfaq0RS9ERfahORt4",
@@ -151,7 +169,7 @@
     document.querySelectorAll(".tab").forEach((tab) => {
       tab.addEventListener("click", () => {
         document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("active", t === tab));
-        ["overview", "reports", "users"].forEach((n) => {
+        ["overview", "reports", "users", "staff"].forEach((n) => {
           $("tab-" + n).classList.toggle("hidden", n !== tab.dataset.tab);
         });
       });
@@ -165,6 +183,7 @@
     });
     $("refreshBtn").addEventListener("click", loadAll);
     $("userSearch").addEventListener("input", renderUsers);
+    $("staffSearch").addEventListener("input", renderStaff);
 
     // ---------- load ----------
     async function loadAll() {
@@ -181,6 +200,7 @@
         renderStats();
         renderReports();
         renderUsers();
+        renderStaff();
       } catch (error) {
         console.error(error);
         alert("Could not load data: " + error.message + "\n\nCheck your Firestore rules for users, titles and reports.");
@@ -197,7 +217,7 @@
         <div class="stat"><b>${allUsers.length}</b><span>Total users</span></div>
         <div class="stat"><b>${online}</b><span>Online now</span></div>
         <div class="stat"><b>${open}</b><span>Open reports</span></div>
-        <div class="stat"><b>${Object.keys(titles).length}</b><span>Titles given</span></div>`;
+        <div class="stat"><b>${Object.values(titles).filter((t) => t.kind === "staff").length}</b><span>Staff members</span></div>`;
       $("reportBadge").textContent = open ? "(" + open + ")" : "";
     }
 
@@ -290,8 +310,7 @@
             <img class="ph" src="${esc(u.photoURL || "images/default-profile.png")}" onerror="this.src='images/default-profile.png'" alt="">
             <div class="grow">
               <div class="nm">${esc(u.name || u.username || "Unknown")}
-                ${u.id === ADMIN_UID ? '<span class="tag title" style="--c:#d4a017">Owner</span>' : ""}
-                ${t && t.title ? `<span class="tag title" style="--c:${esc(t.color || "#d4a017")}">${esc(t.title)}</span>` : ""}</div>
+                <span class="badges">${badgeFor(u)}</span></div>
               <div class="sm">${esc(u.email || "No email")}</div>
               <div class="sm">${isOnlineNow(u) ? "🟢 Online" : "⚫ Offline"}</div>
               <div class="uid">UID: ${esc(u.id)}</div>
@@ -305,8 +324,10 @@
           b.addEventListener("click", () => fn(b));
           btns.appendChild(b);
         };
-        mk("🏷 Set title", "purple", () => setTitle(u));
-        if (t && t.title) mk("Remove title", "", () => removeTitle(u.id));
+        if (u.id !== ADMIN_UID) {
+          if (t && t.kind === "staff") mk("Remove staff", "", () => removeStaff(u.id));
+          else mk("⭐ Make staff", "purple", () => makeStaff(u.id));
+        }
         mk("Remove banner", "", () => removeBanner(u.id));
         if (u.id !== ADMIN_UID) {
           mk("🗑 Delete account", "red", (b) => deleteAccount(u.id, u.name || u.email || "this user", b));
@@ -316,24 +337,62 @@
       if (!list.length) box.innerHTML = '<div class="card">No users found.</div>';
     }
 
-    async function setTitle(u) {
-      const text = prompt("Title for " + (u.name || "this user") + " (max 20 characters, e.g. VIP, Moderator, Legend):",
-        (titles[u.id] && titles[u.id].title) || "");
-      if (text === null) return;
-      const clean = text.trim().slice(0, 20);
-      if (!clean) return removeTitle(u.id);
-      const names = TITLE_COLORS.map((c, i) => (i + 1) + " = " + c.name).join("\n");
-      const pick = prompt("Pick a colour number:\n" + names, "1");
-      const idx = Math.max(1, Math.min(TITLE_COLORS.length, parseInt(pick, 10) || 1)) - 1;
-      await setDoc(doc(db, "titles", u.id), { title: clean, color: TITLE_COLORS[idx].value, updatedAt: serverTimestamp() });
-      titles[u.id] = { title: clean, color: TITLE_COLORS[idx].value };
-      renderStats(); renderUsers();
+    function badgeFor(u) {
+      if (u.id === ADMIN_UID) return renderBadge("owner");
+      const t = titles[u.id];
+      if (t && t.kind === "staff") return renderBadge("staff");
+      return renderBadge("diamond", { points: u.rankPoints || 0 });
     }
-    async function removeTitle(uid) {
+
+    async function makeStaff(uid) {
+      await setDoc(doc(db, "titles", uid), { kind: "staff", updatedAt: serverTimestamp() });
+      titles[uid] = { kind: "staff" };
+      renderStats(); renderUsers(); renderStaff();
+    }
+    async function removeStaff(uid) {
+      if (!confirm("Remove this person from staff?")) return;
       await deleteDoc(doc(db, "titles", uid));
       delete titles[uid];
-      renderStats(); renderUsers();
+      renderStats(); renderUsers(); renderStaff();
     }
+
+    // ---------- staff tab ----------
+    function userRow(u, buttonText, buttonClass, onClick) {
+      const el = document.createElement("div");
+      el.className = "row";
+      el.style.cssText = "align-items:center;padding:8px 0;border-top:1px solid #eee";
+      el.innerHTML = `
+        <img class="ph" src="${esc(u.photoURL || "images/default-profile.png")}" onerror="this.src='images/default-profile.png'" alt="">
+        <div class="grow">
+          <div class="nm">${esc(u.name || u.username || "Unknown")}<span class="badges">${badgeFor(u)}</span></div>
+          <div class="sm">${esc(u.email || "")}</div>
+        </div>`;
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "b " + buttonClass; b.textContent = buttonText;
+      b.addEventListener("click", onClick);
+      el.appendChild(b);
+      return el;
+    }
+
+    function renderStaff() {
+      const staff = allUsers.filter((u) => titles[u.id] && titles[u.id].kind === "staff");
+      const list = $("staffList");
+      list.innerHTML = "";
+      if (!staff.length) list.innerHTML = '<div class="sm">No staff yet.</div>';
+      staff.forEach((u) => list.appendChild(userRow(u, "Remove", "", () => removeStaff(u.id))));
+
+      const q = $("staffSearch").value.trim().toLowerCase();
+      const results = $("staffResults");
+      results.innerHTML = "";
+      if (!q) return;
+      allUsers
+        .filter((u) => u.id !== ADMIN_UID && !(titles[u.id] && titles[u.id].kind === "staff"))
+        .filter((u) => [u.name, u.email, u.username].some((v) => String(v || "").toLowerCase().includes(q)))
+        .slice(0, 8)
+        .forEach((u) => results.appendChild(userRow(u, "⭐ Make staff", "purple", () => makeStaff(u.id))));
+      if (!results.children.length) results.innerHTML = '<div class="sm">No matching members.</div>';
+    }
+
     async function removeBanner(uid) {
       if (!confirm("Remove this user's banner picture?")) return;
       try { await deleteDoc(doc(db, "banners", uid)); alert("Banner removed."); }

@@ -188,40 +188,138 @@ export function startPresence({ db, auth, doc, updateDoc, serverTimestamp }) {
 // so ONLY the owner can give them (see the Firestore rules).
 // ==========================================================
 
-const titleCache = new Map();
+const titleCache = new Map();   // uid -> { kind, title, color }
+const pointsCache = new Map();  // uid -> { points, at }
+const pointsPending = new Set();
+let pointsFb = null;
 
+// (kept for older "text" titles)
 export const TITLE_COLORS = [
   { name: "Gold", value: "#d4a017" },
   { name: "Red", value: "#e53935" },
-  { name: "Orange", value: "#ef6c00" },
   { name: "Green", value: "#2e9e5b" },
   { name: "Blue", value: "#1e88e5" },
   { name: "Purple", value: "#8e44ad" },
-  { name: "Pink", value: "#e91e8c" },
   { name: "Black", value: "#222222" }
 ];
 
-export function getTitle(uid) {
-  if (titleCache.has(uid)) return titleCache.get(uid);
-  if (uid === ADMIN_UID) return { title: "Owner", color: "#d4a017" };
-  return null;
+// White-diamond tiers, based on a person's all-time points.
+// Change the numbers here if you want different levels.
+export const DIAMOND_TIERS = [
+  { min: 5000, count: 3, glow: 3, name: "Legend" },
+  { min: 1500, count: 2, glow: 2, name: "Elite" },
+  { min: 500,  count: 1, glow: 2, name: "Pro" },
+  { min: 150,  count: 1, glow: 1, name: "Rising" },
+  { min: 0,    count: 1, glow: 0, name: "Member" }
+];
+
+export function diamondTier(points) {
+  const p = Number(points) || 0;
+  return DIAMOND_TIERS.find((t) => p >= t.min) || DIAMOND_TIERS[DIAMOND_TIERS.length - 1];
 }
 
-export function titleBadgeHTML(uid) {
-  const t = getTitle(uid);
-  if (!t || !t.title) return "";
-  return `<span class="fz-title" style="--c:${esc(t.color || "#d4a017")}">${esc(t.title)}</span>`;
+const CROWN_SVG =
+  '<svg viewBox="0 0 24 24" aria-hidden="true">' +
+  '<path d="M2.5 8.5l4.6 4.1L12 4l4.9 8.6 4.6-4.1-1.8 10H4.3z" fill="#f7c531" stroke="#b8860b" stroke-width="1.2" stroke-linejoin="round"/>' +
+  '<rect x="4.3" y="19.6" width="15.4" height="2.2" rx="1.1" fill="#e0a800" stroke="#b8860b" stroke-width="1"/>' +
+  '<circle cx="12" cy="4" r="1.5" fill="#ff4d6d"/>' +
+  '<circle cx="2.5" cy="8.5" r="1.3" fill="#4dd2ff"/>' +
+  '<circle cx="21.5" cy="8.5" r="1.3" fill="#4dd2ff"/>' +
+  '</svg>';
+
+const STAFF_SVG =
+  '<svg viewBox="0 0 24 24" aria-hidden="true">' +
+  '<path d="M12 2l8 3v6c0 5-3.4 9.3-8 11-4.6-1.7-8-6-8-11V5z" fill="#5b6bff" stroke="#2f3bb8" stroke-width="1.2" stroke-linejoin="round"/>' +
+  '<path d="M12 7l1.5 3.2 3.5.4-2.6 2.4.7 3.5L12 14.7l-3.1 1.8.7-3.5L7 10.6l3.5-.4z" fill="#fff"/>' +
+  '</svg>';
+
+const DIAMOND_SVG =
+  '<svg viewBox="0 0 24 24" aria-hidden="true">' +
+  '<path d="M6.2 3h11.6l4.2 6L12 21.5 2 9z" fill="#ffffff" stroke="#8fb8ff" stroke-width="1.2" stroke-linejoin="round"/>' +
+  '<path d="M2 9h20M9.2 3L7.5 9 12 21.5 16.5 9 14.8 3" fill="none" stroke="#a9c7ff" stroke-width="1"/>' +
+  '</svg>';
+
+/**
+ * kind: "owner" (rotating crown) | "staff" (shield) | "diamond" (white diamond by points)
+ */
+export function renderBadge(kind, opts) {
+  const o = opts || {};
+  const size = o.big ? " big" : "";
+
+  if (kind === "owner") {
+    return `<span class="fz-badge crown${size}" title="Owner" aria-label="Owner">${CROWN_SVG}</span>`;
+  }
+  if (kind === "staff") {
+    return `<span class="fz-badge staff${size}" title="Staff" aria-label="Staff">${STAFF_SVG}</span>`;
+  }
+
+  const points = Number(o.points) || 0;
+  const tier = diamondTier(points);
+  return `<span class="fz-badge diamond g${tier.glow}${size}" title="${esc(tier.name)} • ${points} pts" aria-label="${esc(tier.name)}">${DIAMOND_SVG.repeat(tier.count)}</span>`;
+}
+
+function ensurePoints(uid) {
+  if (!pointsFb || !uid) return;
+  const cached = pointsCache.get(uid);
+  if (cached && Date.now() - cached.at < 300000) return;
+  if (pointsPending.has(uid)) return;
+
+  pointsPending.add(uid);
+  pointsFb
+    .getDoc(pointsFb.doc(pointsFb.db, "users", uid))
+    .then((snap) => {
+      const pts = snap.exists() ? Number(snap.data().rankPoints) || 0 : 0;
+      pointsCache.set(uid, { points: pts, at: Date.now() });
+    })
+    .catch(() => {
+      pointsCache.set(uid, { points: 0, at: Date.now() });
+    })
+    .finally(() => {
+      pointsPending.delete(uid);
+      scheduleSlotRefresh();
+    });
+}
+
+let slotRefreshTimer = null;
+function scheduleSlotRefresh() {
+  clearTimeout(slotRefreshTimer);
+  slotRefreshTimer = setTimeout(() => refreshTitleSlots(), 60);
+}
+
+export function titleBadgeHTML(uid, opts) {
+  if (!uid) return "";
+  const o = opts || {};
+
+  if (uid === ADMIN_UID) return renderBadge("owner", o);
+
+  const t = titleCache.get(uid);
+  if (t && t.kind === "staff") return renderBadge("staff", o);
+
+  // older text titles still work
+  if (t && t.title) {
+    return `<span class="fz-title" style="--c:${esc(t.color || "#d4a017")}">${esc(t.title)}</span>`;
+  }
+
+  // everyone else: white diamond that grows with points
+  ensurePoints(uid);
+  const cached = pointsCache.get(uid);
+  if (!cached) return "";
+  return renderBadge("diamond", { points: cached.points, big: o.big });
 }
 
 export function refreshTitleSlots(root) {
   (root || document)
     .querySelectorAll(".fz-title-slot[data-uid]")
     .forEach((el) => {
-      el.innerHTML = titleBadgeHTML(el.dataset.uid);
+      el.innerHTML = titleBadgeHTML(el.dataset.uid, {
+        big: el.classList.contains("big")
+      });
     });
 }
 
-export function watchTitles({ db, collection, onSnapshot }) {
+export function watchTitles({ db, collection, onSnapshot, doc, getDoc }) {
+  if (doc && getDoc) pointsFb = { db, doc, getDoc };
+
   if (window.__fzTitlesWatched) return;
   window.__fzTitlesWatched = true;
 
@@ -231,8 +329,11 @@ export function watchTitles({ db, collection, onSnapshot }) {
       titleCache.clear();
       snap.forEach((d) => {
         const v = d.data() || {};
-        if (v.title) {
+        if (v.kind === "staff") {
+          titleCache.set(d.id, { kind: "staff" });
+        } else if (v.title) {
           titleCache.set(d.id, {
+            kind: "custom",
             title: String(v.title).slice(0, 20),
             color: v.color || "#d4a017"
           });
@@ -434,18 +535,31 @@ export async function decorateProfile({
 
   if (avatarEl) avatarEl.classList.add("fz-avatar-over");
 
+  // The banner stretches from the very top down to the rank card
+  function fitBanner() {
+    const rank = root.querySelector("#userPopoverRank, #profileModalRank");
+    const h = rank ? rank.offsetTop - 4 : 200;
+    banner.style.height = Math.max(190, h) + "px";
+  }
+  fitBanner();
+  setTimeout(fitBanner, 250);
+  setTimeout(fitBanner, 900);
+
+  function showBanner(data) {
+    banner.style.backgroundImage = `url("${data}")`;
+    banner.classList.add("has-image");
+    root.classList.add("fz-has-banner");
+  }
+
   loadBanner(fb, uid).then((data) => {
-    if (data) {
-      banner.style.backgroundImage = `url("${data}")`;
-      banner.classList.add("has-image");
-    }
+    if (data) showBanner(data);
   });
 
   // ---- title ----
   if (nameEl) {
     const row = document.createElement("div");
     row.className = "fz-title-row";
-    row.innerHTML = `<span class="fz-title-slot" data-uid="${esc(uid)}">${titleBadgeHTML(uid)}</span>`;
+    row.innerHTML = `<span class="fz-title-slot big" data-uid="${esc(uid)}">${titleBadgeHTML(uid, { big: true })}</span>`;
     nameEl.insertAdjacentElement("afterend", row);
   }
 
@@ -460,10 +574,7 @@ export async function decorateProfile({
     bannerBtn.className = "fz-btn ghost";
     bannerBtn.textContent = "🖼️ Change banner";
     bannerBtn.addEventListener("click", () => {
-      pickBanner(fb, uid, (data) => {
-        banner.style.backgroundImage = `url("${data}")`;
-        banner.classList.add("has-image");
-      });
+      pickBanner(fb, uid, (data) => showBanner(data));
     });
     actions.appendChild(bannerBtn);
   } else if (me) {
@@ -763,22 +874,79 @@ const UI_CSS = `
 .fz-title-row { margin: 2px 0 4px; min-height: 0; text-align: center; }
 .fz-title-row .fz-title { margin-left: 0; font-size: 11px; padding: 2px 10px; }
 
+/* ---------- badges (icons, no words) ---------- */
+.fz-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 2px; height: 16px; margin-left: 6px; vertical-align: middle;
+}
+.fz-badge svg { height: 16px; width: 16px; display: block; }
+.fz-badge.big { height: 30px; margin-left: 0; gap: 4px; }
+.fz-badge.big svg { height: 30px; width: 30px; }
+.fz-title-slot.big { display: inline-block; }
+
+/* owner: rotating golden crown */
+.fz-badge.crown { perspective: 140px; }
+.fz-badge.crown svg {
+  filter: drop-shadow(0 0 4px rgba(255,195,0,.95));
+  animation: fz-spin 3.2s linear infinite;
+  transform-style: preserve-3d;
+}
+@keyframes fz-spin { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
+
+/* staff: glowing shield with a star */
+.fz-badge.staff svg {
+  filter: drop-shadow(0 0 4px rgba(91,107,255,.9));
+  animation: fz-pulse 2.2s ease-in-out infinite;
+}
+@keyframes fz-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
+
+/* white diamond: glow grows with points */
+.fz-badge.diamond svg { filter: drop-shadow(0 0 1px rgba(110,150,230,.8)); }
+.fz-badge.diamond.g1 svg { filter: drop-shadow(0 0 3px rgba(130,175,255,.95)); }
+.fz-badge.diamond.g2 svg {
+  filter: drop-shadow(0 0 5px rgba(120,175,255,1));
+  animation: fz-twinkle 2.4s ease-in-out infinite;
+}
+.fz-badge.diamond.g3 svg {
+  filter: drop-shadow(0 0 7px rgba(150,200,255,1));
+  animation: fz-twinkle 1.6s ease-in-out infinite;
+}
+@keyframes fz-twinkle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .78; transform: scale(1.14); }
+}
+
 .fz-banner {
   position: absolute;
   top: 0; left: 0; right: 0;
-  height: 96px;
+  height: 200px;
   z-index: -1;
   border-radius: 20px 20px 0 0;
   background: linear-gradient(135deg, #7b5cff, #ff5ca8 60%, #ffb347);
   background-size: cover;
   background-position: center;
   pointer-events: none;
+  /* fades softly into the popover instead of a hard edge */
+  -webkit-mask-image: linear-gradient(180deg, #000 68%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 68%, transparent 100%);
 }
 .fz-banner.has-image::after {
   content: "";
   position: absolute; inset: 0;
-  background: linear-gradient(180deg, transparent 55%, rgba(0,0,0,.25));
+  background: linear-gradient(180deg, rgba(0,0,0,.10) 0%, rgba(0,0,0,.35) 45%, rgba(0,0,0,.6) 100%);
   border-radius: inherit;
+}
+/* readable text on top of a banner picture */
+.fz-has-banner #userPopoverName,
+.fz-has-banner #userPopoverEmail,
+.fz-has-banner #profileModalName,
+.fz-has-banner #profileModalUsername {
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  text-shadow: 0 2px 8px rgba(0,0,0,.8);
 }
 .fz-profile-root { isolation: isolate; }
 .fz-avatar-over {
@@ -851,10 +1019,13 @@ body.dark-mode .fz-card select, body.dark-mode .fz-card textarea {
 }
 `;
 
-injectCSS("fz-shared-ui", UI_CSS + LAYOUT_CSS);
+const NO_LAYOUT = document.documentElement.hasAttribute("data-fz-no-layout");
+
+// Admin page: only badge/dialog styles (no fixed-height layout, no theme)
+injectCSS("fz-shared-ui", NO_LAYOUT ? UI_CSS : UI_CSS + LAYOUT_CSS);
 
 // ---- apply the saved theme as early as possible ----
-applyFzTheme(getSavedTheme());
+if (!NO_LAYOUT) applyFzTheme(getSavedTheme());
 
 // ---- keep both pages / tabs in sync ----
 window.addEventListener("storage", (e) => {

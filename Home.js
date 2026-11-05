@@ -3464,7 +3464,7 @@ const userSnap =
 
       // Keep online/offline status accurate (heartbeat) and load titles
       startPresence({ db, auth, doc, updateDoc, serverTimestamp });
-      watchTitles({ db, collection, onSnapshot });
+      watchTitles({ db, collection, onSnapshot, doc, getDoc });
       // ======================
 // LOAD USER NAME
 // ======================
