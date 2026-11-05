@@ -1,823 +1,372 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-<meta name="robots" content="noindex, nofollow">
-  <title>Admin Panel</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Owner Panel</title>
   <style>
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      color: #222;
-    }
-
-    .admin-header {
-      background: #111;
-      color: white;
-      padding: 18px;
-      text-align: center;
-    }
-
-    .admin-header h1 {
-      margin: 0;
-      font-size: 22px;
-    }
-
-    .admin-header p {
-      margin: 6px 0 0;
-      color: #aaa;
-      font-size: 13px;
-    }
-
-    .admin-container {
-      max-width: 900px;
-      margin: 20px auto;
-      padding: 15px;
-    }
-
-    .admin-card {
-      background: white;
-      border-radius: 12px;
-      padding: 18px;
-      margin-bottom: 15px;
-      box-shadow: 0 2px 10px rgba(0,0,0,.08);
-    }
-
-    .admin-card h2 {
-      margin-top: 0;
-    }
-
-    .user-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .user-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      background: #fafafa;
-    }
-
-    .user-photo {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      object-fit: cover;
-      background: #ddd;
-    }
-
-    .user-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .user-name {
-      font-weight: bold;
-      margin-bottom: 4px;
-    }
-
-    .user-email {
-      font-size: 13px;
-      color: #666;
-      word-break: break-word;
-    }
-
-    .user-uid {
-      font-size: 10px;
-      color: #999;
-      word-break: break-all;
-      margin-top: 4px;
-    }
-
-    .delete-btn {
-      border: none;
-      background: #d93025;
-      color: white;
-      padding: 10px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .delete-btn:hover {
-      opacity: .9;
-    }
-
-    .delete-btn:disabled {
-      opacity: .5;
-      cursor: not-allowed;
-    }
-
-    .status {
-      padding: 12px;
-      border-radius: 8px;
-      background: #eee;
-      margin-bottom: 15px;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .logout-btn {
-      border: none;
-      background: #555;
-      color: white;
-      padding: 10px 15px;
-      border-radius: 8px;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    @media (max-width: 600px) {
-
-      .user-item {
-        align-items: flex-start;
-      }
-
-      .delete-btn {
-        font-size: 12px;
-        padding: 8px;
-      }
-
-    }
-
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, sans-serif; background: #f2f2f6; color: #222; }
+    .hdr { background: linear-gradient(135deg,#1b1035,#4a1d6e 60%,#a3324f); color: #fff; padding: 18px 14px 14px; text-align: center; }
+    .hdr h1 { margin: 0; font-size: 21px; }
+    .hdr p { margin: 4px 0 0; color: #d8c9ee; font-size: 12px; }
+    .tabs { display: flex; gap: 6px; padding: 10px; max-width: 900px; margin: 0 auto; overflow-x: auto; }
+    .tab { flex: 1; min-width: 90px; border: none; padding: 10px 8px; border-radius: 10px; background: #e1e1ea; font-weight: 700; cursor: pointer; font-size: 13px; }
+    .tab.active { background: #4a1d6e; color: #fff; }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 0 10px 30px; }
+    .card { background: #fff; border-radius: 14px; padding: 14px; margin-bottom: 12px; box-shadow: 0 2px 10px rgba(0,0,0,.07); }
+    .status { padding: 12px; border-radius: 10px; background: #eee; margin: 10px; text-align: center; }
+    .hidden { display: none !important; }
+    .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .stat { background: #fff; border-radius: 14px; padding: 16px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,.07); }
+    .stat b { display: block; font-size: 28px; color: #4a1d6e; }
+    .stat span { font-size: 12px; color: #666; }
+    .row { display: flex; gap: 10px; align-items: flex-start; }
+    .ph { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; background: #ddd; flex: none; }
+    .grow { flex: 1; min-width: 0; }
+    .nm { font-weight: 700; word-break: break-word; }
+    .sm { font-size: 12px; color: #666; word-break: break-word; }
+    .uid { font-size: 10px; color: #999; word-break: break-all; }
+    .tag { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; color: #fff; background: #888; margin-right: 4px; }
+    .tag.open { background: #d93025; } .tag.resolved { background: #2e9e5b; } .tag.dismissed { background: #888; }
+    .tag.title { background: var(--c, #d4a017); }
+    .quote { margin: 8px 0; padding: 8px 10px; border-left: 3px solid #d93025; background: #fafafa; font-size: 13px; border-radius: 6px; word-break: break-word; }
+    .btns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    button.b { border: none; padding: 8px 11px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; background: #e1e1ea; color: #222; }
+    button.b.red { background: #d93025; color: #fff; }
+    button.b.green { background: #2e9e5b; color: #fff; }
+    button.b.purple { background: #4a1d6e; color: #fff; }
+    button.b:disabled { opacity: .5; }
+    input[type=text], select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 10px; font-size: 14px; margin-bottom: 8px; }
+    .filters { display: flex; gap: 6px; margin-bottom: 10px; }
+    .filters button { flex: 1; }
+    .banner { height: 60px; border-radius: 10px 10px 0 0; background: linear-gradient(135deg,#7b5cff,#ff5ca8,#ffb347); background-size: cover; background-position: center; margin: -14px -14px 10px; }
+    .logout { border: none; background: #555; color: #fff; padding: 10px 15px; border-radius: 8px; cursor: pointer; margin-top: 6px; }
   </style>
-
 </head>
-
-
 <body>
-
-
-  <!-- =====================================================
-       ADMIN HEADER
-  ====================================================== -->
-
-  <header class="admin-header">
-
-    <h1>
-      🔐 Admin Panel
-    </h1>
-
-    <p>
-      User Account Management
-    </p>
-
+  <header class="hdr">
+    <h1>👑 Owner Panel</h1>
+    <p>Reports • Accounts • Titles • Overview</p>
   </header>
 
+  <div id="adminStatus" class="status">Checking owner access...</div>
 
-  <!-- =====================================================
-       MAIN
-  ====================================================== -->
-
-  <main class="admin-container">
-
-
-    <!-- STATUS -->
-
-    <div
-      id="adminStatus"
-      class="status"
-    >
-      Checking administrator access...
+  <div id="adminContent" class="hidden">
+    <div class="tabs">
+      <button class="tab active" data-tab="overview">Overview</button>
+      <button class="tab" data-tab="reports">Reports <span id="reportBadge"></span></button>
+      <button class="tab" data-tab="users">Users</button>
     </div>
 
+    <div class="wrap">
+      <!-- OVERVIEW -->
+      <section id="tab-overview">
+        <div class="stats" id="statsBox"></div>
+        <div style="margin-top:12px"><button id="refreshBtn" class="b purple">↻ Refresh</button></div>
+      </section>
 
-    <!-- USERS -->
-
-    <div
-      id="adminContent"
-      class="hidden"
-    >
-
-      <div class="admin-card">
-
-        <h2>
-          👥 Users
-        </h2>
-
-        <p>
-          Manage registered user accounts.
-        </p>
-
-        <div
-          id="userList"
-          class="user-list"
-        >
+      <!-- REPORTS -->
+      <section id="tab-reports" class="hidden">
+        <div class="filters">
+          <button class="b purple" data-filter="open">Open</button>
+          <button class="b" data-filter="resolved">Resolved</button>
+          <button class="b" data-filter="dismissed">Dismissed</button>
+          <button class="b" data-filter="all">All</button>
         </div>
+        <div id="reportList"></div>
+      </section>
 
-      </div>
+      <!-- USERS -->
+      <section id="tab-users" class="hidden">
+        <input type="text" id="userSearch" placeholder="Search name, email or username">
+        <div id="userList"></div>
+      </section>
 
-
-      <button
-        id="logoutBtn"
-        class="logout-btn"
-        type="button"
-      >
-        Log Out
-      </button>
-
+      <button id="logoutBtn" class="logout" type="button">Log Out</button>
     </div>
-
-  </main>
-
-
-  <!-- =====================================================
-       FIREBASE
-  ====================================================== -->
+  </div>
 
   <script type="module">
-
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
     import {
-      initializeApp
-    } from
-    "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+      getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc,
+      updateDoc, arrayUnion, serverTimestamp, query, orderBy, limit
+    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+    import { TITLE_COLORS, isOnlineNow } from "./fz-shared.js";
 
+    const firebaseConfig = {
+      apiKey: "AIzaSyAxVyuHiNb-NEeXLfMfaq0RS9ERfahORt4",
+      authDomain: "friend-zone-chat-city.firebaseapp.com",
+      projectId: "friend-zone-chat-city",
+      storageBucket: "friend-zone-chat-city.firebasestorage.app",
+      messagingSenderId: "1077723243409",
+      appId: "1:1077723243409:web:f030fdcd210f0326d93030",
+      measurementId: "G-3RD3QLSF3F"
+    };
 
-    import {
-      getAuth,
-      onAuthStateChanged,
-      signOut
-    } from
-    "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const ADMIN_UID = "Ur72jn1ON4Z7zVdJAvgM2orOpnl2";
 
+    const $ = (id) => document.getElementById(id);
+    const adminStatus = $("adminStatus");
+    const adminContent = $("adminContent");
 
-    import {
-      getFirestore,
-      collection,
-      getDocs
-    } from
-    "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-
-
-    // =====================================================
-    // FIREBASE CONFIG
-    // =====================================================
-    //
-    // IMPORTANT:
-    // Replace these with the SAME Firebase config
-    // already used by your existing app.
-    //
-    // This is NOT your private service-account key.
-    // =====================================================
-
-  const firebaseConfig = {
-  apiKey: "AIzaSyAxVyuHiNb-NEeXLfMfaq0RS9ERfahORt4",
-  authDomain: "friend-zone-chat-city.firebaseapp.com",
-  projectId: "friend-zone-chat-city",
-  storageBucket: "friend-zone-chat-city.firebasestorage.app",
-  messagingSenderId: "1077723243409",
-  appId: "1:1077723243409:web:f030fdcd210f0326d93030",
-  measurementId: "G-3RD3QLSF3F"
-};
-
-    // =====================================================
-    // INITIALIZE FIREBASE
-    // =====================================================
-
-    const app =
-      initializeApp(
-        firebaseConfig
-      );
-
-
-    const auth =
-      getAuth(app);
-
-
-    const db =
-      getFirestore(app);
-
-
-    // =====================================================
-    // ADMIN UID
-    // =====================================================
-    //
-  
-    //ADMIN_UID variable.
-    // =====================================================
-
-    const ADMIN_UID =
-      "Ur72jn1ON4Z7zVdJAvgM2orOpnl2";
-
-
-    // =====================================================
-    // ELEMENTS
-    // =====================================================
-
-    const adminStatus =
-      document.getElementById(
-        "adminStatus"
-      );
-
-
-    const adminContent =
-      document.getElementById(
-        "adminContent"
-      );
-
-
-    const userList =
-      document.getElementById(
-        "userList"
-      );
-
-
-    const logoutBtn =
-      document.getElementById(
-        "logoutBtn"
-      );
-
-
-    // =====================================================
-    // ESCAPE HTML
-    // =====================================================
-
-    function escapeHTML(value) {
-
-      return String(value || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-
+    function esc(v) {
+      return String(v == null ? "" : v)
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+    function fmtTime(ts) {
+      try { return ts && ts.toDate ? ts.toDate().toLocaleString() : ""; } catch (e) { return ""; }
     }
 
+    let allUsers = [];
+    let titles = {};
+    let reports = [];
+    let reportFilter = "open";
 
-    // =====================================================
-    // CHECK ADMIN
-    // =====================================================
-
-    onAuthStateChanged(
-      auth,
-      async (user) => {
-
-        if (!user) {
-
-          adminStatus.textContent =
-            "❌ Please log in first.";
-
-          adminContent.classList.add(
-            "hidden"
-          );
-
-          return;
-
-        }
-
-
-        if (
-          user.uid !==
-          ADMIN_UID
-        ) {
-
-          adminStatus.textContent =
-            "❌ Access denied. Administrator only.";
-
-          adminContent.classList.add(
-            "hidden"
-          );
-
-          return;
-
-        }
-
-
-        adminStatus.textContent =
-          "✅ Administrator access granted.";
-
-        adminContent.classList.remove(
-          "hidden"
-        );
-
-
-        await loadUsers();
-
+    // ---------- access ----------
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        adminStatus.textContent = "❌ Please log in first.";
+        adminContent.classList.add("hidden");
+        return;
       }
-    );
+      if (user.uid !== ADMIN_UID) {
+        adminStatus.textContent = "❌ Access denied. Owner only.";
+        adminContent.classList.add("hidden");
+        return;
+      }
+      adminStatus.classList.add("hidden");
+      adminContent.classList.remove("hidden");
+      await loadAll();
+    });
 
+    // ---------- tabs ----------
+    document.querySelectorAll(".tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("active", t === tab));
+        ["overview", "reports", "users"].forEach((n) => {
+          $("tab-" + n).classList.toggle("hidden", n !== tab.dataset.tab);
+        });
+      });
+    });
+    document.querySelectorAll("[data-filter]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        reportFilter = btn.dataset.filter;
+        document.querySelectorAll("[data-filter]").forEach((b) => b.classList.toggle("purple", b === btn));
+        renderReports();
+      });
+    });
+    $("refreshBtn").addEventListener("click", loadAll);
+    $("userSearch").addEventListener("input", renderUsers);
 
-    // =====================================================
-    // LOAD USERS
-    // =====================================================
-
-    async function loadUsers() {
-
-      userList.innerHTML =
-        "<div>Loading users...</div>";
-
-
+    // ---------- load ----------
+    async function loadAll() {
       try {
-
-        const snapshot =
-          await getDocs(
-            collection(
-              db,
-              "users"
-            )
-          );
-
-
-        userList.innerHTML = "";
-
-
-        if (
-          snapshot.empty
-        ) {
-
-          userList.innerHTML =
-            "<div>No users found.</div>";
-
-          return;
-
-        }
-
-
-        snapshot.forEach(
-          (userDoc) => {
-
-            const user =
-              userDoc.data();
-
-
-            const uid =
-              userDoc.id;
-
-
-            const item =
-              document.createElement(
-                "div"
-              );
-
-
-            item.className =
-              "user-item";
-
-
-            const photo =
-              user.photoURL ||
-              "images/default-profile.png";
-
-
-            item.innerHTML = `
-
-              <img
-                class="user-photo"
-                src="${escapeHTML(photo)}"
-                alt="Profile"
-                onerror="
-                  this.src='images/default-profile.png';
-                "
-              >
-
-              <div class="user-info">
-
-                <div class="user-name">
-
-                  ${escapeHTML(
-                    user.name ||
-                    user.username ||
-                    "Unknown User"
-                  )}
-
-                </div>
-
-                <div class="user-email">
-
-                  ${escapeHTML(
-                    user.email ||
-                    "No email"
-                  )}
-
-                </div>
-
-                <div class="user-uid">
-
-                  UID:
-                  ${escapeHTML(uid)}
-
-                </div>
-
-              </div>
-
-            `;
-
-
-            // =================================================
-            // DELETE BUTTON
-            // =================================================
-
-            if (
-              uid !== ADMIN_UID
-            ) {
-
-              const deleteBtn =
-                document.createElement(
-                  "button"
-                );
-
-
-              deleteBtn.className =
-                "delete-btn";
-
-
-              deleteBtn.type =
-                "button";
-
-
-              deleteBtn.textContent =
-                "🗑️ Delete";
-
-
-              deleteBtn.addEventListener(
-                "click",
-                () => {
-
-                  deleteUser(
-                    uid,
-                    user.name ||
-                    user.email ||
-                    "this user",
-                    deleteBtn
-                  );
-
-                }
-              );
-
-
-              item.appendChild(
-                deleteBtn
-              );
-
-            } else {
-
-              const adminLabel =
-                document.createElement(
-                  "span"
-                );
-
-
-              adminLabel.textContent =
-                "👑 ADMIN";
-
-
-              item.appendChild(
-                adminLabel
-              );
-
-            }
-
-
-            userList.appendChild(
-              item
-            );
-
-          }
-        );
-
-
+        const [uSnap, tSnap, rSnap] = await Promise.all([
+          getDocs(collection(db, "users")),
+          getDocs(collection(db, "titles")),
+          getDocs(query(collection(db, "reports"), orderBy("createdAt", "desc"), limit(200)))
+        ]);
+        allUsers = uSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        titles = {};
+        tSnap.forEach((d) => { titles[d.id] = d.data(); });
+        reports = rSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        renderStats();
+        renderReports();
+        renderUsers();
       } catch (error) {
+        console.error(error);
+        alert("Could not load data: " + error.message + "\n\nCheck your Firestore rules for users, titles and reports.");
+      }
+    }
 
-        console.error(
-          "Load users error:",
-          error
-        );
+    function userById(id) { return allUsers.find((u) => u.id === id); }
 
+    // ---------- overview ----------
+    function renderStats() {
+      const open = reports.filter((r) => r.status === "open").length;
+      const online = allUsers.filter((u) => isOnlineNow(u)).length;
+      $("statsBox").innerHTML = `
+        <div class="stat"><b>${allUsers.length}</b><span>Total users</span></div>
+        <div class="stat"><b>${online}</b><span>Online now</span></div>
+        <div class="stat"><b>${open}</b><span>Open reports</span></div>
+        <div class="stat"><b>${Object.keys(titles).length}</b><span>Titles given</span></div>`;
+      $("reportBadge").textContent = open ? "(" + open + ")" : "";
+    }
 
-        userList.innerHTML = `
+    // ---------- reports ----------
+    function renderReports() {
+      const list = reports.filter((r) => reportFilter === "all" || (r.status || "open") === reportFilter);
+      const box = $("reportList");
+      if (!list.length) {
+        box.innerHTML = '<div class="card">No reports here.</div>';
+        return;
+      }
+      box.innerHTML = "";
+      list.forEach((r) => {
+        const target = userById(r.targetId) || {};
+        const status = r.status || "open";
+        const el = document.createElement("div");
+        el.className = "card";
+        el.innerHTML = `
+          <div><span class="tag ${esc(status)}">${esc(status)}</span>
+            <span class="tag">${esc(r.context || "")}</span>
+            <b>${esc(r.reason || "Report")}</b></div>
+          <div class="sm" style="margin-top:6px">
+            <b>${esc(r.reporterName || "Someone")}</b> reported
+            <b>${esc(r.targetName || target.name || "a user")}</b>
+            • ${esc(fmtTime(r.createdAt))}</div>
+          ${r.details ? `<div class="quote">${esc(r.details)}</div>` : ""}
+          ${r.messageText ? `<div class="quote">Message: “${esc(r.messageText)}”</div>` : ""}
+          <div class="uid">Target UID: ${esc(r.targetId)}</div>
+          <div class="btns"></div>`;
+        const btns = el.querySelector(".btns");
 
-          <div>
-            ❌ Could not load users.
-            <br><br>
-            ${escapeHTML(
-              error.message
-            )}
+        const mk = (text, cls, fn) => {
+          const b = document.createElement("button");
+          b.type = "button"; b.className = "b " + (cls || ""); b.textContent = text;
+          b.addEventListener("click", () => fn(b));
+          btns.appendChild(b);
+        };
+
+        if (status === "open") {
+          mk("✔ Resolved", "green", () => setStatus(r.id, "resolved"));
+          mk("Dismiss", "", () => setStatus(r.id, "dismissed"));
+        } else {
+          mk("Reopen", "", () => setStatus(r.id, "open"));
+        }
+        if (r.targetId && r.targetId !== ADMIN_UID) {
+          mk("⛔ Ban from live", "", () => banFromLive(r.targetId, r.targetName));
+          mk("🗑 Delete account", "red", (b) => deleteAccount(r.targetId, r.targetName || "this user", b));
+        }
+        mk("Delete report", "", () => removeReport(r.id));
+        box.appendChild(el);
+      });
+    }
+
+    async function setStatus(id, status) {
+      await updateDoc(doc(db, "reports", id), { status, reviewedAt: serverTimestamp() });
+      const r = reports.find((x) => x.id === id);
+      if (r) r.status = status;
+      renderStats(); renderReports();
+    }
+    async function removeReport(id) {
+      if (!confirm("Delete this report?")) return;
+      await deleteDoc(doc(db, "reports", id));
+      reports = reports.filter((x) => x.id !== id);
+      renderStats(); renderReports();
+    }
+    async function banFromLive(uid, name) {
+      if (!confirm("Ban " + (name || "this user") + " from the Live Room?")) return;
+      try {
+        await updateDoc(doc(db, "liveRoom", "meta"), { bannedUsers: arrayUnion(uid) });
+        alert("✅ Banned from the Live Room.");
+      } catch (e) { alert("Could not ban: " + e.message); }
+    }
+
+    // ---------- users ----------
+    function renderUsers() {
+      const q = $("userSearch").value.trim().toLowerCase();
+      const list = allUsers.filter((u) => {
+        if (!q) return true;
+        return [u.name, u.email, u.username].some((v) => String(v || "").toLowerCase().includes(q));
+      }).sort((a, b) => Number(isOnlineNow(b)) - Number(isOnlineNow(a)));
+
+      const box = $("userList");
+      box.innerHTML = "";
+      list.forEach((u) => {
+        const t = titles[u.id];
+        const el = document.createElement("div");
+        el.className = "card";
+        el.innerHTML = `
+          <div class="row">
+            <img class="ph" src="${esc(u.photoURL || "images/default-profile.png")}" onerror="this.src='images/default-profile.png'" alt="">
+            <div class="grow">
+              <div class="nm">${esc(u.name || u.username || "Unknown")}
+                ${u.id === ADMIN_UID ? '<span class="tag title" style="--c:#d4a017">Owner</span>' : ""}
+                ${t && t.title ? `<span class="tag title" style="--c:${esc(t.color || "#d4a017")}">${esc(t.title)}</span>` : ""}</div>
+              <div class="sm">${esc(u.email || "No email")}</div>
+              <div class="sm">${isOnlineNow(u) ? "🟢 Online" : "⚫ Offline"}</div>
+              <div class="uid">UID: ${esc(u.id)}</div>
+            </div>
           </div>
-
-        `;
-
-      }
-
+          <div class="btns"></div>`;
+        const btns = el.querySelector(".btns");
+        const mk = (text, cls, fn) => {
+          const b = document.createElement("button");
+          b.type = "button"; b.className = "b " + (cls || ""); b.textContent = text;
+          b.addEventListener("click", () => fn(b));
+          btns.appendChild(b);
+        };
+        mk("🏷 Set title", "purple", () => setTitle(u));
+        if (t && t.title) mk("Remove title", "", () => removeTitle(u.id));
+        mk("Remove banner", "", () => removeBanner(u.id));
+        if (u.id !== ADMIN_UID) {
+          mk("🗑 Delete account", "red", (b) => deleteAccount(u.id, u.name || u.email || "this user", b));
+        }
+        box.appendChild(el);
+      });
+      if (!list.length) box.innerHTML = '<div class="card">No users found.</div>';
     }
 
+    async function setTitle(u) {
+      const text = prompt("Title for " + (u.name || "this user") + " (max 20 characters, e.g. VIP, Moderator, Legend):",
+        (titles[u.id] && titles[u.id].title) || "");
+      if (text === null) return;
+      const clean = text.trim().slice(0, 20);
+      if (!clean) return removeTitle(u.id);
+      const names = TITLE_COLORS.map((c, i) => (i + 1) + " = " + c.name).join("\n");
+      const pick = prompt("Pick a colour number:\n" + names, "1");
+      const idx = Math.max(1, Math.min(TITLE_COLORS.length, parseInt(pick, 10) || 1)) - 1;
+      await setDoc(doc(db, "titles", u.id), { title: clean, color: TITLE_COLORS[idx].value, updatedAt: serverTimestamp() });
+      titles[u.id] = { title: clean, color: TITLE_COLORS[idx].value };
+      renderStats(); renderUsers();
+    }
+    async function removeTitle(uid) {
+      await deleteDoc(doc(db, "titles", uid));
+      delete titles[uid];
+      renderStats(); renderUsers();
+    }
+    async function removeBanner(uid) {
+      if (!confirm("Remove this user's banner picture?")) return;
+      try { await deleteDoc(doc(db, "banners", uid)); alert("Banner removed."); }
+      catch (e) { alert("Could not remove: " + e.message); }
+    }
 
-    // =====================================================
-    // DELETE USER
-    // =====================================================
-
-    async function deleteUser(
-      uid,
-      name,
-      button
-    ) {
-
-      if (!auth.currentUser) {
-
-        alert(
-          "Please log in first."
-        );
-
-        return;
-
-      }
-
-
-      if (
-        auth.currentUser.uid !==
-        ADMIN_UID
-      ) {
-
-        alert(
-          "Access denied."
-        );
-
-        return;
-
-      }
-
-
-      if (
-        uid === ADMIN_UID
-      ) {
-
-        alert(
-          "You cannot delete the admin account."
-        );
-
-        return;
-
-      }
-
-
-      const confirmed =
-        confirm(
-          "⚠️ PERMANENT DELETE\n\n" +
-          "Delete " +
-          name +
-          "'s Firebase Authentication account?\n\n" +
-          "This action cannot be undone."
-        );
-
-
-      if (!confirmed) {
-        return;
-      }
-
-
+    // ---------- delete account (uses your existing Vercel API) ----------
+    async function deleteAccount(uid, name, button) {
+      if (!auth.currentUser || auth.currentUser.uid !== ADMIN_UID) return alert("Access denied.");
+      if (uid === ADMIN_UID) return alert("You cannot delete the owner account.");
+      if (!confirm("⚠️ PERMANENT DELETE\n\nDelete " + name + "'s account?\n\nThis cannot be undone.")) return;
       try {
-
-        button.disabled =
-          true;
-
-        button.textContent =
-          "Deleting...";
-
-
-        // =================================================
-        // GET ADMIN TOKEN
-        // =================================================
-
-        const token =
-          await auth.currentUser.getIdToken(
-            true
-          );
-
-
-        // =================================================
-        // CALL VERCEL API
-        // =================================================
-
-        const response =
-          await fetch(
-            "/api/delete-user",
-            {
-
-              method:
-                "POST",
-
-              headers: {
-
-                "Content-Type":
-                  "application/json",
-
-                "Authorization":
-                  "Bearer " +
-                  token
-
-              },
-
-              body:
-                JSON.stringify({
-                  uid: uid
-                })
-
-            }
-          );
-
-
-        const result =
-          await response.json();
-
-
-        if (
-          !response.ok
-        ) {
-
-          throw new Error(
-            result.error ||
-            "Delete failed."
-          );
-
-        }
-
-
-        alert(
-          "✅ Account deleted successfully."
-        );
-
-
-        // =================================================
-        // REMOVE FROM SCREEN
-        // =================================================
-
-        await loadUsers();
-
-
+        if (button) { button.disabled = true; button.textContent = "Deleting..."; }
+        const token = await auth.currentUser.getIdToken(true);
+        const response = await fetch("/api/delete-user", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+          body: JSON.stringify({ uid })
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || "Delete failed.");
+        alert("✅ Account deleted.");
+        await loadAll();
       } catch (error) {
-
-        console.error(
-          "Delete account error:",
-          error
-        );
-
-
-        alert(
-          "❌ Could not delete account:\n\n" +
-          error.message
-        );
-
-
-        button.disabled =
-          false;
-
-        button.textContent =
-          "🗑️ Delete";
-
+        alert("❌ Could not delete account:\n\n" + error.message);
+        if (button) { button.disabled = false; button.textContent = "🗑 Delete account"; }
       }
-
     }
 
-
-    // =====================================================
-    // LOGOUT
-    // =====================================================
-
-    logoutBtn.addEventListener(
-      "click",
-      async () => {
-
-        try {
-
-          await signOut(auth);
-
-          window.location.href =
-            "index.html";
-
-        } catch (error) {
-
-          console.error(
-            "Logout error:",
-            error
-          );
-
-        }
-
-      }
-    );
-
+    $("logoutBtn").addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "index.html";
+    });
   </script>
-
 </body>
-
 </html>

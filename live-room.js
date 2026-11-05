@@ -51,6 +51,17 @@ import {
 // Music player (shared with the homepage)
 import { initMusic } from "./music.js";
 
+// Friends Zone shared features (presence, titles, reports, banners, themes)
+import {
+  isOnlineNow,
+  startPresence,
+  watchTitles,
+  titleBadgeHTML,
+  decorateProfile,
+  openReportDialog,
+  openThemePicker
+} from "./fz-shared.js";
+
 // ==========================================
 // APP ICONS (SVG, same style as live-room.html)
 // icon("name", size, filled?)  ->  <svg> markup
@@ -115,6 +126,18 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
+// Firebase pieces the shared features need
+const fzFb = {
+  auth,
+  db,
+  doc,
+  getDoc,
+  setDoc,
+  addDoc,
+  collection,
+  serverTimestamp
+};
+
 
 // ==========================================
 // ELEMENTS
@@ -157,6 +180,11 @@ const profileModalName = document.getElementById("profileModalName");
 const profileModalUsername = document.getElementById("profileModalUsername");
 const profileModalStatus = document.getElementById("profileModalStatus");
 const profileModalStatusText = document.getElementById("profileModalStatusText");
+const liveThemeBtn = document.getElementById("liveThemeBtn");
+if (liveThemeBtn) {
+  liveThemeBtn.addEventListener("click", () => openThemePicker());
+}
+
 const profileModalInfo =
   document.getElementById("profileModalInfo");
 const profileModalActions =
@@ -907,6 +935,10 @@ startLiveRoomFriendRequestsListener();
     });
 
     console.log("User marked online in Live Room");
+
+    // Keep online/offline status accurate (heartbeat) and load titles
+    startPresence({ db, auth, doc, updateDoc, serverTimestamp });
+    watchTitles({ db, collection, onSnapshot });
   } catch (error) {
     console.error("Could not load profile/update online status:", error);
   }
@@ -1430,13 +1462,16 @@ const onlineUsersQuery = query(
 onSnapshot(
   onlineUsersQuery,
   (snapshot) => {
-    onlineCountText.textContent = `${snapshot.size} online`;
-    if (onlineCountHeader) onlineCountHeader.innerHTML = iconLabel("users", `${snapshot.size} online`, 13);
+    // Only people with a recent heartbeat count as online
+    const freshOnline = snapshot.docs.filter((d) => isOnlineNow(d.data())).length;
+    onlineCountText.textContent = `${freshOnline} online`;
+    if (onlineCountHeader) onlineCountHeader.innerHTML = iconLabel("users", `${freshOnline} online`, 13);
 
     onlineUsersMap.clear();
     const currentUids = new Set();
 
     snapshot.forEach((userDoc) => {
+      if (!isOnlineNow(userDoc.data())) return;
       onlineUsersMap.set(userDoc.id, userDoc.data());
       currentUids.add(userDoc.id);
       if (userDoc.data().username) {
@@ -1731,7 +1766,7 @@ async function openProfilePopup(user) {
         email: data.email || "",
         age: calcAgeFromDob(data.dob) || data.age || "",
         country: data.nationality || data.country || data.location || "",
-        online: data.online !== undefined ? data.online : online,
+        online: data.online !== undefined ? isOnlineNow(data) : online,
         likesCount: data.likesCount || 0,
         friendsCount: data.friendsCount || 0,
         messageCount: data.messageCount || 0
@@ -1828,6 +1863,17 @@ async function openProfilePopup(user) {
       `
     )
     .join("");
+
+  // Banner + title + Report / Change-banner button
+  decorateProfile({
+    root: profileModalAvatar.closest(".profile-modal") || profileModalAvatar.parentElement,
+    avatarEl: profileModalAvatar,
+    nameEl: profileModalName,
+    uid: uid,
+    fb: fzFb,
+    context: "live",
+    displayName: fullUser.name
+  });
 
   // ==========================================
   // ACTIONS
@@ -3146,12 +3192,39 @@ async function startRecording() {
     recordingStream = await navigator.mediaDevices.getUserMedia({ audio: true });
   } catch (error) {
     console.error("Microphone error:", error);
-    alert("Could not access your microphone.");
+    if (error && (error.name === "NotAllowedError" || error.name === "SecurityError")) {
+      alert("Microphone is blocked. Allow the microphone for this site in your browser or phone settings, then try again.");
+    } else if (error && error.name === "NotFoundError") {
+      alert("No microphone was found on this device.");
+    } else {
+      alert("Could not access your microphone.");
+    }
     return;
   }
 
   recordedChunks = [];
-  mediaRecorder = new MediaRecorder(recordingStream);
+
+  // Pick a format this device can really record AND play back.
+  // (iPhones record MP4/AAC, Android records WebM — labelling an
+  //  iPhone recording as WebM made it impossible to play.)
+  let chosenMime = "";
+  const mimeCandidates = [
+    "audio/webm;codecs=opus",
+    "audio/webm",
+    "audio/mp4",
+    "audio/ogg;codecs=opus"
+  ];
+  if (window.MediaRecorder && typeof MediaRecorder.isTypeSupported === "function") {
+    for (const candidate of mimeCandidates) {
+      if (MediaRecorder.isTypeSupported(candidate)) {
+        chosenMime = candidate;
+        break;
+      }
+    }
+  }
+  mediaRecorder = chosenMime
+    ? new MediaRecorder(recordingStream, { mimeType: chosenMime })
+    : new MediaRecorder(recordingStream);
 
   mediaRecorder.ondataavailable = (event) => {
     if (event.data && event.data.size > 0) recordedChunks.push(event.data);
@@ -3189,6 +3262,7 @@ function stopRecording(shouldSend) {
   if (!mediaRecorder) return;
 
   const durationSeconds = (Date.now() - recordingStartedAt) / 1000;
+  const recorderMime = ((mediaRecorder && mediaRecorder.mimeType) || "audio/webm").split(";")[0];
 
   mediaRecorder.onstop = async () => {
     stopRecordingTracks();
@@ -3204,7 +3278,7 @@ function stopRecording(shouldSend) {
       return;
     }
 
-    const blob = new Blob(recordedChunks, { type: "audio/webm" });
+    const blob = new Blob(recordedChunks, { type: recorderMime });
     recordedChunks = [];
     mediaRecorder = null;
 
@@ -3216,10 +3290,13 @@ function stopRecording(shouldSend) {
 
 async function sendVoiceMessage(blob, durationSeconds) {
   try {
-    const path = `liveRoomAudio/${currentUser.uid}/${Date.now()}.webm`;
+    const audioType = blob.type || "audio/webm";
+    const audioExt = audioType.includes("mp4") ? "m4a" : audioType.includes("ogg") ? "ogg" : "webm";
+    const path = `liveRoomAudio/${currentUser.uid}/${Date.now()}.${audioExt}`;
     const audioRef = storageRef(storage, path);
 
-    await uploadBytes(audioRef, blob);
+    // contentType makes sure the browser can play the file back
+    await uploadBytes(audioRef, blob, { contentType: audioType });
     const audioURL = await getDownloadURL(audioRef);
 
     await addDoc(
@@ -3244,7 +3321,12 @@ async function sendVoiceMessage(blob, durationSeconds) {
     console.log("Voice message sent");
   } catch (error) {
     console.error("Send voice message error:", error);
-    alert("Could not send the voice message.");
+    const code = error && error.code ? error.code : "";
+    if (code === "storage/unauthorized") {
+      alert("Voice message blocked by Firebase Storage rules. The owner needs to allow uploads to liveRoomAudio/.");
+    } else {
+      alert("Could not send the voice message. " + (code || ""));
+    }
   }
 }
 
@@ -3353,6 +3435,13 @@ name.addEventListener("click", () => {
 
 nameRow.appendChild(name);
 
+// Title badge (set by the owner)
+const titleSlot = document.createElement("span");
+titleSlot.className = "fz-title-slot";
+titleSlot.dataset.uid = data.senderId || "";
+titleSlot.innerHTML = titleBadgeHTML(data.senderId);
+nameRow.appendChild(titleSlot);
+
 // Show muted status beside the sender's name
 if (isMuted(data.senderId)) {
   const mutedStatus = document.createElement("span");
@@ -3449,7 +3538,10 @@ content.appendChild(nameRow);
         duration.className = "voice-duration";
         duration.textContent = formatDuration(data.audioDuration);
 
-        const audioEl = new Audio(data.audioURL);
+        const audioEl = new Audio();
+        audioEl.preload = "metadata";
+        audioEl.setAttribute("playsinline", "");
+        audioEl.src = data.audioURL;
 
         playBtn.addEventListener("click", () => {
           if (activeAudioEl && activeAudioEl !== audioEl) {
@@ -3457,10 +3549,18 @@ content.appendChild(nameRow);
           }
 
           if (audioEl.paused) {
-            audioEl.play();
+            const playPromise = audioEl.play();
             activeAudioEl = audioEl;
             playBtn.innerHTML = icon("pause", 14, true);
             wave.classList.add("playing");
+            if (playPromise && typeof playPromise.catch === "function") {
+              playPromise.catch((err) => {
+                console.error("Voice play error:", err);
+                playBtn.innerHTML = icon("play", 14, true);
+                wave.classList.remove("playing");
+                alert("This voice message can't be played on your device.");
+              });
+            }
           } else {
             audioEl.pause();
             playBtn.innerHTML = icon("play", 14, true);
@@ -3533,6 +3633,32 @@ content.appendChild(nameRow);
       replyBtn.style.cursor = "pointer";
       replyBtn.addEventListener("click", () => startReply(data, messageId));
       content.appendChild(replyBtn);
+
+      // ---- report button (other people's messages) ----
+      if (currentUser && data.senderId && data.senderId !== currentUser.uid) {
+        const reportBtn = document.createElement("button");
+        reportBtn.type = "button";
+        reportBtn.textContent = "Report";
+        reportBtn.style.border = "none";
+        reportBtn.style.background = "transparent";
+        reportBtn.style.color = "#d32f2f";
+        reportBtn.style.fontSize = "10px";
+        reportBtn.style.padding = "3px 8px 3px 0";
+        reportBtn.style.cursor = "pointer";
+        reportBtn.addEventListener("click", () => {
+          openReportDialog({
+            fb: fzFb,
+            target: {
+              uid: data.senderId,
+              name: data.senderName || data.username || "User"
+            },
+            context: "live",
+            messageId: messageId,
+            messageText: data.text || (data.imageURL ? "[image]" : data.audioURL ? "[voice message]" : "")
+          });
+        });
+        content.appendChild(reportBtn);
+      }
 
       // ---- pin button (owner/admin only) ----
       if (currentUser && isModerator(currentUser.uid)) {

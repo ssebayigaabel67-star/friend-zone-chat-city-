@@ -44,6 +44,17 @@ import {
 // Music player (shared with the live room)
 import { initMusic } from "./music.js";
 
+// Friends Zone shared features (presence, titles, reports, banners, themes)
+import {
+  isOnlineNow,
+  startPresence,
+  watchTitles,
+  titleBadgeHTML,
+  decorateProfile,
+  openThemePicker,
+  pickMyBanner
+} from "./fz-shared.js";
+
 // ======================
 // FIREBASE CONFIG
 // ======================
@@ -68,6 +79,18 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 const db = getFirestore(app);
+
+// Firebase pieces the shared features need
+const fzFb = {
+  auth,
+  db,
+  doc,
+  getDoc,
+  setDoc,
+  addDoc,
+  collection,
+  serverTimestamp
+};
 
 // Music button (right feature bar)
 initMusic("musicBtn");
@@ -661,7 +684,7 @@ function buildFriendRow(entry) {
 
       ${escapeHTML(friend.name || friend.email || "User")}
 
-      ${friend.online ? " 🟢" : " ⚫"}
+      ${isOnlineNow(friend) ? " 🟢" : " ⚫"}
 
       ${
         isOthers && mySentRequestIds.has(userId)
@@ -845,8 +868,8 @@ function renderFriendsList() {
   // online first, then A → Z
   users = users.slice().sort((a, b) => {
 
-    if (!!a.data.online !== !!b.data.online) {
-      return a.data.online ? -1 : 1;
+    if (isOnlineNow(a.data) !== isOnlineNow(b.data)) {
+      return isOnlineNow(a.data) ? -1 : 1;
     }
 
     return String(a.data.name || a.data.email || "")
@@ -2073,7 +2096,7 @@ function openUserProfilePopover(
 
   if (status) {
 
-    if (userData.online) {
+    if (isOnlineNow(userData)) {
 
       status.textContent =
         "🟢 Online";
@@ -2234,6 +2257,15 @@ function openUserProfilePopover(
   // SHOW POPOVER
   // ======================
 
+  decorateProfile({
+    root: popover,
+    avatarEl: document.getElementById("userPopoverPhoto"),
+    nameEl: document.getElementById("userPopoverName"),
+    uid: userId,
+    fb: fzFb,
+    context: "home",
+    displayName: userData.name || userData.username || ""
+  });
   popover.classList.add(
     "show"
   );
@@ -3429,6 +3461,10 @@ const userSnap =
           merge: true
         }
       );
+
+      // Keep online/offline status accurate (heartbeat) and load titles
+      startPresence({ db, auth, doc, updateDoc, serverTimestamp });
+      watchTitles({ db, collection, onSnapshot });
       // ======================
 // LOAD USER NAME
 // ======================
@@ -4265,7 +4301,7 @@ function loadMessages() {
                   data.senderName ||
                   "Unknown User"
                 )}
-              </b>
+              </b><span class="fz-title-slot" data-uid="${escapeHTML(data.senderId || "")}">${titleBadgeHTML(data.senderId)}</span>
 
               <br>
 
@@ -5476,8 +5512,7 @@ async function loadGroupMembersIntoPopover(group) {
       const isMemberAdmin =
         group.admin === uid;
 
-      const isOnline =
-        user.online === true;
+      const isOnline = isOnlineNow(user);
 
       item.innerHTML = `
 
@@ -6419,7 +6454,7 @@ function loadGroupMessages() {
                 data.senderName ||
                 "Unknown User"
               )}
-            </b>
+            </b><span class="fz-title-slot" data-uid="${escapeHTML(data.senderId || "")}">${titleBadgeHTML(data.senderId)}</span>
 
             <br>
 
@@ -7678,6 +7713,25 @@ window.addEventListener(
 
 
 // ======================
+// THEMES + BANNER BUTTONS
+// ======================
+const appearanceThemesBtnEl = document.getElementById("appearanceThemesBtn");
+if (appearanceThemesBtnEl) {
+  appearanceThemesBtnEl.addEventListener("click", () => openThemePicker());
+}
+
+const settingsBannerBtnEl = document.getElementById("settingsBannerBtn");
+if (settingsBannerBtnEl) {
+  settingsBannerBtnEl.addEventListener("click", () => {
+    if (!auth.currentUser) {
+      alert("Please log in first.");
+      return;
+    }
+    pickMyBanner(fzFb);
+  });
+}
+
+// ======================
 // FINISHED
 // ======================
 
@@ -7877,8 +7931,7 @@ async function openMyProfilePopover() {
       auth.currentUser.email ||
       "No email";
 
-    const online =
-      user.online === true;
+    const online = isOnlineNow(user);
 
 
     // ======================
@@ -10540,10 +10593,7 @@ async function loadMyProfilePopover() {
 
     if (status) {
 
-      status.textContent =
-        userData.online
-          ? "🟢 Online"
-          : "⚫ Offline";
+      status.textContent = isOnlineNow(userData) ? "🟢 Online" : "⚫ Offline";
 
     }
 
