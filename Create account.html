@@ -1,132 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Create Account - FriendsZoneChat City</title>
 
-<title>Create Account</title>
+  <style>
+    * { box-sizing: border-box; }
 
-<style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background-color: #111;
+      background-image: url("Add.jpg");
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-attachment: fixed;
+      font-family: Arial, sans-serif;
+      color: #fff;
+      text-align: center;
+      padding: 16px 12px 40px;
+    }
 
-body{
-  background-image: url("Add.jpg");
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  height: 100vh;
-  font-family: Arial, sans-serif;
-}
+    h1 { color: red; margin: 8px 0 2px; }
+    h3 { color: greenyellow; margin: 0 0 14px; }
 
-h3{
-  color:red;
-}
+    .card {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 18px 16px 20px;
+      background: rgba(0, 0, 0, 0.74);
+      border-radius: 18px;
+      text-align: left;
+    }
 
-h4{
-  color:greenyellow;
-}
+    label.field-label {
+      display: block;
+      margin: 14px 0 5px;
+      font-size: 13px;
+      font-weight: bold;
+      color: #ddd;
+    }
 
-h6{
-  color:white;
-}
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="tel"],
+    input[type="date"],
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid transparent;
+      border-radius: 10px;
+      font-size: 15px;
+      background: #fff;
+      color: #111;
+    }
 
-input{
-  padding:8px;
-  border-radius:5px;
-  border:none;
-}
+    input.invalid, select.invalid { border-color: #ff5252; }
+    input.valid, select.valid { border-color: #2ecc71; }
 
-button{
-  padding:10px 20px;
-  border:none;
-  border-radius:5px;
-  cursor:pointer;
-  background:black;
-  color:white;
-}
+    .err {
+      min-height: 0;
+      margin: 5px 2px 0;
+      font-size: 12.5px;
+      color: #ff8a80;
+      font-weight: bold;
+    }
 
-button:hover{
-  background:green;
-}
+    .hint { margin: 5px 2px 0; font-size: 12px; color: #aaa; }
 
-</style>
+    .phone-row { display: flex; gap: 8px; }
+    .phone-row select { width: 40%; min-width: 108px; }
+    .phone-row input { flex: 1; min-width: 0; }
 
+    .gender-row { display: flex; gap: 10px; }
+    .gender-row label {
+      flex: 1;
+      text-align: center;
+      padding: 12px 6px;
+      border-radius: 10px;
+      background: #2b2b2b;
+      border: 2px solid transparent;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .gender-row input { display: none; }
+    .gender-row input:checked + span { color: #fff; }
+    .gender-row label:has(input:checked) { background: #7b1fa2; border-color: #e1bee7; }
+    .gender-row.invalid label { border-color: #ff5252; }
+
+    .check { display: flex; gap: 9px; align-items: flex-start; margin-top: 16px; font-size: 13px; color: #ddd; line-height: 1.45; }
+    .check input { margin-top: 3px; width: 18px; height: 18px; flex: none; }
+    .check a { color: yellow; }
+
+    .show-pw { margin-top: 8px; font-size: 13px; color: #ccc; display: flex; gap: 6px; align-items: center; }
+
+    #signupBtn {
+      width: 100%;
+      margin-top: 20px;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: red;
+      color: #fff;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #signupBtn:disabled { opacity: .6; cursor: default; }
+
+    #formMessage {
+      margin-top: 14px;
+      padding: 0;
+      font-weight: bold;
+      font-size: 14px;
+      text-align: center;
+    }
+    #formMessage.bad { color: #ff8a80; }
+    #formMessage.good { color: #69f0ae; }
+
+    a.back { color: yellow; font-weight: bold; text-decoration: none; display: inline-block; margin-top: 16px; }
+  </style>
 </head>
 
 <body>
 
-<h3>Create an account</h3>
+<h1>FriendsZoneChat City</h1>
+<h3>Create Account</h3>
 
-<h4>
-Name:
-<input id="name" type="text" required>
-</h4>
+<div class="card">
 
+  <label class="field-label" for="name">Full name</label>
+  <input type="text" id="name" placeholder="Your real name" autocomplete="name" maxlength="40">
+  <div class="err" id="err-name"></div>
 
-<h4>
-Email:
-<input id="email" type="email" required>
-</h4>
+  <label class="field-label" for="email">Email</label>
+  <input type="email" id="email" placeholder="you@example.com" autocomplete="email" inputmode="email">
+  <div class="err" id="err-email"></div>
+  <div class="hint">We will send a link to confirm this email is yours.</div>
 
+  <label class="field-label" for="password">Password</label>
+  <input type="password" id="password" placeholder="At least 8 characters, letters and numbers" autocomplete="new-password">
+  <div class="err" id="err-password"></div>
 
-<h4>
-Password:
-<input id="password" type="password" required>
-</h4>
+  <label class="field-label" for="confirmPassword">Confirm password</label>
+  <input type="password" id="confirmPassword" placeholder="Type the password again" autocomplete="new-password">
+  <div class="err" id="err-confirmPassword"></div>
 
+  <label class="show-pw"><input type="checkbox" id="showPw"> Show passwords</label>
 
-<h4>
-Date of Birth:
-<input id="dob" type="date" required>
-</h4>
-<h4>
-  Nationality:
-  <input
-    id="nationality"
-    type="text"
-    placeholder="e.g. Ugandan"
-    required
-  >
-</h4>
+  <label class="field-label" for="dob">Date of birth</label>
+  <input type="date" id="dob">
+  <div class="err" id="err-dob"></div>
 
-<h4>
-Contacts:
-</h4>
+  <label class="field-label" for="country">Country</label>
+  <select id="country"></select>
+  <div class="err" id="err-country"></div>
 
-<input id="phone" type="tel" required>
+  <label class="field-label" for="phone">Phone number</label>
+  <div class="phone-row">
+    <select id="phoneCountry" aria-label="Phone country code"></select>
+    <input type="tel" id="phone" placeholder="700 123 456" autocomplete="tel-national" inputmode="tel">
+  </div>
+  <div class="err" id="err-phone"></div>
 
+  <label class="field-label">Gender</label>
+  <div class="gender-row" id="genderRow">
+    <label><input type="radio" name="gender" value="Male"> <span>♂ Male</span></label>
+    <label><input type="radio" name="gender" value="Female"> <span>♀ Female</span></label>
+  </div>
+  <div class="err" id="err-gender"></div>
 
-<h4>
-Gender:
-</h4>
+  <label class="check">
+    <input type="checkbox" id="agree">
+    <span>I confirm the information above is true, and I agree to the
+      <a href="FriendsZone_Privacy_Policy_and_Terms.html" target="_blank" rel="noopener">Privacy Policy &amp; Terms</a>.</span>
+  </label>
+  <div class="err" id="err-agree"></div>
 
+  <button type="button" id="signupBtn">Create Account</button>
+  <div id="formMessage"></div>
+</div>
 
-<input type="radio" id="male" name="gender" value="Male">
-<label for="male">
-<h6>Male</h6>
-</label>
+<a class="back" href="index.html" id="backLink">← Back</a>
 
-
-<input type="radio" id="female" name="gender" value="Female">
-<label for="female">
-<h6>Female</h6>
-</label>
-
-
-<br><br>
-
-
-<button id="signupBtn">
-Create Account
-</button>
-
-
-<button>
-Help
-</button>
-
-
-<script type="module" src="App.js"></script>
-
-
+<script type="module" src="signup.js"></script>
 </body>
 </html>

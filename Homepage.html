@@ -15148,7 +15148,8 @@ body.dark-mode .account-info-row small {
   margin-top: 5px;
 }
 
-.edit-account-form input {
+\1
+.edit-account-form select {
   width: 100%;
   box-sizing: border-box;
   padding: 11px;
@@ -15156,6 +15157,13 @@ body.dark-mode .account-info-row small {
   border-radius: 10px;
   font-size: 14px;
   outline: none;
+  background: #fff;
+  color: #222;
+}
+body.dark-mode .edit-account-form select {
+  background: #2a2a2a;
+  color: #fff;
+  border-color: #444;
 }
 
 .save-account-btn {
@@ -17130,12 +17138,7 @@ body.dark-mode .account-option.account-delete-option strong {
       Country
     </label>
 
-    <input
-      type="text"
-      id="editProfileNationality"
-      placeholder="Nationality"
-  autocomplete="off"
->
+    <select id="editProfileNationality"></select>
 
 
     <label>
@@ -17165,12 +17168,17 @@ body.dark-mode .account-option.account-delete-option strong {
       Phone
     </label>
 
-    <input
-      type="tel"
-      id="editProfilePhone"
-      placeholder="Phone number"
-  autocomplete="off"
->
+    <div style="display:flex;gap:6px;">
+      <select id="editProfilePhoneDial" style="width:40%;min-width:100px;" aria-label="Phone country code"></select>
+      <input
+        type="tel"
+        id="editProfilePhone"
+        placeholder="Phone number"
+        autocomplete="off"
+        inputmode="tel"
+        style="flex:1;min-width:0;"
+      >
+    </div>
 
 
     <div class="edit-profile-buttons">
@@ -17631,7 +17639,13 @@ body.dark-mode .account-option.account-delete-option strong {
     <div>
       <svg class="fz-icon" aria-hidden="true"><use href="#icon-globe"></use></svg>
       <span id="userPopoverNationality">
-        Nationality: —
+        Country: —
+      </span>
+    </div>
+    <div>
+      <span aria-hidden="true" style="display:inline-block;width:18px;text-align:center;">👤</span>
+      <span id="userPopoverGender">
+        Gender: —
       </span>
     </div>
 
@@ -17906,7 +17920,7 @@ body.dark-mode .account-option.account-delete-option strong {
       <div class="account-info-row">
         <span><svg class="fz-icon" aria-hidden="true"><use href="#icon-globe"></use></svg></span>
         <div>
-          <small>Nationality</small>
+          <small>Country</small>
           <strong id="accountInfoNationality">Not set</strong>
         </div>
       </div>
@@ -18508,8 +18522,9 @@ body.dark-mode .account-option.account-delete-option strong {
   autocomplete="off"
 >
 
-      <label>Age</label>
+      <label style="display:none">Age</label>
       <input
+        style="display:none"
         type="number"
         id="editAccountAge"
         placeholder="Enter your age"
@@ -18518,13 +18533,8 @@ body.dark-mode .account-option.account-delete-option strong {
   autocomplete="off"
 >
 
-      <label>Nationality</label>
-      <input
-        type="text"
-        id="editAccountNationality"
-        placeholder="Enter your nationality"
-  autocomplete="off"
->
+      <label>Country</label>
+      <select id="editAccountNationality"></select>
 
       <button
         id="saveAccountChangesBtn"

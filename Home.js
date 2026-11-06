@@ -55,6 +55,21 @@ import {
   pickMyBanner
 } from "./fz-shared.js";
 
+// Real-data checks, countries, flags, phone codes
+import {
+  countryLabel,
+  countryIsoOf,
+  countryByIso,
+  genderLabel,
+  fillCountrySelect,
+  fillDialSelect,
+  validateName,
+  validateDob,
+  validatePhone,
+  splitStoredPhone,
+  ageFromDob
+} from "./fz-validate.js";
+
 // ======================
 // FIREBASE CONFIG
 // ======================
@@ -2170,14 +2185,14 @@ function openUserProfilePopover(
   // ======================
 
   if (nationality) {
-
     nationality.textContent =
-      "Nationality: " +
-      (
-        userData.nationality ||
-        "Not provided"
-      );
+      "Country: " + (countryLabel(userData) || "Not provided");
+  }
 
+  const fzGenderEl = document.getElementById("userPopoverGender");
+  if (fzGenderEl) {
+    fzGenderEl.textContent =
+      "Gender: " + (genderLabel(userData.gender) || "Not provided");
   }
 
 
@@ -10743,12 +10758,7 @@ async function loadMyProfilePopover() {
 
     if (nationality) {
 
-      nationality.textContent =
-        "Nationality: " +
-        (
-          userData.nationality ||
-          "Not set"
-        );
+      nationality.textContent = "Country: " + (countryLabel(userData) || "Not set");
 
     }
 
@@ -10765,12 +10775,7 @@ async function loadMyProfilePopover() {
 
     if (gender) {
 
-      gender.textContent =
-        "Gender: " +
-        (
-          userData.gender ||
-          "Not set"
-        );
+      gender.textContent = "Gender: " + (genderLabel(userData.gender) || "Not set");
 
     }
 
@@ -10822,9 +10827,7 @@ async function loadMyProfilePopover() {
       completed++;
     }
 
-    if (
-      userData.nationality
-    ) {
+    if (userData.countryCode || userData.country || userData.nationality) {
       completed++;
     }
 
@@ -10968,11 +10971,11 @@ if (editMyProfileBtn) {
           userData.dob ||
           "";
 
-        document.getElementById(
-          "editProfileNationality"
-        ).value =
-          userData.nationality ||
-          "";
+        fillCountrySelect(
+          document.getElementById("editProfileNationality"),
+          countryIsoOf(userData),
+          "Select your country"
+        );
 
         document.getElementById(
           "editProfileGender"
@@ -10980,11 +10983,14 @@ if (editMyProfileBtn) {
           userData.gender ||
           "";
 
-        document.getElementById(
-          "editProfilePhone"
-        ).value =
-          userData.phone ||
-          "";
+        {
+          const phoneParts = splitStoredPhone(userData.phone, userData.phoneCountry);
+          fillDialSelect(
+            document.getElementById("editProfilePhoneDial"),
+            phoneParts.iso || userData.phoneCountry || countryIsoOf(userData) || "UG"
+          );
+          document.getElementById("editProfilePhone").value = phoneParts.national;
+        }
 
 
         // ======================
@@ -11085,20 +11091,35 @@ if (saveProfileBtn) {
             "editProfileDob"
           ).value;
 
-        const nationality =
-          document.getElementById(
-            "editProfileNationality"
-          ).value.trim();
+        const countryIso =
+          document.getElementById("editProfileNationality").value;
 
         const gender =
           document.getElementById(
             "editProfileGender"
           ).value;
 
-        const phone =
-          document.getElementById(
-            "editProfilePhone"
-          ).value.trim();
+        const phoneRaw =
+          document.getElementById("editProfilePhone").value.trim();
+        const phoneDial =
+          document.getElementById("editProfilePhoneDial").value;
+
+        // ======================
+        // CHECK EVERYTHING IS REAL
+        // ======================
+        const nameCheck = validateName(name);
+        if (!nameCheck.ok) { alert(nameCheck.error); return; }
+
+        const dobCheck = validateDob(dob);
+        if (!dobCheck.ok) { alert(dobCheck.error); return; }
+
+        const countryObj = countryByIso(countryIso);
+        if (!countryObj) { alert("Please choose your country."); return; }
+
+        if (!gender) { alert("Please choose your gender."); return; }
+
+        const phoneCheck = validatePhone(phoneDial, phoneRaw);
+        if (!phoneCheck.ok) { alert(phoneCheck.error); return; }
 
 
         // ======================
@@ -11117,20 +11138,21 @@ if (saveProfileBtn) {
               username,
 
             name:
-              name,
-
+              nameCheck.value,
             dob:
               dob,
-
+            country:
+              countryObj.name,
+            countryCode:
+              countryObj.iso,
             nationality:
-              nationality,
-
+              countryObj.name,
             gender:
               gender,
-
             phone:
-              phone
-
+              phoneCheck.e164,
+            phoneCountry:
+              phoneCheck.iso
           }
         );
 
@@ -17846,10 +17868,10 @@ if (accountInfoBtn && accountInfoModal) {
         data.email || auth.currentUser.email || "Not set";
 
       document.getElementById("accountInfoAge").textContent =
-        data.age || "Not set";
+        (ageFromDob(data.dob) ?? data.age ?? "") || "Not set";
 
       document.getElementById("accountInfoNationality").textContent =
-        data.nationality || "Not set";
+        countryLabel(data) || "Not set";
 
       document.getElementById("accountInfoLikes").textContent =
         data.likesCount ?? data.likes ?? 0;
@@ -17965,8 +17987,7 @@ if (editAccountBtn && editAccountModal) {
       editAccountAge.value =
         data.age || "";
 
-      editAccountNationality.value =
-        data.nationality || "";
+      fillCountrySelect(editAccountNationality, countryIsoOf(data), "Select your country");
 
       editAccountPhotoData =
         data.photoURL ||
@@ -18067,8 +18088,7 @@ if (saveAccountChangesBtn) {
       const age =
         editAccountAge.value.trim();
 
-      const nationality =
-        editAccountNationality.value.trim();
+      const countryIso = editAccountNationality.value;
 
 
       if (!name) {
@@ -18082,6 +18102,18 @@ if (saveAccountChangesBtn) {
 
         alert("Please enter your username.");
 
+        return;
+      }
+
+      const nameCheck = validateName(name);
+      if (!nameCheck.ok) {
+        alert(nameCheck.error);
+        return;
+      }
+
+      const countryObj = countryByIso(countryIso);
+      if (!countryObj) {
+        alert("Please choose your country.");
         return;
       }
 
@@ -18102,17 +18134,12 @@ if (saveAccountChangesBtn) {
 
 
         await updateDoc(userRef, {
-
-          name: name,
-
+          name: nameCheck.value,
           username: username,
-
-          age: age,
-
-          nationality: nationality,
-
+          country: countryObj.name,
+          countryCode: countryObj.iso,
+          nationality: countryObj.name,
           photoURL: editAccountPhotoData
-
         });
 
 

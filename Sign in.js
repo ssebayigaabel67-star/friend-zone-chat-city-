@@ -19,34 +19,77 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-setPersistence(auth, browserLocalPersistence)
-.then(() => {
-  console.log("Auth persistence enabled");
-})
-.catch((error) => {
+setPersistence(auth, browserLocalPersistence).catch((error) => {
   console.error(error);
 });
 
-document.getElementById("loginBtn").addEventListener("click", async () => {
+const emailEl = document.getElementById("email");
+const passwordEl = document.getElementById("password");
+const loginBtn = document.getElementById("loginBtn");
+const messageEl = document.getElementById("message");
 
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
+// ---- "Show password" tick box (added here, no HTML change needed) ----
+const showWrap = document.createElement("label");
+showWrap.style.cssText =
+  "display:block;margin:2px 0 6px;font-size:13px;color:#fff;cursor:pointer;";
+showWrap.innerHTML =
+  '<input type="checkbox" id="showPassword" style="width:auto;margin:0 6px 0 0;padding:0;vertical-align:middle;"> Show password';
+passwordEl.insertAdjacentElement("afterend", showWrap);
+passwordEl.insertAdjacentElement("afterend", document.createElement("br"));
+// (the <br> that was already after the password box stays; the tick box sits between)
+document.getElementById("showPassword").addEventListener("change", (e) => {
+  passwordEl.type = e.target.checked ? "text" : "password";
+});
 
-  try {const userCredential = await signInWithEmailAndPassword(
-  auth,
-  email,
-  password
-);
+function friendlyError(error) {
+  switch (error && error.code) {
+    case "auth/invalid-credential":
+    case "auth/wrong-password":
+    case "auth/user-not-found":
+      return "Wrong email or password. Please try again.";
+    case "auth/invalid-email":
+      return "Please enter a valid email address.";
+    case "auth/user-disabled":
+      return "This account has been disabled. Please contact support.";
+    case "auth/too-many-requests":
+      return "Too many attempts. Please wait a few minutes or use “Forgot Password?”.";
+    case "auth/network-request-failed":
+      return "No internet connection. Please check your network and try again.";
+    default:
+      return "Could not sign in. Please try again.";
+  }
+}
 
-alert("Login successful!");
+async function signIn() {
+  const email = emailEl.value.trim();
+  const password = passwordEl.value;
 
-window.location.href = "Homepage.html";} catch (error) {
+  messageEl.textContent = "";
 
-    document.getElementById("message").textContent =
-      error.message;
-
-    console.error(error);
-
+  if (!email || !password) {
+    messageEl.textContent = "Please enter your email and password.";
+    return;
   }
 
+  loginBtn.disabled = true;
+  const oldText = loginBtn.textContent;
+  loginBtn.textContent = "Signing in...";
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    window.location.href = "Homepage.html";
+  } catch (error) {
+    console.error(error);
+    messageEl.textContent = friendlyError(error);
+    loginBtn.disabled = false;
+    loginBtn.textContent = oldText;
+  }
+}
+
+loginBtn.addEventListener("click", signIn);
+
+[emailEl, passwordEl].forEach((el) => {
+  el.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") signIn();
+  });
 });

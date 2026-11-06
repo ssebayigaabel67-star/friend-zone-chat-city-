@@ -62,6 +62,9 @@ import {
   openThemePicker
 } from "./fz-shared.js";
 
+// Countries with flags, gender labels (real-data helpers)
+import { countryLabel, genderLabel } from "./fz-validate.js";
+
 // ==========================================
 // APP ICONS (SVG, same style as live-room.html)
 // icon("name", size, filled?)  ->  <svg> markup
@@ -1795,7 +1798,8 @@ async function openProfilePopup(user) {
         photoURL: data.photoURL || data.profilePicture || data.photo || user.photoURL || "",
         email: data.email || "",
         age: calcAgeFromDob(data.dob) || data.age || "",
-        country: data.nationality || data.country || data.location || "",
+        country: countryLabel(data) || data.location || "",
+        gender: genderLabel(data.gender) || "",
         online: data.online !== undefined ? isOnlineNow(data) : online,
         likesCount: data.likesCount || 0,
         friendsCount: data.friendsCount || 0,
@@ -1880,7 +1884,8 @@ async function openProfilePopup(user) {
   const rows = [
     { label: "Email", value: fullUser.email || "Not provided" },
     { label: "Age", value: fullUser.age || "Not provided" },
-    { label: "Nationality", value: fullUser.country || "Not provided" }
+    { label: "Country", value: fullUser.country || "Not provided" },
+    { label: "Gender", value: fullUser.gender || "Not provided" }
   ];
 
   profileModalInfo.innerHTML = rows
