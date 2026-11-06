@@ -3965,6 +3965,56 @@ body.dark-mode .live-header .theme-toggle-btn {
   .live-header .header-icon-btn .ic,
   .live-header .theme-toggle-btn .ic { width: 16px; height: 16px; }
 }
+
+/* ===== Online members popover: one smooth scroll area ===== */
+.online-popover {
+  max-height: min(72vh, 520px) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
+.online-popover .online-users {
+  max-height: none !important;
+  overflow: visible !important;
+}
+.online-popover .online-popover-header {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: rgba(255,255,255,.97);
+}
+body.dark-mode .online-popover .online-popover-header {
+  background: rgba(24,24,34,.98);
+}
+
+/* ===== Online members popover: header + search stay, the list scrolls ===== */
+.online-popover {
+  max-height: calc(var(--fz-app-h, 100dvh) - 96px) !important;
+  overflow: hidden !important;
+}
+.online-popover.show {
+  display: flex !important;
+  flex-direction: column !important;
+}
+.online-popover .online-popover-header,
+.online-popover .member-search-input {
+  flex: 0 0 auto !important;
+}
+.online-popover .online-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
+.online-popover .online-users {
+  max-height: none !important;
+  overflow: visible !important;
+}
 </style>
 <body>
 
@@ -4115,6 +4165,7 @@ body.dark-mode .live-header .theme-toggle-btn {
       autocomplete="off"
     >
 
+    <div class="online-scroll">
     <div id="recentlyJoined" class="recently-joined"></div>
 
     <div id="topContributors"></div>
@@ -4123,6 +4174,7 @@ body.dark-mode .live-header .theme-toggle-btn {
       id="onlineUsers"
       class="online-users"
     >
+    </div>
     </div>
 
   </div>

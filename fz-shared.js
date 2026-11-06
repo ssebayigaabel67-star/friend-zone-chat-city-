@@ -247,15 +247,15 @@ export function renderBadge(kind, opts) {
   const size = o.big ? " big" : "";
 
   if (kind === "owner") {
-    return `<span class="fz-badge crown${size}" title="Owner" aria-label="Owner">${CROWN_SVG}</span>`;
+    return `<span class="fz-badge crown${size}" title="Owner" aria-label="Owner">${CROWN_SVG}${o.big ? '<span class="fz-badge-label">Owner</span>' : ""}</span>`;
   }
   if (kind === "staff") {
-    return `<span class="fz-badge staff${size}" title="Staff" aria-label="Staff">${STAFF_SVG}</span>`;
+    return `<span class="fz-badge staff${size}" title="Staff" aria-label="Staff">${STAFF_SVG}${o.big ? '<span class="fz-badge-label">Staff</span>' : ""}</span>`;
   }
 
   const points = Number(o.points) || 0;
   const tier = diamondTier(points);
-  return `<span class="fz-badge diamond g${tier.glow}${size}" title="${esc(tier.name)} • ${points} pts" aria-label="${esc(tier.name)}">${DIAMOND_SVG.repeat(tier.count)}</span>`;
+  return `<span class="fz-badge diamond g${tier.glow}${size}" title="${esc(tier.name)} • ${points} pts" aria-label="${esc(tier.name)}">${DIAMOND_SVG.repeat(tier.count)}${o.big ? `<span class="fz-badge-label">Diamond ${esc(tier.name)}</span>` : ""}</span>`;
 }
 
 function ensurePoints(uid) {
@@ -290,10 +290,10 @@ export function titleBadgeHTML(uid, opts) {
   if (!uid) return "";
   const o = opts || {};
 
-  if (uid === ADMIN_UID) return renderBadge("owner", o);
+  if (uid === ADMIN_UID) return withLabel(renderBadge("owner", o), "Owner", "owner", o);
 
   const t = titleCache.get(uid);
-  if (t && t.kind === "staff") return renderBadge("staff", o);
+  if (t && t.kind === "staff") return withLabel(renderBadge("staff", o), "Staff", "staff", o);
 
   // older text titles still work
   if (t && t.title) {
@@ -304,7 +304,19 @@ export function titleBadgeHTML(uid, opts) {
   ensurePoints(uid);
   const cached = pointsCache.get(uid);
   if (!cached) return "";
-  return renderBadge("diamond", { points: cached.points, big: o.big });
+  const tier = diamondTier(cached.points);
+  return withLabel(
+    renderBadge("diamond", { points: cached.points, big: o.big }),
+    "Diamond · " + tier.name,
+    "diamond",
+    o
+  );
+}
+
+// In profile popovers the badge also shows its NAME next to the icon
+function withLabel(badgeHtml, text, kind, o) {
+  if (!o || !o.big) return badgeHtml;
+  return `<span class="fz-badge-wrap">${badgeHtml}<span class="fz-badge-label ${kind}">${esc(text)}</span></span>`;
 }
 
 export function refreshTitleSlots(root) {
@@ -454,31 +466,123 @@ async function loadBanner(fb, uid) {
   }
 }
 
-function compressImageToBanner(file) {
+const BANNER_W = 800;
+const BANNER_H = 570; // tall, like the real banner area in the popup
+
+function readImageFile(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onerror = () => reject(new Error("Could not read the picture."));
     reader.onload = () => {
       const img = new Image();
       img.onerror = () => reject(new Error("That file is not a picture."));
-      img.onload = () => {
-        const W = 800, H = 240;
-        const canvas = document.createElement("canvas");
-        canvas.width = W;
-        canvas.height = H;
-        const ctx = canvas.getContext("2d");
-
-        // "cover" crop
-        const scale = Math.max(W / img.width, H / img.height);
-        const w = img.width * scale;
-        const h = img.height * scale;
-        ctx.drawImage(img, (W - w) / 2, (H - h) / 2, w, h);
-
-        resolve(canvas.toDataURL("image/jpeg", 0.72));
-      };
+      img.onload = () => resolve(img);
       img.src = reader.result;
     };
     reader.readAsDataURL(file);
+  });
+}
+
+/**
+ * mode "fill" = picture fills the banner (edges may be cropped)
+ * mode "fit"  = the WHOLE picture is shown (soft background behind it)
+ */
+function renderBannerImage(img, mode) {
+  const canvas = document.createElement("canvas");
+  canvas.width = BANNER_W;
+  canvas.height = BANNER_H;
+  const ctx = canvas.getContext("2d");
+
+  const cover = Math.max(BANNER_W / img.width, BANNER_H / img.height);
+  const cw = img.width * cover;
+  const ch = img.height * cover;
+
+  if (mode === "fit") {
+    // soft blurred copy of the picture as the background
+    try { ctx.filter = "blur(22px)"; } catch (e) {}
+    ctx.drawImage(img, (BANNER_W - cw) / 2, (BANNER_H - ch) / 2, cw, ch);
+    try { ctx.filter = "none"; } catch (e) {}
+    ctx.fillStyle = "rgba(0,0,0,0.35)";
+    ctx.fillRect(0, 0, BANNER_W, BANNER_H);
+
+    // whole picture, centred
+    const contain = Math.min(BANNER_W / img.width, BANNER_H / img.height);
+    const w = img.width * contain;
+    const h = img.height * contain;
+    ctx.drawImage(img, (BANNER_W - w) / 2, (BANNER_H - h) / 2, w, h);
+  } else {
+    ctx.drawImage(img, (BANNER_W - cw) / 2, (BANNER_H - ch) / 2, cw, ch);
+  }
+
+  return canvas.toDataURL("image/jpeg", 0.74);
+}
+
+function openBannerEditor(fb, uid, img, onDone) {
+  const old = document.getElementById("fzBannerOverlay");
+  if (old) old.remove();
+
+  let mode = "fill";
+  const overlay = document.createElement("div");
+  overlay.id = "fzBannerOverlay";
+  overlay.className = "fz-overlay show";
+  overlay.innerHTML = `
+    <div class="fz-card" role="dialog" aria-modal="true">
+      <h3>🖼️ Your banner</h3>
+      <p class="fz-sub">Choose how your picture sits in the banner.</p>
+      <img id="fzBannerPreview" alt="Banner preview"
+           style="width:100%;border-radius:12px;display:block;background:#222;aspect-ratio:${BANNER_W}/${BANNER_H};object-fit:cover;">
+      <div style="display:flex;gap:8px;margin-top:10px;">
+        <button type="button" class="fz-btn ghost" data-mode="fill" style="flex:1">Fill banner</button>
+        <button type="button" class="fz-btn ghost" data-mode="fit" style="flex:1">Fit whole picture</button>
+      </div>
+      <button id="fzBannerSave" class="fz-btn danger" style="background:#176b57" type="button">Save banner</button>
+      <button id="fzBannerCancel" class="fz-btn ghost" type="button">Cancel</button>
+    </div>`;
+  document.body.appendChild(overlay);
+
+  const preview = overlay.querySelector("#fzBannerPreview");
+  const modeBtns = overlay.querySelectorAll("[data-mode]");
+
+  function refresh() {
+    preview.src = renderBannerImage(img, mode);
+    modeBtns.forEach((b) => {
+      const on = b.dataset.mode === mode;
+      b.style.outline = on ? "3px solid #7b5cff" : "none";
+    });
+  }
+  refresh();
+
+  modeBtns.forEach((b) => {
+    b.addEventListener("click", () => {
+      mode = b.dataset.mode;
+      refresh();
+    });
+  });
+
+  const close = () => overlay.remove();
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) close(); });
+  overlay.querySelector("#fzBannerCancel").addEventListener("click", close);
+
+  const saveBtn = overlay.querySelector("#fzBannerSave");
+  saveBtn.addEventListener("click", async () => {
+    saveBtn.disabled = true;
+    saveBtn.textContent = "Saving...";
+    try {
+      const data = renderBannerImage(img, mode);
+      await fb.setDoc(fb.doc(fb.db, "banners", uid), {
+        data: data,
+        updatedAt: fb.serverTimestamp()
+      });
+      bannerCache.set(uid, data);
+      close();
+      toast("✅ Banner updated.");
+      if (onDone) onDone(data);
+    } catch (error) {
+      console.error("Banner error:", error);
+      saveBtn.disabled = false;
+      saveBtn.textContent = "Save banner";
+      alert("Could not save the banner: " + error.message);
+    }
   });
 }
 
@@ -490,18 +594,10 @@ function pickBanner(fb, uid, onDone) {
     const file = input.files && input.files[0];
     if (!file) return;
     try {
-      toast("Uploading banner...");
-      const data = await compressImageToBanner(file);
-      await fb.setDoc(fb.doc(fb.db, "banners", uid), {
-        data: data,
-        updatedAt: fb.serverTimestamp()
-      });
-      bannerCache.set(uid, data);
-      toast("✅ Banner updated.");
-      if (onDone) onDone(data);
+      const img = await readImageFile(file);
+      openBannerEditor(fb, uid, img, onDone);
     } catch (error) {
-      console.error("Banner error:", error);
-      alert("Could not update the banner: " + error.message);
+      alert(error.message);
     }
   });
   input.click();
@@ -546,7 +642,11 @@ export async function decorateProfile({
   setTimeout(fitBanner, 900);
 
   function showBanner(data) {
-    banner.style.backgroundImage = `url("${data}")`;
+    // blurred copy fills the space, the real picture fits fully on top
+    banner.innerHTML =
+      '<div class="fz-banner-bg"></div><div class="fz-banner-img"></div>';
+    banner.querySelector(".fz-banner-bg").style.backgroundImage = `url("${data}")`;
+    banner.querySelector(".fz-banner-img").style.backgroundImage = `url("${data}")`;
     banner.classList.add("has-image");
     root.classList.add("fz-has-banner");
   }
@@ -880,9 +980,31 @@ const UI_CSS = `
   gap: 2px; height: 16px; margin-left: 6px; vertical-align: middle;
 }
 .fz-badge svg { height: 16px; width: 16px; display: block; }
-.fz-badge.big { height: 30px; margin-left: 0; gap: 4px; }
-.fz-badge.big svg { height: 30px; width: 30px; }
+.fz-badge.big {
+  height: auto; margin-left: 0; gap: 6px;
+  padding: 4px 14px 4px 9px; border-radius: 999px;
+  background: rgba(18,18,32,.84);
+  box-shadow: 0 2px 10px rgba(0,0,0,.28);
+}
+.fz-badge.big svg { height: 22px; width: 22px; }
+.fz-badge-label {
+  font-size: 13px; font-weight: 700; letter-spacing: .3px;
+  color: #fff; line-height: 1; font-family: Arial, sans-serif;
+}
+.fz-badge.crown .fz-badge-label { color: #ffd666; }
+.fz-badge.staff .fz-badge-label { color: #b9c1ff; }
+.fz-badge.diamond .fz-badge-label { color: #e3f1ff; }
 .fz-title-slot.big { display: inline-block; }
+.fz-badge-wrap {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 4px 14px 4px 10px; border-radius: 999px;
+  background: rgba(10,10,25,.62);
+  box-shadow: 0 2px 10px rgba(0,0,0,.25);
+}
+.fz-badge-label { font-size: 13px; font-weight: 800; letter-spacing: .4px; }
+.fz-badge-label.owner { color: #ffd54a; text-shadow: 0 0 8px rgba(255,195,0,.5); }
+.fz-badge-label.staff { color: #a9b6ff; }
+.fz-badge-label.diamond { color: #eaf3ff; }
 
 /* owner: rotating golden crown */
 .fz-badge.crown { perspective: 140px; }
@@ -930,13 +1052,24 @@ const UI_CSS = `
   background-position: center;
   pointer-events: none;
   /* fades softly into the popover instead of a hard edge */
-  -webkit-mask-image: linear-gradient(180deg, #000 68%, transparent 100%);
-  mask-image: linear-gradient(180deg, #000 68%, transparent 100%);
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(180deg, #000 84%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 84%, transparent 100%);
+}
+.fz-banner.has-image { background: none; }
+.fz-banner-bg {
+  position: absolute; inset: -18px;
+  background-size: cover; background-position: center;
+  filter: blur(18px) brightness(.72);
+}
+.fz-banner-img {
+  position: absolute; inset: 0;
+  background-size: contain; background-repeat: no-repeat; background-position: center;
 }
 .fz-banner.has-image::after {
   content: "";
   position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,.10) 0%, rgba(0,0,0,.35) 45%, rgba(0,0,0,.6) 100%);
+  background: linear-gradient(180deg, rgba(0,0,0,.05) 0%, rgba(0,0,0,.18) 55%, rgba(0,0,0,.5) 100%);
   border-radius: inherit;
 }
 /* readable text on top of a banner picture */

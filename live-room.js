@@ -1516,7 +1516,37 @@ onSnapshot(
   }
 );
 
+// Re-draw the list ONLY when something visible changed, and keep the
+// scroll position. (Every person's heartbeat triggers this callback, which
+// used to rebuild the list and throw the scroll back to the top.)
+let lastOnlineSig = "";
+
 function renderOnlineUsersList(filterTerm) {
+  const term = (filterTerm || "").toLowerCase();
+  const sig =
+    term + "||" +
+    Array.from(onlineUsersMap.entries())
+      .map(([uid, u]) => {
+        const rest = Object.assign({}, u);
+        delete rest.lastSeen;
+        delete rest.online;
+        if (rest.photoURL) rest.photoURL = String(rest.photoURL).length;
+        return uid + JSON.stringify(rest);
+      })
+      .join("|");
+
+  if (sig === lastOnlineSig) return;
+  lastOnlineSig = sig;
+
+  const scroller = onlineUsersEl.closest(".online-scroll") || onlinePopover;
+  const savedTop = scroller ? scroller.scrollTop : 0;
+
+  renderOnlineUsersListNow(filterTerm);
+
+  if (scroller) scroller.scrollTop = savedTop;
+}
+
+function renderOnlineUsersListNow(filterTerm) {
   onlineUsersEl.innerHTML = "";
 
   const term = (filterTerm || "").toLowerCase();
