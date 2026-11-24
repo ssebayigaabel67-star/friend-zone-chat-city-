@@ -19,6 +19,9 @@
     window.dispatchEvent(new Event("fz-install-ready"));
   });
 </script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Public+Sans:wght@400;500;600;700&display=swap">
 <title>Friend Zone Chat
 </title>
 <style>
@@ -15724,6 +15727,562 @@ body.dark-mode .account-option.account-delete-option strong {
 .close-photo-viewer {
   z-index: 2147483001;
 }
+
+/* ===== FRIENDSZONE SKIN ===== */
+/* ==================================================
+   FRIENDSZONE SKIN
+   One layer that restyles the app. Your HTML and JS are untouched.
+   To go back to the old look, delete everything between
+   "FRIENDSZONE SKIN" and "END FRIENDSZONE SKIN".
+================================================== */
+
+:root {
+  --fz-bg:        #eef1f8;
+  --fz-surface:   #ffffff;
+  --fz-surface-2: #f3f5f8;
+  --fz-hover:     #eaeef3;
+  --fz-line:      #d8dce6;
+  --fz-ink:       #0a0a0a;
+  --fz-muted:     #555b66;
+  --fz-brand:     #1740e8;
+  --fz-brand-ink: #ffffff;
+  --fz-brand-soft:#e1e8ff;
+  --fz-signal:    #1740e8;
+  --fz-online:    #1a9a55;
+  --fz-danger:    #c92a2a;
+  --fz-shadow:    0 8px 28px rgba(23, 32, 43, .18);
+  --fz-header:    #1740e8;
+  --fz-header-ink:#ffffff;
+  --fz-head: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --fz-body: "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+body.dark-mode {
+  --fz-bg:        #000000;
+  --fz-surface:   #111111;
+  --fz-surface-2: #1c1c1c;
+  --fz-hover:     #262626;
+  --fz-line:      #2e2e2e;
+  --fz-ink:       #f5f5f5;
+  --fz-muted:     #98a4b1;
+  --fz-brand:     #4d6bff;
+  --fz-brand-ink: #ffffff;
+  --fz-brand-soft:#16204d;
+  --fz-online:    #3ccb7f;
+  --fz-danger:    #ff7b7b;
+  --fz-header:    #000000;
+  --fz-signal:    #4d6bff;
+  --fz-shadow:    0 8px 28px rgba(0, 0, 0, .5);
+}
+
+body, body * { font-family: var(--fz-body); }
+body * { text-shadow: none !important; }
+:focus-visible { outline: 2px solid var(--fz-brand); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  body *, body *::before, body *::after { animation: none !important; transition: none !important; }
+}
+
+/* ---------- page + header ---------- */
+html body { background: var(--fz-bg); color: var(--fz-ink); }
+
+body .header {
+  background: var(--fz-header);
+  color: var(--fz-header-ink);
+  border-bottom: 1px solid var(--fz-line);
+  box-shadow: none;
+}
+body .header h3 {
+  font-family: var(--fz-head);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  color: var(--fz-header-ink);
+}
+body .sidebar-menu-btn { color: var(--fz-header-ink); border-radius: 10px; }
+body .sidebar-menu-btn:hover { background: rgba(255,255,255,.16); }
+body #darkModeBtn {
+  background: transparent;
+  color: var(--fz-header-ink);
+  border: 1px solid rgba(255,255,255,.5);
+}
+body #darkModeBtn:hover { background: rgba(255,255,255,.16); }
+
+/* ---------- right feature bar ---------- */
+body .right-feature-bar {
+  background: var(--fz-surface) !important;
+  border-left: 1px solid var(--fz-line) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  animation: none !important;
+}
+body .right-feature-bar button {
+  background: transparent !important;
+  color: var(--fz-ink) !important;
+  border: 1px solid var(--fz-line) !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  animation: none !important;
+}
+body .right-feature-bar button:hover { background: var(--fz-hover) !important; transform: none !important; }
+body .right-feature-bar button::before,
+body .right-feature-bar button::after { display: none !important; }
+body .right-feature-bar .delete-feature-btn,
+body .right-feature-bar #logoutBtn { color: var(--fz-danger) !important; }
+body .right-feature-bar #logoutBtn { background: transparent !important; }
+
+/* ---------- sidebar ---------- */
+body .sidebar {
+  background: var(--fz-surface) !important;
+  color: var(--fz-ink);
+  border-right: 1px solid var(--fz-line) !important;
+  box-shadow: none !important;
+}
+body .sidebar.sidebar-open { box-shadow: var(--fz-shadow) !important; }
+body .sidebar::before,
+body .sidebar::after { display: none !important; }
+body .sidebar::-webkit-scrollbar-track { background: transparent; }
+body .sidebar::-webkit-scrollbar-thumb { background: var(--fz-line) !important; box-shadow: none !important; border-radius: 6px; }
+body .sidebar h1, body .sidebar h2, body .sidebar h3, body .sidebar h4,
+body .sidebar h5, body .sidebar h6, body .sidebar p, body .sidebar span,
+body .sidebar label { color: var(--fz-ink); }
+
+body .sidebar-overlay {
+  background: rgba(12, 16, 22, .5) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Generic sidebar buttons: plain rows */
+body .sidebar button, body .sidebar a,
+body .sidebar .sidebar-item, body .sidebar .nav-item, body .sidebar .menu-item {
+  background: transparent;
+  color: var(--fz-ink);
+  border: 0;
+  border-radius: 10px;
+  box-shadow: none;
+  transform: none;
+  margin: 2px 8px;
+}
+body .sidebar button:hover, body .sidebar a:hover,
+body .sidebar .sidebar-item:hover, body .sidebar .nav-item:hover, body .sidebar .menu-item:hover {
+  background: var(--fz-hover);
+  color: var(--fz-ink);
+  border-color: transparent;
+  box-shadow: none;
+  transform: none;
+}
+body .sidebar button.active, body .sidebar a.active,
+body .sidebar .sidebar-item.active, body .sidebar .nav-item.active, body .sidebar .menu-item.active {
+  background: var(--fz-brand-soft);
+  color: var(--fz-ink);
+  border-color: transparent;
+  box-shadow: none;
+}
+body .sidebar button::before, body .sidebar button::after,
+body .sidebar a::before, body .sidebar a::after,
+body .sidebar .sidebar-item::before, body .sidebar .sidebar-item::after,
+body .sidebar .nav-item::before, body .sidebar .nav-item::after,
+body .sidebar .menu-item::before, body .sidebar .menu-item::after { display: none !important; animation: none !important; }
+body .sidebar button:hover span, body .sidebar a:hover span { transform: none; filter: none; }
+
+/* ---------- friends + groups ---------- */
+body #friendsList::before {
+  content: "Friends";
+  font-family: var(--fz-head);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--fz-muted);
+  text-shadow: none;
+  opacity: 1;
+}
+body .groups-title {
+  font-family: var(--fz-head);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--fz-muted);
+}
+body .groups-title::after { display: none !important; animation: none !important; }
+
+body .friend, body .group {
+  min-height: 60px;
+  margin: 2px 0;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--fz-ink);
+  box-shadow: none;
+  transform: none;
+}
+body .friend::before, body .friend::after,
+body .group::before, body .group::after { display: none !important; animation: none !important; }
+body .friend:hover, body .friend:active,
+body .group:hover, body .group:active {
+  background: var(--fz-hover);
+  border-color: transparent;
+  box-shadow: none;
+  transform: none;
+}
+body .friend.active, body .group.active {
+  background: var(--fz-brand-soft);
+  border-color: transparent;
+  box-shadow: inset 3px 0 0 var(--fz-brand);
+}
+body .friend span, body .group span {
+  color: var(--fz-ink);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+body .friend:hover span, body .friend.active span,
+body .group:hover span, body .group.active span { color: var(--fz-ink); }
+
+body .friend img, body .group img, body .group-list-photo {
+  border: 2px solid var(--fz-line);
+  box-shadow: none;
+  background: var(--fz-surface-2);
+}
+body .friend:hover img, body .friend:active img { transform: none; border-color: var(--fz-line); box-shadow: none; }
+body .friend img[alt*="online"], body .friend.online img { border-color: var(--fz-online); box-shadow: none; }
+body .friend .online-dot, body .friend .status-dot, body .friend .online-status {
+  background: var(--fz-online);
+  box-shadow: none;
+  animation: none;
+}
+
+body .groups-menu-btn, body .create-group-main-btn {
+  background: var(--fz-brand);
+  color: var(--fz-brand-ink);
+  border: 0;
+  border-radius: 10px;
+  box-shadow: none;
+  transform: none;
+  animation: none;
+}
+body .groups-menu-btn:hover, body .create-group-main-btn:hover { background: var(--fz-brand); filter: brightness(1.08); box-shadow: none; transform: none; }
+body .create-group-main-btn::before { display: none !important; }
+body .create-group-main-btn { font-weight: 600; letter-spacing: 0; }
+
+body .friends-tab { border-radius: 8px; box-shadow: none; }
+body .friends-search {
+  background: var(--fz-surface-2);
+  color: var(--fz-ink);
+  border: 1px solid var(--fz-line);
+  border-radius: 10px;
+  box-shadow: none;
+}
+body .friend-quick-btn { background: var(--fz-surface-2); color: var(--fz-ink); border: 1px solid var(--fz-line); box-shadow: none; }
+
+/* ---------- chat area ---------- */
+body .chat-area { background-image: none; background-color: var(--fz-bg); }
+body:not([class*="chat-theme-"]) #messages { background: transparent; }
+body #typingStatus {
+  background: var(--fz-surface);
+  color: var(--fz-muted);
+  font-size: 13px;
+  border-top: 1px solid var(--fz-line);
+}
+
+body .message { box-shadow: none; max-width: min(80%, 520px); line-height: 1.4; }
+body:not([class*="chat-theme-"]) .message.received {
+  background: var(--fz-surface);
+  color: var(--fz-ink);
+  border: 1px solid var(--fz-line);
+}
+body:not([class*="chat-theme-"]) .message.sent {
+  background: var(--fz-brand);
+  color: var(--fz-brand-ink);
+}
+body .message b {
+  font-size: 13px;
+  font-weight: 700;
+  opacity: 1;
+  color: var(--fz-muted);
+}
+body .message small { font-size: 11px; color: var(--fz-muted); }
+body:not([class*="chat-theme-"]) .message.sent small { color: rgba(255,255,255,.78); }
+body.dark-mode:not([class*="chat-theme-"]) .message.sent small { color: rgba(13,18,32,.7); }
+
+/* ---------- message bar ---------- */
+body .bottom {
+  background: var(--fz-surface);
+  border-top: 1px solid var(--fz-line);
+  box-shadow: none;
+}
+body .bottom::before { display: none !important; animation: none !important; }
+body #messageInput {
+  background: var(--fz-surface-2);
+  color: var(--fz-ink);
+  border: 1px solid var(--fz-line);
+  border-radius: 12px;
+  box-shadow: none;
+}
+body #messageInput::placeholder { color: var(--fz-muted); }
+body #messageInput:focus {
+  background: var(--fz-surface);
+  border-color: var(--fz-brand);
+  box-shadow: 0 0 0 3px var(--fz-brand-soft);
+}
+body #imageBtn, body #recordBtn {
+  background: transparent;
+  color: var(--fz-ink);
+  border: 1px solid var(--fz-line);
+  border-radius: 12px;
+  box-shadow: none;
+  transform: none;
+}
+body #imageBtn:hover, body #recordBtn:hover { background: var(--fz-hover); transform: none; box-shadow: none; }
+body #recordBtn.recording, body #recordBtn.active {
+  background: var(--fz-danger);
+  color: #fff;
+  border-color: var(--fz-danger);
+  box-shadow: none;
+}
+body #sendBtn {
+  background: var(--fz-brand);
+  color: var(--fz-brand-ink);
+  border-radius: 12px;
+  box-shadow: none;
+  font-weight: 600;
+  letter-spacing: 0;
+  transform: none;
+}
+body #sendBtn::before { display: none !important; }
+body #sendBtn:hover { background: var(--fz-brand); filter: brightness(1.08); box-shadow: none; transform: none; }
+body #sendBtn:active { transform: scale(.97); }
+
+/* ---------- call controls ---------- */
+body .call-buttons button {
+  background: transparent;
+  color: inherit;
+  border: 1px solid var(--fz-line);
+  border-radius: 12px;
+  box-shadow: none;
+  transform: none;
+}
+body .call-buttons button::before { display: none !important; animation: none !important; }
+body .call-buttons button:hover { background: var(--fz-hover); box-shadow: none; transform: none; }
+body .call-buttons button:hover span, body .call-buttons button:hover i { transform: none; filter: none; }
+body #sidebarCallStatus { color: var(--fz-muted); }
+
+/* ---------- popovers, panels, modals: one consistent surface ---------- */
+body .settings-popover, body .notifications-popover, body .privacy-popover,
+body .account-popover, body .appearance-popover, body .text-size-popover,
+body .animation-popover, body .privacy-sub-popover, body .blocked-users-popover,
+body .group-admin-popover, body .user-profile-popover, body .news-room-popover,
+body .breaking-news-popover, body .announcement-room-popover,
+body .account-info-popover, body .create-announcement-box, body .delete-account-box,
+body .fz-install-card,
+body .chat-customization-panel, body .chat-theme-panel, body .message-font-panel,
+body .name-color-panel, body .bubble-style-panel, body .message-effects-panel,
+body .chat-background-panel, body .bubble-colors-panel,
+body .group-members-popover, body .rename-group-popover,
+body .change-group-photo-popover, body .group-info-popover {
+  background: var(--fz-surface);
+  color: var(--fz-ink);
+  border: 1px solid var(--fz-line);
+  border-radius: 14px;
+  box-shadow: var(--fz-shadow);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+/* the two dark popovers stay dark in both modes, but flat */
+body .profile-popover, body .create-group-popover {
+  background: #17202b;
+  color: #eef2f6;
+  border: 1px solid #2c3744;
+  border-radius: 14px;
+  box-shadow: var(--fz-shadow);
+}
+body .announcement-modal, body .create-announcement-modal,
+body .account-info-modal, body .fz-install-overlay {
+  background: rgba(12, 16, 22, .55);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+body .settings-popover h2, body .privacy-popover h2, body .account-popover h2,
+body .appearance-popover h2, body .notifications-popover h2,
+body .news-room-popover h2, body .create-group-title {
+  font-family: var(--fz-head);
+  font-weight: 700;
+  letter-spacing: -.01em;
+}
+body [class$="-subtitle"] { color: var(--fz-muted); }
+
+/* option rows inside settings, privacy, account, appearance, etc. */
+body .settings-option, body .privacy-option, body .account-option,
+body .appearance-option, body .text-size-option, body .animation-option,
+body .chat-customization-option, body .message-font-option,
+body .message-effects-option, body .bubble-style-option, body .privacy-choice,
+body .account-info-row, body .group-info-row, body .my-profile-action-btn {
+  background: var(--fz-surface-2);
+  color: var(--fz-ink);
+  border: 1px solid var(--fz-line);
+  border-radius: 10px;
+  box-shadow: none;
+}
+body .settings-option:hover, body .privacy-option:hover, body .account-option:hover,
+body .appearance-option:hover, body .text-size-option:hover, body .animation-option:hover,
+body .chat-customization-option:hover, body .message-font-option:hover,
+body .message-effects-option:hover, body .bubble-style-option:hover,
+body .privacy-choice:hover, body .my-profile-action-btn:hover {
+  background: var(--fz-hover);
+  transform: none;
+}
+body .settings-option > span, body .account-option > span, body .privacy-option > span {
+  background: var(--fz-surface);
+  border-radius: 8px;
+}
+body .settings-option small, body .privacy-option small, body .account-option small { color: var(--fz-muted); }
+body .settings-option > b, body .privacy-option > b, body .account-option > b { color: var(--fz-muted); }
+
+/* close buttons */
+body [class$="-close"] {
+  background: var(--fz-surface-2);
+  color: var(--fz-ink);
+  border-radius: 10px;
+  box-shadow: none;
+}
+
+/* primary actions in dialogs */
+body .save-account-btn, body .publish-announcement-btn, body .news-create-btn,
+body .announcement-create-btn, body .message-user-btn, body #saveProfileBtn,
+body #saveGroupPhotoBtn, body #saveRenameGroupBtn, body #confirmAddMemberBtn,
+body #publishBreakingNewsBtn, body #createGroupBtn, body .fz-install-btn {
+  background: var(--fz-brand);
+  color: var(--fz-brand-ink);
+  border: 0;
+  border-radius: 10px;
+  box-shadow: none;
+  font-weight: 600;
+  letter-spacing: 0;
+  transform: none;
+}
+body .save-account-btn:hover, body .publish-announcement-btn:hover, body .news-create-btn:hover,
+body .announcement-create-btn:hover, body .message-user-btn:hover, body #createGroupBtn:hover {
+  background: var(--fz-brand);
+  filter: brightness(1.08);
+  box-shadow: none;
+  transform: none;
+}
+/* destructive confirm */
+body #confirmDeleteAccountBtn { background: var(--fz-danger); color: #fff; border-radius: 10px; box-shadow: none; }
+
+/* profile progress bar: flat */
+body .profile-progress-bar { background: var(--fz-line); border-radius: 6px; }
+body .profile-progress-fill { background: var(--fz-brand) !important; box-shadow: none !important; animation: none !important; }
+
+/* inputs in dialogs */
+body .edit-account-form input, body .edit-account-form select, body .edit-account-form textarea,
+body .create-group-popover input, body .rename-group-popover input,
+body .create-announcement-box input, body .create-announcement-box textarea,
+body .create-announcement-box select {
+  border: 1px solid var(--fz-line);
+  border-radius: 10px;
+  box-shadow: none;
+}
+body .edit-account-form input:focus, body .rename-group-popover input:focus,
+body .create-announcement-box input:focus, body .create-announcement-box textarea:focus {
+  border-color: var(--fz-brand);
+  box-shadow: 0 0 0 3px var(--fz-brand-soft);
+  outline: none;
+}
+
+/* news items: flat list */
+body .news-item { background: var(--fz-surface-2); border: 1px solid var(--fz-line); border-radius: 10px; box-shadow: none; }
+body .news-item-breaking { border-left: 3px solid var(--fz-signal); }
+
+/* ---------- beat the late rainbow rules in the original CSS ---------- */
+html body { background: var(--fz-bg) !important; background-attachment: scroll; }
+html body .chat-area, html body .chat-container, html body #chatArea {
+  background: var(--fz-bg) !important;
+  background-size: auto;
+  animation: none !important;
+}
+/* keep the chat themes working */
+html body[class*="chat-theme-"] .chat-area,
+html body[class*="chat-theme-"] .chat-container { background: var(--chat-theme-bg) !important; }
+/* keep the "chat background" picker working */
+html body .chat-area.chat-bg-default  { background: #f5f5f5 !important; }
+html body .chat-area.chat-bg-clean    { background: #ffffff !important; }
+html body .chat-area.chat-bg-gradient { background: linear-gradient(135deg, #ff00cc, #333399) !important; }
+html body .chat-area.chat-bg-ocean    { background: linear-gradient(135deg, #00c6ff, #0072ff) !important; }
+html body .chat-area.chat-bg-space    { background: linear-gradient(135deg, #0f0c29, #302b63, #24243e) !important; }
+html body .chat-area.chat-bg-nature   { background: linear-gradient(135deg, #56ab2f, #a8e063) !important; }
+html body .chat-area.chat-bg-pink     { background: linear-gradient(135deg, #ff9a9e, #fad0c4) !important; }
+
+/* ---------- icons: one colour, danger icons stay red ---------- */
+body .fz-icon { color: inherit !important; }
+body .fz-icon:has(use[href="#icon-logout"]),
+body .fz-icon:has(use[href="#icon-trash"]),
+body .fz-icon:has(use[href="#icon-alert"]),
+body .fz-icon:has(use[href="#icon-ban"]),
+body .fz-icon:has(use[href="#icon-flag"]) { color: var(--fz-danger) !important; }
+body .right-feature-bar button { color: var(--fz-ink) !important; }
+
+/* ---------- profile block at the top of the sidebar ---------- */
+body .profile {
+  background: transparent !important;
+  border-bottom: 1px solid var(--fz-line);
+  box-shadow: none !important;
+}
+body .profile::before { display: none !important; animation: none !important; }
+body .profile-picture-wrapper {
+  background: var(--fz-line) !important;
+  box-shadow: none !important;
+  animation: none !important;
+  padding: 3px;
+}
+body .profile-picture-wrapper::after {
+  background: var(--fz-online);
+  border-color: var(--fz-surface);
+  box-shadow: none;
+  animation: none;
+}
+body #profilePic { border: 2px solid var(--fz-surface); background: var(--fz-surface-2); box-shadow: none; transform: none; }
+body #profilePic:hover, body #profilePic:active { transform: none; box-shadow: none; }
+body .profile h3 { font-family: var(--fz-head); font-weight: 700; letter-spacing: -.01em; color: var(--fz-ink); }
+body .profile small { color: var(--fz-muted); }
+
+/* ---------- friends / others tabs ---------- */
+body .friends-tabs { background: var(--fz-surface-2); border: 1px solid var(--fz-line); border-radius: 12px; }
+body .friends-tab {
+  color: var(--fz-muted);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  border-radius: 9px;
+}
+body .friends-tab.active {
+  color: var(--fz-ink);
+  background: var(--fz-surface);
+  box-shadow: 0 1px 2px rgba(23, 32, 43, .12);
+}
+body .friends-tab-dot { background: var(--fz-brand); color: #fff; }
+
+/* ---------- friend requests ---------- */
+body #friendRequestsList .friend-request, body #friendRequestsList > div {
+  background: var(--fz-surface-2);
+  color: var(--fz-ink);
+  border: 1px solid var(--fz-line);
+  border-radius: 12px;
+  box-shadow: none;
+  transform: none;
+}
+
+/* ---------- dark mode: use the same surface everywhere ---------- */
+html body.dark-mode .header { background: var(--fz-header); }
+html body.dark-mode .sidebar { background: var(--fz-surface) !important; }
+
+/* ===== END FRIENDSZONE SKIN ===== */
+
 </style>
  </head>
 <body>
