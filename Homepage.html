@@ -15151,7 +15151,7 @@ body.dark-mode .account-info-row small {
   margin-top: 5px;
 }
 
-\1
+.edit-account-form input,
 .edit-account-form select {
   width: 100%;
   box-sizing: border-box;
@@ -15730,49 +15730,53 @@ body.dark-mode .account-option.account-delete-option strong {
 
 /* ===== FRIENDSZONE SKIN ===== */
 /* ==================================================
-   FRIENDSZONE SKIN
-   One layer that restyles the app. Your HTML and JS are untouched.
+   FRIENDSZONE SKIN  (v3: blue, black, white + one yellow accent)
+   One layer that restyles the app. Your HTML and JS logic are untouched.
    To go back to the old look, delete everything between
    "FRIENDSZONE SKIN" and "END FRIENDSZONE SKIN".
 ================================================== */
 
 :root {
-  --fz-bg:        #eef1f8;
+  --fz-bg:        #e9eeff;
+  --fz-side:      #f3f6ff;
   --fz-surface:   #ffffff;
-  --fz-surface-2: #f3f5f8;
-  --fz-hover:     #eaeef3;
-  --fz-line:      #d8dce6;
-  --fz-ink:       #0a0a0a;
-  --fz-muted:     #555b66;
-  --fz-brand:     #1740e8;
+  --fz-surface-2: #eef2ff;
+  --fz-hover:     #dde6ff;
+  --fz-line:      #c3ccec;
+  --fz-edge:      #1c2340;
+  --fz-bw:        1.5px;
+  --fz-ink:       #0b0b0f;
+  --fz-muted:     #4a4f68;
+  --fz-brand:     #1a3cf2;
   --fz-brand-ink: #ffffff;
-  --fz-brand-soft:#e1e8ff;
-  --fz-signal:    #1740e8;
-  --fz-online:    #1a9a55;
-  --fz-danger:    #c92a2a;
-  --fz-shadow:    0 8px 28px rgba(23, 32, 43, .18);
-  --fz-header:    #1740e8;
-  --fz-header-ink:#ffffff;
+  --fz-brand-soft:#dfe6ff;
+  --fz-yellow:    #ffd60a;
+  --fz-yellow-soft:#fff3b0;
+  --fz-signal:    #1a3cf2;
+  --fz-online:    #12b76a;
+  --fz-danger:    #d92d4a;
+  --fz-shadow:    0 12px 32px rgba(11, 16, 40, .28);
   --fz-head: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
   --fz-body: "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
 body.dark-mode {
-  --fz-bg:        #000000;
-  --fz-surface:   #111111;
-  --fz-surface-2: #1c1c1c;
-  --fz-hover:     #262626;
-  --fz-line:      #2e2e2e;
-  --fz-ink:       #f5f5f5;
-  --fz-muted:     #98a4b1;
-  --fz-brand:     #4d6bff;
-  --fz-brand-ink: #ffffff;
-  --fz-brand-soft:#16204d;
+  --fz-bg:        #0d1020;
+  --fz-side:      #151935;
+  --fz-surface:   #1b2040;
+  --fz-surface-2: #242a55;
+  --fz-hover:     #2f3875;
+  --fz-line:      #343e80;
+  --fz-edge:      #6b79d8;
+  --fz-ink:       #f1f3ff;
+  --fz-muted:     #aab2e8;
+  --fz-brand:     #5b78ff;
+  --fz-brand-ink: #070a1c;
+  --fz-brand-soft:#27327a;
+  --fz-yellow-soft:#3a3510;
   --fz-online:    #3ccb7f;
-  --fz-danger:    #ff7b7b;
-  --fz-header:    #000000;
-  --fz-signal:    #4d6bff;
-  --fz-shadow:    0 8px 28px rgba(0, 0, 0, .5);
+  --fz-danger:    #ff7b8f;
+  --fz-shadow:    0 12px 32px rgba(0, 0, 0, .6);
 }
 
 body, body * { font-family: var(--fz-body); }
@@ -16198,25 +16202,6 @@ body .create-announcement-box input:focus, body .create-announcement-box textare
 body .news-item { background: var(--fz-surface-2); border: 1px solid var(--fz-line); border-radius: 10px; box-shadow: none; }
 body .news-item-breaking { border-left: 3px solid var(--fz-signal); }
 
-/* ---------- beat the late rainbow rules in the original CSS ---------- */
-html body { background: var(--fz-bg) !important; background-attachment: scroll; }
-html body .chat-area, html body .chat-container, html body #chatArea {
-  background: var(--fz-bg) !important;
-  background-size: auto;
-  animation: none !important;
-}
-/* keep the chat themes working */
-html body[class*="chat-theme-"] .chat-area,
-html body[class*="chat-theme-"] .chat-container { background: var(--chat-theme-bg) !important; }
-/* keep the "chat background" picker working */
-html body .chat-area.chat-bg-default  { background: #f5f5f5 !important; }
-html body .chat-area.chat-bg-clean    { background: #ffffff !important; }
-html body .chat-area.chat-bg-gradient { background: linear-gradient(135deg, #ff00cc, #333399) !important; }
-html body .chat-area.chat-bg-ocean    { background: linear-gradient(135deg, #00c6ff, #0072ff) !important; }
-html body .chat-area.chat-bg-space    { background: linear-gradient(135deg, #0f0c29, #302b63, #24243e) !important; }
-html body .chat-area.chat-bg-nature   { background: linear-gradient(135deg, #56ab2f, #a8e063) !important; }
-html body .chat-area.chat-bg-pink     { background: linear-gradient(135deg, #ff9a9e, #fad0c4) !important; }
-
 /* ---------- icons: one colour, danger icons stay red ---------- */
 body .fz-icon { color: inherit !important; }
 body .fz-icon:has(use[href="#icon-logout"]),
@@ -16281,8 +16266,201 @@ body #friendRequestsList .friend-request, body #friendRequestsList > div {
 html body.dark-mode .header { background: var(--fz-header); }
 html body.dark-mode .sidebar { background: var(--fz-surface) !important; }
 
-/* ===== END FRIENDSZONE SKIN ===== */
+/* ---------- blue header, white surfaces, black text ---------- */
+html body .header { background: var(--fz-brand); color: #fff; border-bottom: 0; }
+html body .header h3 { color: #fff; }
+html body .sidebar-menu-btn { color: #fff; }
+html body .sidebar-menu-btn:hover { background: rgba(255,255,255,.16); }
+html body #darkModeBtn { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.55); }
+html body #darkModeBtn:hover { background: rgba(255,255,255,.16); }
+html body.dark-mode .header { background: #05060a; border-bottom: 1px solid var(--fz-line); }
+html body .friends-tab-dot { background: var(--fz-brand); color: #fff; }
 
+/* ================= v3: calm, outlined, one accent ================= */
+html body .header { background: var(--fz-brand); border-bottom: var(--fz-bw) solid var(--fz-edge); }
+html body.dark-mode .header { background: #070a18; }
+html body .header h3 { font-size: 21px; }
+
+/* ---------- page + chat area (themes keep working) ---------- */
+html body { background: var(--fz-bg) !important; background-attachment: scroll; }
+html body .chat-area, html body .chat-container, html body #chatArea { animation: none !important; background-size: auto; }
+html body[class*="chat-theme-"] .chat-area, html body[class*="chat-theme-"] .chat-container { background: var(--chat-theme-bg) !important; }
+html body.chat-theme-classic .chat-area, html body.chat-theme-classic .chat-container { background: var(--fz-bg) !important; }
+html body[class] .chat-area.chat-bg-default  { background: #f5f5f5 !important; }
+html body[class] .chat-area.chat-bg-clean    { background: #ffffff !important; }
+html body[class] .chat-area.chat-bg-gradient { background: linear-gradient(135deg, #ff00cc, #333399) !important; }
+html body[class] .chat-area.chat-bg-ocean    { background: linear-gradient(135deg, #00c6ff, #0072ff) !important; }
+html body[class] .chat-area.chat-bg-space    { background: linear-gradient(135deg, #0f0c29, #302b63, #24243e) !important; }
+html body[class] .chat-area.chat-bg-nature   { background: linear-gradient(135deg, #56ab2f, #a8e063) !important; }
+html body[class] .chat-area.chat-bg-pink     { background: linear-gradient(135deg, #ff9a9e, #fad0c4) !important; }
+
+/* FriendsZone "Themes" (fz-shared.js): let the theme show through everything behind the chat */
+html[data-fz-theme] body[class] .chat-area,
+html[data-fz-theme] body[class] .chat-container,
+html[data-fz-theme] body[class] #chatArea,
+html[data-fz-theme] body[class] #messages { background: transparent !important; }
+html[data-fz-theme] body #typingStatus { background: transparent; border-top: 0; }
+
+/* ---------- sidebar ---------- */
+html body .sidebar { background: var(--fz-side) !important; border-right: var(--fz-bw) solid var(--fz-edge) !important; }
+html body.dark-mode .sidebar { background: var(--fz-side) !important; }
+html body .sidebar.sidebar-open { box-shadow: 6px 0 24px rgba(11, 16, 40, .25) !important; }
+
+html body .profile { background: var(--fz-brand) !important; border-bottom: var(--fz-bw) solid var(--fz-edge); }
+html body.dark-mode .profile { background: #27327a !important; }
+html body .sidebar .profile h3, html body .sidebar .profile p, html body .sidebar .profile small,
+html body #sidebarCallStatus { color: #fff !important; }
+html body .profile-picture-wrapper { background: #fff !important; padding: 3px; border: var(--fz-bw) solid var(--fz-edge); }
+html body #profilePic { border: 0; background: var(--fz-surface-2); }
+html body .sidebar .call-buttons button, html body .profile .call-buttons button {
+  background: #fff; color: #1c2340; border: var(--fz-bw) solid var(--fz-edge); box-shadow: none;
+}
+
+html body .friends-tabs { background: var(--fz-surface); border: var(--fz-bw) solid var(--fz-edge); border-radius: 12px; box-shadow: none; }
+html body .friends-tab { color: var(--fz-ink); font-weight: 600; border: 0; box-shadow: none; }
+html body .friends-tab.active { background: var(--fz-brand); color: var(--fz-brand-ink); box-shadow: none; }
+html body .friends-tab-dot { background: var(--fz-yellow); color: #0b0b0f; border: 0; }
+html body .friends-search { background: var(--fz-surface); color: var(--fz-ink); border: var(--fz-bw) solid var(--fz-edge); border-radius: 10px; box-shadow: none; }
+html body .friend-quick-btn { background: var(--fz-surface); color: var(--fz-ink); border: 1px solid var(--fz-edge); box-shadow: none; }
+
+html body #friendsList::before, html body .sidebar-section-title, html body .groups-title { color: var(--fz-ink); font-weight: 700; font-size: 15px; letter-spacing: 0; text-transform: none; }
+
+html body .friend, html body .group {
+  background: var(--fz-surface); color: var(--fz-ink);
+  border: var(--fz-bw) solid var(--fz-edge); border-radius: 12px; box-shadow: none; margin: 6px 0;
+}
+html body .friend:hover, html body .friend:active, html body .group:hover, html body .group:active {
+  background: var(--fz-hover); border-color: var(--fz-edge); box-shadow: none;
+}
+html body .friend.active, html body .group.active { background: var(--fz-yellow); border-color: var(--fz-edge); box-shadow: none; }
+html body .friend.active span, html body .group.active span { color: #0b0b0f; }
+html body .friend img, html body .group img, html body .group-list-photo { border: var(--fz-bw) solid var(--fz-edge); background: var(--fz-surface-2); }
+html body .friend img[alt*="online"], html body .friend.online img { border: 2px solid var(--fz-online); }
+html body #friendRequestsList .friend-request, html body #friendRequestsList > div {
+  background: var(--fz-surface); border: var(--fz-bw) solid var(--fz-edge); border-radius: 12px; box-shadow: none;
+}
+
+html body .create-group-main-btn {
+  background: var(--fz-brand); color: var(--fz-brand-ink); border: var(--fz-bw) solid var(--fz-edge);
+  border-radius: 12px; box-shadow: none; font-weight: 700;
+}
+html body .create-group-main-btn:hover { background: var(--fz-brand); filter: brightness(1.1); }
+html body .groups-menu-btn { background: var(--fz-surface); color: var(--fz-ink); border: var(--fz-bw) solid var(--fz-edge); box-shadow: none; }
+html body .groups-menu-btn:hover { background: var(--fz-hover); filter: none; }
+
+/* ---------- right rail: black with white icons ---------- */
+html body .right-feature-bar { background: #0b0b0f !important; border-left: var(--fz-bw) solid var(--fz-edge) !important; }
+html body .right-feature-bar button {
+  background: #181c2e !important; color: #fff !important; border: 1px solid #39406a !important; box-shadow: none !important;
+}
+html body .right-feature-bar button:hover { background: var(--fz-brand) !important; border-color: #fff !important; filter: none; }
+html body .right-feature-bar .fz-icon { color: #fff !important; }
+html body .right-feature-bar #logoutBtn .fz-icon, html body .right-feature-bar .delete-feature-btn .fz-icon { color: #ff7b8f !important; }
+
+/* ---------- messages ---------- */
+html body #typingStatus { background: var(--fz-surface); color: var(--fz-ink); border-top: var(--fz-bw) solid var(--fz-edge); font-weight: 600; }
+html body .message b { color: var(--fz-muted); }
+html body.chat-theme-classic .message.received { background: var(--fz-surface); color: var(--fz-ink); border: var(--fz-bw) solid var(--fz-edge); }
+html body.chat-theme-classic .message.sent { background: var(--fz-brand); color: var(--fz-brand-ink); border: var(--fz-bw) solid var(--fz-edge); }
+html body.chat-theme-classic .message.sent b, html body.chat-theme-classic .message.sent small { color: rgba(255,255,255,.85); }
+html body.dark-mode.chat-theme-classic .message.sent b, html body.dark-mode.chat-theme-classic .message.sent small { color: rgba(7,10,28,.75); }
+html body[class*="chat-theme-"]:not(.chat-theme-classic) .message { border: 1px solid rgba(11, 11, 15, .35); }
+
+/* ---------- message bar ---------- */
+html body .bottom, html body.dark-mode .bottom { background: var(--fz-surface); border-top: var(--fz-bw) solid var(--fz-edge); }
+html body #messageInput { background: var(--fz-surface-2); color: var(--fz-ink); border: var(--fz-bw) solid var(--fz-edge); }
+html body #messageInput:focus { background: var(--fz-surface); border-color: var(--fz-brand); box-shadow: 0 0 0 3px var(--fz-brand-soft); }
+html body #imageBtn, html body #recordBtn {
+  background: var(--fz-surface); color: var(--fz-ink); border: var(--fz-bw) solid var(--fz-edge); box-shadow: none;
+}
+html body #imageBtn:hover, html body #recordBtn:hover { background: var(--fz-hover); box-shadow: none; filter: none; }
+html body #recordBtn.recording, html body #recordBtn.active { background: var(--fz-danger); color: #fff; border-color: var(--fz-danger); }
+html body #sendBtn { background: var(--fz-brand); color: var(--fz-brand-ink); border: var(--fz-bw) solid var(--fz-edge); box-shadow: none; font-weight: 700; }
+html body #sendBtn:hover { background: var(--fz-brand); box-shadow: none; filter: brightness(1.1); }
+
+/* ---------- popovers and panels: one clean card ---------- */
+html body .settings-popover, html body .notifications-popover, html body .privacy-popover,
+html body .account-popover, html body .appearance-popover, html body .text-size-popover,
+html body .animation-popover, html body .privacy-sub-popover, html body .blocked-users-popover,
+html body .group-admin-popover, html body .user-profile-popover, html body .news-room-popover,
+html body .breaking-news-popover, html body .announcement-room-popover,
+html body .account-info-popover, html body .create-announcement-box, html body .delete-account-box,
+html body .fz-install-card,
+html body .chat-customization-panel, html body .chat-theme-panel, html body .message-font-panel,
+html body .name-color-panel, html body .bubble-style-panel, html body .message-effects-panel,
+html body .chat-background-panel, html body .bubble-colors-panel,
+html body .group-members-popover, html body .rename-group-popover,
+html body .change-group-photo-popover, html body .group-info-popover {
+  background: var(--fz-surface); color: var(--fz-ink);
+  border: var(--fz-bw) solid var(--fz-edge); border-radius: 16px; box-shadow: var(--fz-shadow);
+}
+html body .profile-popover { background: var(--fz-brand); color: #fff; border: var(--fz-bw) solid var(--fz-edge); border-radius: 16px; box-shadow: var(--fz-shadow); }
+html body.dark-mode .profile-popover { background: #27327a; }
+
+html body .settings-option, html body .privacy-option, html body .account-option,
+html body .appearance-option, html body .text-size-option, html body .animation-option,
+html body .chat-customization-option, html body .message-font-option,
+html body .message-effects-option, html body .bubble-style-option, html body .privacy-choice,
+html body .chat-theme-option, html body .chat-background-option,
+html body .account-info-row, html body .group-info-row, html body .my-profile-action-btn {
+  background: var(--fz-surface-2); color: var(--fz-ink);
+  border: 1px solid var(--fz-edge); border-radius: 12px; box-shadow: none;
+}
+html body .my-profile-action-btn { background: var(--fz-surface); }
+html body .settings-option:hover, html body .privacy-option:hover, html body .account-option:hover,
+html body .appearance-option:hover, html body .chat-customization-option:hover,
+html body .chat-theme-option:hover, html body .chat-background-option:hover { background: var(--fz-hover); transform: none; }
+html body .settings-option > span, html body .account-option > span, html body .privacy-option > span,
+html body .appearance-option > span, html body .chat-customization-option > span {
+  background: var(--fz-brand-soft); color: var(--fz-brand); border: 1px solid var(--fz-edge); border-radius: 10px;
+}
+html body.dark-mode .settings-option > span, html body.dark-mode .account-option > span,
+html body.dark-mode .privacy-option > span, html body.dark-mode .appearance-option > span,
+html body.dark-mode .chat-customization-option > span { color: var(--fz-ink); }
+html body .theme-preview { border: 1px solid var(--fz-edge); }
+html body [class$="-close"] { background: var(--fz-surface-2); color: var(--fz-ink); border: 1px solid var(--fz-edge); box-shadow: none; }
+
+html body .save-account-btn, html body .publish-announcement-btn, html body .news-create-btn,
+html body .announcement-create-btn, html body .message-user-btn, html body #saveProfileBtn,
+html body #saveGroupPhotoBtn, html body #saveRenameGroupBtn, html body #confirmAddMemberBtn,
+html body #publishBreakingNewsBtn, html body .fz-install-btn {
+  background: var(--fz-brand); color: var(--fz-brand-ink); border: 1px solid var(--fz-edge); box-shadow: none;
+}
+html body #confirmDeleteAccountBtn { border: 1px solid var(--fz-edge); box-shadow: none; }
+html body .edit-account-form input, html body .edit-account-form select, html body .edit-account-form textarea,
+html body .rename-group-popover input, html body .create-announcement-box input,
+html body .create-announcement-box textarea, html body .create-announcement-box select {
+  background: var(--fz-surface); color: var(--fz-ink); border: 1px solid var(--fz-edge); border-radius: 10px;
+}
+html body .profile-progress-bar { border: 1px solid var(--fz-edge); height: 10px; }
+html body .profile-progress-fill { background: var(--fz-brand) !important; }
+html body .news-item { background: var(--fz-surface-2); border: 1px solid var(--fz-edge); box-shadow: none; }
+html body .news-item-breaking { border-left: 5px solid var(--fz-yellow); }
+
+/* ---------- CREATE GROUP: sits above everything, near the top ---------- */
+html body .create-group-popover {
+  position: fixed !important; top: 76px !important; left: 50% !important; right: auto !important; bottom: auto !important;
+  transform: translateX(-50%) !important;
+  z-index: 2147483000 !important;
+  width: calc(100vw - 28px); max-width: 380px; max-height: calc(100vh - 96px); max-height: calc(100dvh - 96px);
+  overflow-y: auto; box-sizing: border-box;
+  background: var(--fz-surface); color: var(--fz-ink);
+  border: var(--fz-bw) solid var(--fz-edge); border-radius: 16px; box-shadow: var(--fz-shadow);
+}
+html body .create-group-popover:not(.show) { display: none !important; }
+html body .create-group-title { color: var(--fz-ink); font-family: var(--fz-head); font-size: 21px; font-weight: 700; text-align: left; letter-spacing: -.01em; }
+html body #createGroupPopover #groupName {
+  background: var(--fz-surface-2); color: var(--fz-ink); border: var(--fz-bw) solid var(--fz-edge); box-shadow: none;
+}
+html body #createGroupPopover #groupName::placeholder { color: var(--fz-muted); }
+html body #createGroupPopover #groupName:focus { border-color: var(--fz-brand); box-shadow: 0 0 0 3px var(--fz-brand-soft); }
+html body .create-group-actions button { border: var(--fz-bw) solid var(--fz-edge); box-shadow: none; }
+html body #cancelCreateGroupBtn { background: var(--fz-surface); color: var(--fz-ink); }
+html body #cancelCreateGroupBtn:hover { background: var(--fz-hover); box-shadow: none; }
+html body #createGroupBtn { background: var(--fz-brand); color: var(--fz-brand-ink); box-shadow: none; }
+html body #createGroupBtn:hover { box-shadow: none; filter: brightness(1.1); }
+
+/* ===== END FRIENDSZONE SKIN ===== */
 </style>
  </head>
 <body>
@@ -17257,44 +17435,7 @@ html body.dark-mode .sidebar { background: var(--fz-surface) !important; }
          CREATE GROUP POPOVER
     ================================================== -->
 
-    <div
-      id="createGroupPopover"
-      class="create-group-popover"
-    >
-
-      <div class="create-group-title">
-        <svg class="fz-icon" aria-hidden="true"><use href="#icon-users"></use></svg> Create Group
-      </div>
-
-
-      <input
-        id="groupName"
-        type="text"
-        placeholder="Enter group name..."
-        autocomplete="off"
-      >
-
-
-      <div class="create-group-actions">
-
-        <button
-          id="cancelCreateGroupBtn"
-          type="button"
-        >
-          Cancel
-        </button>
-
-
-        <button
-          id="createGroupBtn"
-          type="button"
-        >
-          Create
-        </button>
-
-      </div>
-
-    </div>
+    
 
 
     <!-- ==================================================
@@ -21253,6 +21394,46 @@ html body.dark-mode .sidebar { background: var(--fz-surface) !important; }
     <button id="fzInstallLater" class="fz-install-later" type="button">Not now</button>
   </div>
 </div>
+
+<!-- CREATE GROUP POPOVER (moved out of the sidebar so it can sit above everything) -->
+<div
+      id="createGroupPopover"
+      class="create-group-popover"
+    >
+
+      <div class="create-group-title">
+        <svg class="fz-icon" aria-hidden="true"><use href="#icon-users"></use></svg> Create Group
+      </div>
+
+
+      <input
+        id="groupName"
+        type="text"
+        placeholder="Enter group name..."
+        autocomplete="off"
+      >
+
+
+      <div class="create-group-actions">
+
+        <button
+          id="cancelCreateGroupBtn"
+          type="button"
+        >
+          Cancel
+        </button>
+
+
+        <button
+          id="createGroupBtn"
+          type="button"
+        >
+          Create
+        </button>
+
+      </div>
+
+    </div>
 
 <script>
 (function () {
